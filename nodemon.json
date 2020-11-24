@@ -1,0 +1,23 @@
+{
+    "verbose": true,
+    "debug": true,
+    "exec": "node -r ts-node/register --inspect src/app.ts",
+    "ignore": [
+      "mochawesome-report",
+      "node_modules",
+      "./test",
+      "**/*.d.ts",
+      "*.test.ts",
+      "*.spec.ts",
+      "fixtures/*",
+      "test/**/*",
+      "docs/*"
+    ],
+    "events": {
+      "restart": ""
+    },
+    "watch": ["src", "./tsconfig.json"],
+    "ext": "ts",
+    "inspect": true,
+    "signal": "SIGINT"
+  }
