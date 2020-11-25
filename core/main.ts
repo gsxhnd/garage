@@ -17,8 +17,11 @@ function createWindow(): BrowserWindow {
   win = new BrowserWindow({
     x: 0,
     y: 0,
+    minHeight: 600,
+    minWidth: 1200,
     width: size.width,
     height: size.height,
+    titleBarStyle: 'hiddenInset',
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: serve ? true : false,
@@ -29,7 +32,7 @@ function createWindow(): BrowserWindow {
 
   if (serve) {
     win.webContents.openDevTools();
-    win.loadURL('https://www.gsxhnd.xyz');
+    win.loadURL('http://localhost:4200');
   } else {
     win.loadURL(
       url.format({
