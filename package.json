@@ -1,7 +1,7 @@
 {
   "name": "garage",
   "version": "0.0.1",
-  "main":"main.js",
+  "main":"dist/main.js",
   "private": true,
   "scripts": {
     "ng": "ng",
