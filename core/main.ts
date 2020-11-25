@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Menu, screen } from 'electron';
 import * as path from 'path';
-import { from } from 'rxjs';
 import * as url from 'url';
+import * as fs from 'fs';
 
 import { menuTemplate } from './menu';
 
@@ -62,6 +62,9 @@ try {
   app.on('ready', () => {
     // const appMenu = Menu.buildFromTemplate(menuTemplate)
     // Menu.setApplicationMenu(appMenu)
+    const home = app.getPath('home');
+    const configDir = home + '/.config/' + app.getName();
+    console.log(configDir);
   });
 
   // Quit when all windows are closed.
@@ -81,6 +84,5 @@ try {
     }
   });
 } catch (e) {
-  // Catch Error
-  // throw e;
+  console.error(e);
 }
