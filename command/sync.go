@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"garage/core"
 	"github.com/urfave/cli/v2"
 )
 
@@ -18,16 +19,7 @@ var syncCmd = &cli.Command{
 	After:        nil,
 	Action: func(context *cli.Context) error {
 		fmt.Println("sync")
+		core.GetSubject()
 		return nil
 	},
-	OnUsageError:           nil,
-	Subcommands:            nil,
-	Flags:                  nil,
-	SkipFlagParsing:        false,
-	HideHelp:               false,
-	HideHelpCommand:        false,
-	Hidden:                 false,
-	UseShortOptionHandling: false,
-	HelpName:               "",
-	CustomHelpTemplate:     "",
 }
