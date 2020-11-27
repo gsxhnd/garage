@@ -1,12 +1,12 @@
 package main
 
 import (
-	"garage/cmd"
+	"garage/command"
 	"os"
 )
 
 func main() {
-	err := cmd.App.Run(os.Args)
+	err := command.App.Run(os.Args)
 	if err != nil {
 		panic(err)
 	}
