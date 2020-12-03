@@ -22,4 +22,22 @@ var syncCmd = &cli.Command{
 		core.GetSubject()
 		return nil
 	},
+	Flags: []cli.Flag{
+		searchFlag,
+		baseFlag,
+	},
+}
+
+var searchFlag = &cli.StringFlag{
+	Name:        "search",
+	Aliases:     []string{"s"},
+	Destination: nil,
+	HasBeenSet:  false,
+}
+
+var baseFlag = &cli.StringFlag{
+	Name:        "base",
+	Aliases:     []string{"b"},
+	Destination: nil,
+	HasBeenSet:  false,
 }
