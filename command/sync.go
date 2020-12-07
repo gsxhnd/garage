@@ -17,14 +17,15 @@ var syncCmd = &cli.Command{
 	BashComplete: nil,
 	Before:       nil,
 	After:        nil,
+	Flags: []cli.Flag{
+		searchFlag,
+		baseFlag,
+		proxyFlag,
+	},
 	Action: func(context *cli.Context) error {
 		fmt.Println("sync")
 		core.GetSubject()
 		return nil
-	},
-	Flags: []cli.Flag{
-		searchFlag,
-		baseFlag,
 	},
 }
 
@@ -38,6 +39,12 @@ var searchFlag = &cli.StringFlag{
 var baseFlag = &cli.StringFlag{
 	Name:        "base",
 	Aliases:     []string{"b"},
+	Destination: nil,
+	HasBeenSet:  false,
+}
+
+var proxyFlag = &cli.StringFlag{
+	Name:        "proxy",
 	Destination: nil,
 	HasBeenSet:  false,
 }
