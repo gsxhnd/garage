@@ -8,3 +8,7 @@ type Subject struct {
 	PublishTime time.Time `json:"publish_time"`
 	TimestampModel
 }
+
+func (s Subject) TableName() string {
+	return "subject"
+}

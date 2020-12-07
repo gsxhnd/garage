@@ -8,7 +8,7 @@ import (
 func GetSubject() {
 	db := Database.Default
 	var data model.Subject
-	row := db.Where("id = '1'").Take(&data)
+	row := db.Take(&data)
 	if row.Error != nil {
 		log.Println(row.Error)
 	} else {

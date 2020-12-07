@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"garage/core"
 	"garage/dao"
 	"github.com/urfave/cli/v2"
 )
@@ -30,8 +29,6 @@ var syncCmd = &cli.Command{
 			return err
 		}
 		dao.GetSubject()
-
-		core.GetSubject()
 		return nil
 	},
 }
