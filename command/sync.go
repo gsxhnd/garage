@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"garage/core"
+	"garage/dao"
 	"github.com/urfave/cli/v2"
 )
 
@@ -24,6 +25,12 @@ var syncCmd = &cli.Command{
 	},
 	Action: func(context *cli.Context) error {
 		fmt.Println("sync")
+		err := dao.Database.Connect()
+		if err != nil {
+			return err
+		}
+		dao.GetSubject()
+
 		core.GetSubject()
 		return nil
 	},
