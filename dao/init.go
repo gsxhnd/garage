@@ -2,7 +2,9 @@ package dao
 
 import (
 	"garage/db"
+	"garage/model"
 	"gorm.io/gorm"
+	"log"
 )
 
 var Database datebase
@@ -17,6 +19,11 @@ func (d *datebase) Connect() error {
 	if err != nil {
 		return err
 	}
+	err = d.Default.AutoMigrate(&model.Subject{}, &model.Star{})
+	if err != nil {
+		log.Println(err)
+	}
+
 	return nil
 }
 

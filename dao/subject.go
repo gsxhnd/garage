@@ -7,8 +7,11 @@ import (
 
 func GetSubject() {
 	db := Database.Default
-	var data model.Subject
-	row := db.Take(&data)
+	data := model.Subject{
+		Id:    "aaa-001",
+		Title: "aaa-001",
+	}
+	row := db.FirstOrCreate(&data)
 	if row.Error != nil {
 		log.Println(row.Error)
 	} else {
