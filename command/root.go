@@ -9,7 +9,8 @@ var (
 func init() {
 	App.Name = "garage"
 	App.Commands = []*cli.Command{
-		syncCmd,
+		scrapyCmd,
+		dashboardCmd,
 		versionCmd,
 	}
 }
