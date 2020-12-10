@@ -1,6 +1,8 @@
 package command
 
 import (
+	"fmt"
+	"github.com/gocolly/colly"
 	"github.com/urfave/cli/v2"
 )
 
@@ -22,7 +24,15 @@ var scrapyCmd = &cli.Command{
 		syncDirFlag,
 		dbDirFlag,
 	},
-	Action: func(context *cli.Context) error {
+	Action: func(ctx *cli.Context) error {
+		fmt.Println(ctx.String("search"))
+		fmt.Println(ctx.Bool("sync"))
+		c := colly.NewCollector()
+		c.MaxDepth = 100
+		c.OnHTML(".pin-list-wrap", func(e *colly.HTMLElement) {
+			fmt.Println(e)
+		})
+		_ = c.Visit("https://juejin.cn/pins/recommended")
 		return nil
 	},
 }
@@ -49,6 +59,7 @@ var (
 	syncDirFlag = &cli.BoolFlag{
 		Name:  "sync",
 		Usage: "",
+		Value: false,
 	}
 	dbDirFlag = &cli.StringFlag{
 		Name:    "dest",
