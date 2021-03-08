@@ -11,9 +11,9 @@ import (
 var crawlCmd = &cli.Command{
 	Name:         "crawl",
 	Aliases:      nil,
-	Usage:        "",
-	UsageText:    "",
-	Description:  "",
+	Usage:        "crawl jav data.",
+	UsageText:    "crawl --site [javbus/javlibrary] -s XXX-001",
+	Description:  "crawl  jav data, support javbus and javlibrary site.",
 	ArgsUsage:    "",
 	Category:     "",
 	BashComplete: nil,
