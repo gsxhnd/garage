@@ -19,7 +19,8 @@ func (d *datebase) Connect() error {
 	if err != nil {
 		return err
 	}
-	err = d.Default.AutoMigrate(&model.Subject{}, &model.Star{})
+
+	err = d.Default.AutoMigrate(&model.JavMovie{}, &model.JavStar{}, &model.JavMovieSatr{})
 	if err != nil {
 		log.Println(err)
 	}

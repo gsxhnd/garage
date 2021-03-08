@@ -6,7 +6,7 @@ import (
 )
 
 func GetSqliteDB() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("jav.db"), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}

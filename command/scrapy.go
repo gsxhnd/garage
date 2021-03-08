@@ -1,8 +1,7 @@
 package command
 
 import (
-	"fmt"
-	"github.com/gocolly/colly"
+	"garage/dao"
 	"github.com/urfave/cli/v2"
 )
 
@@ -25,14 +24,17 @@ var scrapyCmd = &cli.Command{
 		dbDirFlag,
 	},
 	Action: func(ctx *cli.Context) error {
-		fmt.Println(ctx.String("search"))
-		fmt.Println(ctx.Bool("sync"))
-		c := colly.NewCollector()
-		c.MaxDepth = 100
-		c.OnHTML(".pin-list-wrap", func(e *colly.HTMLElement) {
-			fmt.Println(e)
-		})
-		_ = c.Visit("https://juejin.cn/pins/recommended")
+		_ = dao.Database.Connect()
+		defer dao.Database.Close()
+		dao.GetJavMovie()
+		//fmt.Println(ctx.String("search"))
+		//fmt.Println(ctx.Bool("sync"))
+		//c := colly.NewCollector()
+		//c.MaxDepth = 100
+		//c.OnHTML(".pin-list-wrap", func(e *colly.HTMLElement) {
+		//	fmt.Println(e)
+		//})
+		//_ = c.Visit("https://juejin.cn/pins/recommended")
 		return nil
 	},
 }
