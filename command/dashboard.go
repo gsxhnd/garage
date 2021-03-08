@@ -2,6 +2,7 @@ package command
 
 import "github.com/urfave/cli/v2"
 
+// start dashboard api
 var dashboardCmd = &cli.Command{
 	Name:                   "dashboard",
 	Aliases:                nil,
