@@ -1,22 +1,28 @@
 package command
 
-import "github.com/urfave/cli/v2"
+import (
+	"garage/api"
+	"github.com/urfave/cli/v2"
+)
 
 // start dashboard api
 var dashboardCmd = &cli.Command{
-	Name:                   "dashboard",
-	Aliases:                nil,
-	Usage:                  "",
-	UsageText:              "",
-	Description:            "",
-	ArgsUsage:              "",
-	Category:               "",
-	BashComplete:           nil,
-	Before:                 nil,
-	After:                  nil,
-	Action:                 nil,
+	Name:         "dashboard",
+	Aliases:      nil,
+	Usage:        "dashboard",
+	UsageText:    "dashboard",
+	Description:  "start web ui",
+	ArgsUsage:    "",
+	Category:     "",
+	BashComplete: nil,
+	Before:       nil,
+	After:        nil,
+	Action: func(context *cli.Context) error {
+		go api.OpenBrowser("http://localhost:8001")
+		api.Run()
+		return nil
+	},
 	OnUsageError:           nil,
-	Subcommands:            nil,
 	Flags:                  nil,
 	SkipFlagParsing:        false,
 	HideHelp:               false,
