@@ -22,8 +22,10 @@ var dashboardCmd = &cli.Command{
 		api.Run()
 		return nil
 	},
-	OnUsageError:           nil,
-	Flags:                  nil,
+	OnUsageError: nil,
+	Flags: []cli.Flag{
+		portFlag,
+	},
 	SkipFlagParsing:        false,
 	HideHelp:               false,
 	HideHelpCommand:        false,
