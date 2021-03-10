@@ -3,6 +3,7 @@ package command
 import (
 	"garage/api"
 	"github.com/urfave/cli/v2"
+	"time"
 )
 
 // start dashboard api
@@ -15,16 +16,26 @@ var dashboardCmd = &cli.Command{
 	ArgsUsage:    "",
 	Category:     "",
 	BashComplete: nil,
-	Before:       nil,
-	After:        nil,
-	Action: func(context *cli.Context) error {
-		go api.OpenBrowser("http://localhost:8001")
-		api.Run()
+	Before: func(ctx *cli.Context) error {
+		go time.AfterFunc(2*time.Second, func() {
+			api.OpenBrowser("http://localhost:" + ctx.String("port"))
+		})
+		return nil
+	},
+	After: func(ctx *cli.Context) error {
+		api.Run(ctx.String("port"))
+		return nil
+	},
+	Action: func(ctx *cli.Context) error {
 		return nil
 	},
 	OnUsageError: nil,
 	Flags: []cli.Flag{
 		portFlag,
+		coverImgFlag,
+		starImgFlag,
+		dbDirFlag,
+		dbNameFlag,
 	},
 	SkipFlagParsing:        false,
 	HideHelp:               false,

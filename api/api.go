@@ -26,10 +26,10 @@ func OpenBrowser(url string) {
 	}
 }
 
-func Run() {
+func Run(port string) {
 	srv := &http.Server{
 		Handler:      routes(),
-		Addr:         ":8001",
+		Addr:         ":" + port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

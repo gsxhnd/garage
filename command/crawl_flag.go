@@ -31,9 +31,4 @@ var (
 		Usage: "",
 		Value: false,
 	}
-	dbDirFlag = &cli.StringFlag{
-		Name:    "dest",
-		Aliases: nil,
-		Usage:   "",
-	}
 )
