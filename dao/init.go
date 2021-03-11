@@ -13,9 +13,9 @@ type datebase struct {
 	Default *gorm.DB
 }
 
-func (d *datebase) Connect() error {
+func (d *datebase) ConnectSQLite(file string) error {
 	var err error
-	d.Default, err = db.GetSqliteDB()
+	d.Default, err = db.GetSqliteDB(file)
 	if err != nil {
 		return err
 	}
@@ -26,6 +26,10 @@ func (d *datebase) Connect() error {
 	}
 
 	return nil
+}
+
+func (d *datebase) ConnectMysql() {
+
 }
 
 func (d *datebase) Close() {

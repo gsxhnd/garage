@@ -26,12 +26,13 @@ func OpenBrowser(url string) {
 	}
 }
 
-func Run(port string) {
+func Run(port string) error {
 	srv := &http.Server{
 		Handler:      routes(),
 		Addr:         ":" + port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	_ = srv.ListenAndServe()
+	err := srv.ListenAndServe()
+	return err
 }

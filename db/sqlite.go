@@ -5,8 +5,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetSqliteDB() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("jav.db"), &gorm.Config{})
+func GetSqliteDB(file string) (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open(file), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}

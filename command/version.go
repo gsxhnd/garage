@@ -21,13 +21,13 @@ var versionCmd = &cli.Command{
 	Usage:       "Show version",
 	Description: "Show version",
 	Action: func(context *cli.Context) error {
-		fmt.Println("version: ", gitTag)
-		fmt.Println("commit: ", gitCommit)
-		fmt.Println("tree state: ", gitTreeState)
-		fmt.Println("build date: ", buildDate)
-		fmt.Println("go version: ", goVersion)
+		fmt.Println("version:     ", gitTag)
+		fmt.Println("commit:      ", gitCommit)
+		fmt.Println("tree state:  ", gitTreeState)
+		fmt.Println("build date:  ", buildDate)
+		fmt.Println("go version:  ", goVersion)
 		fmt.Println("go compiler: ", compiler)
-		fmt.Println("platform: ", platform)
+		fmt.Println("platform:    ", platform)
 		return nil
 	},
 }

@@ -2,46 +2,54 @@ package command
 
 import (
 	"garage/api"
+	"garage/dao"
+	"github.com/gsxhnd/owl"
 	"github.com/urfave/cli/v2"
 	"time"
 )
 
 // start dashboard api
 var dashboardCmd = &cli.Command{
-	Name:         "dashboard",
-	Aliases:      nil,
-	Usage:        "dashboard",
-	UsageText:    "dashboard",
-	Description:  "start web ui",
-	ArgsUsage:    "",
-	Category:     "",
-	BashComplete: nil,
+	Name:        "dashboard",
+	Aliases:     nil,
+	Usage:       "dashboard",
+	UsageText:   "dashboard",
+	Description: "start web ui",
 	Before: func(ctx *cli.Context) error {
-		go time.AfterFunc(2*time.Second, func() {
-			api.OpenBrowser("http://localhost:" + ctx.String("port"))
-		})
-		return nil
-	},
-	After: func(ctx *cli.Context) error {
-		api.Run(ctx.String("port"))
-		return nil
+		conf := ctx.String("conf")
+		owl.SetConfName(conf)
+		err := owl.ReadConf()
+		if err != nil {
+			return err
+		} else {
+			return nil
+		}
 	},
 	Action: func(ctx *cli.Context) error {
-		return nil
+		var (
+			port = owl.GetString("dashboard.port")
+		)
+		defer dao.Database.Close()
+		switch owl.GetString("db.source") {
+		case "sqlite":
+			err := dao.Database.ConnectSQLite(owl.GetString("db.file"))
+			if err != nil {
+				return err
+			}
+		}
+
+		if ctx.Bool("open") {
+			go time.AfterFunc(2*time.Second, func() {
+				api.OpenBrowser("http://localhost:" + port)
+			})
+		}
+
+		err := api.Run(port)
+		return err
 	},
 	OnUsageError: nil,
 	Flags: []cli.Flag{
-		portFlag,
-		coverImgFlag,
-		starImgFlag,
-		dbDirFlag,
-		dbNameFlag,
+		confFlag,
+		openFlag,
 	},
-	SkipFlagParsing:        false,
-	HideHelp:               false,
-	HideHelpCommand:        false,
-	Hidden:                 false,
-	UseShortOptionHandling: false,
-	HelpName:               "",
-	CustomHelpTemplate:     "",
 }

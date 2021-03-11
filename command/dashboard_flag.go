@@ -3,20 +3,18 @@ package command
 import "github.com/urfave/cli/v2"
 
 var (
-	portFlag = &cli.StringFlag{
-		Name:        "port",
-		Aliases:     []string{"p"},
-		Usage:       "",
+	confFlag = &cli.StringFlag{
+		Name:        "conf",
+		Aliases:     []string{"c"},
+		Usage:       "-c [Conf File]",
 		Destination: nil,
 		HasBeenSet:  false,
-		Value:       "9000",
+		Value:       "./conf.yaml",
 	}
-	coverImgFlag = &cli.StringFlag{
-		Name:    "cover-image",
-		Aliases: []string{"ci"},
-	}
-	starImgFlag = &cli.StringFlag{
-		Name:    "star-image",
-		Aliases: []string{"si"},
+	openFlag = &cli.BoolFlag{
+		Name:        "open",
+		Usage:       "--open",
+		Destination: nil,
+		Value:       false,
 	}
 )

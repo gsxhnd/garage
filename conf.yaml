@@ -1,0 +1,11 @@
+dashboard:
+  port: 8080
+
+db:
+  source: "sqlite"
+  sqlite:
+    file: "./jav.db"
+
+img:
+  cover: ""
+  star: ""

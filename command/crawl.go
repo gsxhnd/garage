@@ -2,7 +2,6 @@ package command
 
 import (
 	"fmt"
-	"garage/dao"
 	"github.com/gocolly/colly/v2"
 	"github.com/urfave/cli/v2"
 )
@@ -26,12 +25,6 @@ var crawlCmd = &cli.Command{
 		dbDirFlag,
 	},
 	Before: func(ctx *cli.Context) error {
-		sync := ctx.Bool("sync")
-		fmt.Println(sync)
-		if sync {
-			_ = dao.Database.Connect()
-			defer dao.Database.Close()
-		}
 		return nil
 	},
 	Action: func(ctx *cli.Context) error {
