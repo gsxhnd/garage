@@ -21,8 +21,6 @@ var crawlCmd = &cli.Command{
 		siteFlag,
 		baseFlag,
 		proxyFlag,
-		syncFlag,
-		dbDirFlag,
 	},
 	Before: func(ctx *cli.Context) error {
 		return nil

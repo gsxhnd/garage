@@ -26,9 +26,4 @@ var (
 		Destination: nil,
 		HasBeenSet:  false,
 	}
-	syncFlag = &cli.BoolFlag{
-		Name:  "sync",
-		Usage: "",
-		Value: false,
-	}
 )
