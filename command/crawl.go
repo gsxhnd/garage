@@ -1,8 +1,7 @@
 package command
 
 import (
-	"fmt"
-	"github.com/gocolly/colly/v2"
+	"garage/crawl"
 	"github.com/urfave/cli/v2"
 )
 
@@ -23,16 +22,14 @@ var crawlCmd = &cli.Command{
 		proxyFlag,
 	},
 	Before: func(ctx *cli.Context) error {
+		var (
+			proxy = ctx.String("proxy")
+		)
+		crawl.SetProxy(proxy)
 		return nil
 	},
 	Action: func(ctx *cli.Context) error {
-		c := colly.NewCollector()
-		_ = c.SetProxy(ctx.String("proxy"))
-		c.MaxDepth = 100
-		c.OnHTML(".container-fluid", func(e *colly.HTMLElement) {
-			fmt.Println(e)
-		})
-		_ = c.Visit("https://www.javbus.com")
+		crawl.Tt()
 		return nil
 	},
 }
