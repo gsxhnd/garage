@@ -34,7 +34,7 @@ var crawlCmd = &cli.Command{
 		defer dao.Database.Close()
 		switch owl.GetString("db.source") {
 		case "sqlite":
-			err := dao.Database.ConnectSQLite(owl.GetString("db.file"))
+			err := dao.Database.ConnectSQLite(owl.GetString("db.sqlite.file"))
 			if err != nil {
 				return err
 			}

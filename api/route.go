@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-func routes() *mux.Router {
+func routes(imgDir string) *mux.Router {
 	r := mux.NewRouter()
-	r.PathPrefix("/img/").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir("./img/"))))
+	r.PathPrefix("/img/").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir(imgDir))))
 
 	api := r.PathPrefix("/v1/api").Subrouter()
 	api.HandleFunc("/jav/movie", GetJavMovie).Methods("GET") // get jav movie list

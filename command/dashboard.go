@@ -27,12 +27,20 @@ var dashboardCmd = &cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 		var (
-			port = owl.GetString("dashboard.port")
+			port   = owl.GetString("dashboard.port")
+			imgDir = owl.GetString("img_dir")
 		)
+		if port == "" {
+			port = ":8080"
+		}
+		if imgDir == "" {
+			imgDir = "./img"
+		}
+
 		defer dao.Database.Close()
 		switch owl.GetString("db.source") {
 		case "sqlite":
-			err := dao.Database.ConnectSQLite(owl.GetString("db.file"))
+			err := dao.Database.ConnectSQLite(owl.GetString("db.sqlite.file"))
 			if err != nil {
 				return err
 			}
@@ -44,7 +52,7 @@ var dashboardCmd = &cli.Command{
 			})
 		}
 
-		err := api.Run(port)
+		err := api.Run(port, imgDir)
 		return err
 	},
 	OnUsageError: nil,

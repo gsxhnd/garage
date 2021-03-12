@@ -26,9 +26,9 @@ func OpenBrowser(url string) {
 	}
 }
 
-func Run(port string) error {
+func Run(port, imgDir string) error {
 	srv := &http.Server{
-		Handler:      routes(),
+		Handler:      routes(imgDir),
 		Addr:         ":" + port,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

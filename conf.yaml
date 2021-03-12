@@ -1,13 +1,14 @@
+img_dir: "./img"
+
 dashboard:
   port: 8080
 
 db:
-  source: "sqlite"
+  source: "sqlite" // 数据源
   sqlite:
-    file: "./jav.db"
+    file: "./jav.db" // sqlite数据
+
 crawl:
   proxy: "127.0.0.1:7890"
-
-img:
-  cover: ""
-  star: ""
+  limit: 1
+  delay: 1
