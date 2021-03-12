@@ -16,15 +16,17 @@ ldflags= "-X ${versionDir}.gitTag=${gitTag} \
 release:
 	# Build for linux
 	go clean
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-linux64-amd64 ./bin/
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-linux64-arm64 ./bin/
+	GOOS=linux GOARCH=amd64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-linux64-amd64 ./bin/
+	GOOS=linux GOARCH=arm64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-linux64-arm64 ./bin/
 	# Build for win
 	go clean
-	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-windows-amd64.exe ./bin/
+	GOOS=windows GOARCH=amd64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-windows-amd64.exe ./bin/
 	# Build for mac
 	go clean
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-darwin-amd64 ./bin/
-	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-darwin-arm64 ./bin/
+	GOOS=darwin GOARCH=amd64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-darwin-amd64 ./bin/
+	GOOS=darwin GOARCH=arm64 go build -v -ldflags ${ldflags} -o ${BuildDIR}/${APP}-darwin-arm64 ./bin/
+	# list
+	ls -al ${BuildDIR}
 
 clean:
 	@go clean --cache
