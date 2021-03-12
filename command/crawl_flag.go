@@ -21,9 +21,4 @@ var (
 		Destination: nil,
 		HasBeenSet:  false,
 	}
-	proxyFlag = &cli.StringFlag{
-		Name:        "proxy",
-		Destination: nil,
-		HasBeenSet:  false,
-	}
 )

@@ -14,5 +14,7 @@ func routes() *mux.Router {
 	api.HandleFunc("/jav/movie", UpdateJavMovie).Methods("PUT")
 	api.HandleFunc("/jav/star", GetJavStar).Methods("GET") // get jav star list
 
+	api.HandleFunc("/crawl/jav/movie", GetJavMovie).Methods("POST")
+
 	return r
 }

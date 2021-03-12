@@ -5,6 +5,8 @@ db:
   source: "sqlite"
   sqlite:
     file: "./jav.db"
+crawl:
+  proxy: "127.0.0.1:7890"
 
 img:
   cover: ""
