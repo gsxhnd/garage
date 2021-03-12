@@ -44,6 +44,11 @@ var dashboardCmd = &cli.Command{
 			if err != nil {
 				return err
 			}
+		case "postgre":
+			err := dao.Database.ConnectPostgreSQL()
+			if err != nil {
+				return err
+			}
 		}
 
 		if ctx.Bool("open") {

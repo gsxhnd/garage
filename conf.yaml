@@ -4,9 +4,15 @@ dashboard:
   port: 8080
 
 db:
-  source: "sqlite" // 数据源
+  source: "postgre" # 数据源
   sqlite:
-    file: "./jav.db" // sqlite数据
+    file: "./jav.db" # sqlite数据
+  postgre:
+    addr: ""
+    port: ""
+    user: ""
+    password: ""
+    dbname: ""
 
 crawl:
   proxy: "127.0.0.1:7890"

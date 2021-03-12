@@ -28,8 +28,19 @@ func (d *datebase) ConnectSQLite(file string) error {
 	return nil
 }
 
-func (d *datebase) ConnectMysql() {
+func (d *datebase) ConnectPostgreSQL() error {
+	var err error
+	d.Default, err = db.GetPostgreSQL()
+	if err != nil {
+		return err
+	}
 
+	err = d.Default.AutoMigrate(&model.JavMovie{}, &model.JavStar{}, &model.JavMovieSatr{})
+	if err != nil {
+		log.Println(err)
+	}
+
+	return nil
 }
 
 func (d *datebase) Close() {
