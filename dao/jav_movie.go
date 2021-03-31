@@ -14,6 +14,14 @@ func CreateJavMovie(jm *[]model.JavMovie) error {
 	}
 }
 
+func UpdateJavMovie(m model.JavMovie) error {
+	var (
+		db = Database.Default
+	)
+	row := db.Model(&model.JavMovie{}).Where("code = ?", m.Code).Updates(m)
+	return row.Error
+}
+
 func GetJavMovie() (interface{}, error) {
 	var (
 		db   = Database.Default
