@@ -1,11 +1,11 @@
 package command
 
 import (
+	"errors"
 	"garage/api"
 	"garage/dao"
 	"github.com/gsxhnd/owl"
 	"github.com/urfave/cli/v2"
-	"time"
 )
 
 // start dashboard api
@@ -49,12 +49,13 @@ var dashboardCmd = &cli.Command{
 			if err != nil {
 				return err
 			}
-		}
-
-		if ctx.Bool("open") {
-			go time.AfterFunc(2*time.Second, func() {
-				api.OpenBrowser("http://localhost:" + port)
-			})
+		case "mysql":
+			err := dao.Database.ConnectMySQL()
+			if err != nil {
+				return err
+			}
+		default:
+			return errors.New("err database sourse")
 		}
 
 		err := api.Run(port, imgDir)
@@ -63,6 +64,5 @@ var dashboardCmd = &cli.Command{
 	OnUsageError: nil,
 	Flags: []cli.Flag{
 		confFlag,
-		openFlag,
 	},
 }

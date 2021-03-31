@@ -13,6 +13,11 @@ db:
     user: ""
     password: ""
     dbname: ""
+  mysql:
+    addr: ""
+    user: ""
+    password: ""
+    dbname: ""
 
 crawl:
   proxy: "127.0.0.1:7890"

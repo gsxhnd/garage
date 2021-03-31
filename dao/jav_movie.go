@@ -31,3 +31,21 @@ func GetJavMovie() (interface{}, error) {
 		return data, nil
 	}
 }
+
+func GetJavMovieInfo(code string) (interface{}, error) {
+	var (
+		db   = Database.Default
+		data = struct {
+			model.JavMovie
+			Star []model.JavStar `json:"star"`
+		}{}
+	)
+	if row := db.Model(&model.JavMovie{}).Where("code = ?", code).Find(&data); row.Error != nil {
+		return nil, row.Error
+	}
+
+	if row := db.Model(&model.JavMovieSatr{}).Where("code = ?", code).Find(&data.Star); row.Error != nil {
+		return nil, row.Error
+	}
+	return data, nil
+}
