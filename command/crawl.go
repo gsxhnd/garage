@@ -39,7 +39,6 @@ var crawlCmd = &cli.Command{
 				return err
 			}
 		}
-
 		return nil
 	},
 }
