@@ -4,8 +4,10 @@ import (
 	"errors"
 	"garage/api"
 	"garage/dao"
+	"garage/model"
 	"github.com/gsxhnd/owl"
 	"github.com/urfave/cli/v2"
+	"log"
 )
 
 // start dashboard api
@@ -39,11 +41,6 @@ var dashboardCmd = &cli.Command{
 
 		defer dao.Database.Close()
 		switch owl.GetString("db.source") {
-		case "sqlite":
-			err := dao.Database.ConnectSQLite(owl.GetString("db.sqlite.file"))
-			if err != nil {
-				return err
-			}
 		case "postgre":
 			err := dao.Database.ConnectPostgreSQL()
 			if err != nil {
@@ -58,7 +55,17 @@ var dashboardCmd = &cli.Command{
 			return errors.New("err database sourse")
 		}
 
-		err := api.Run(port, imgDir)
+		err := dao.Database.Default.AutoMigrate(
+			&model.JavMovie{},
+			&model.JavStar{},
+			&model.JavStarCode{},
+			&model.JavMovieSatr{},
+		)
+		if err != nil {
+			log.Println(err)
+		}
+
+		err = api.Run(port, imgDir)
 		return err
 	},
 	OnUsageError: nil,

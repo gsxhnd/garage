@@ -1,7 +1,6 @@
 package command
 
 import (
-	"garage/dao"
 	"github.com/gsxhnd/owl"
 	"github.com/urfave/cli/v2"
 )
@@ -31,14 +30,6 @@ var crawlCmd = &cli.Command{
 		}
 	},
 	Action: func(ctx *cli.Context) error {
-		defer dao.Database.Close()
-		switch owl.GetString("db.source") {
-		case "sqlite":
-			err := dao.Database.ConnectSQLite(owl.GetString("db.sqlite.file"))
-			if err != nil {
-				return err
-			}
-		}
 		return nil
 	},
 }
