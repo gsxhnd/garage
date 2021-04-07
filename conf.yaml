@@ -4,9 +4,7 @@ dashboard:
   port: 8080
 
 db:
-  source: "postgre" # 数据源
-  sqlite:
-    file: "./jav.db" # sqlite数据
+  source: "mysql"
   postgre:
     addr: ""
     port: ""
