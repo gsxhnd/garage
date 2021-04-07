@@ -18,9 +18,9 @@ func SetProxy(proxy string) {
 	_ = c.SetProxy(proxy)
 }
 
-func Tt() {
+func StartCrawl(url string) {
 	c.OnHTML(".container-fluid", func(e *colly.HTMLElement) {
 		fmt.Println(e)
 	})
-	_ = c.Visit("https://www.javbus.com")
+	_ = c.Visit(url)
 }
