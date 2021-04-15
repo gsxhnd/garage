@@ -2,12 +2,13 @@ package api
 
 import (
 	"github.com/gorilla/mux"
+	"github.com/gsxhnd/owl"
 	"net/http"
 )
 
 func routes(imgDir string) *mux.Router {
 	r := mux.NewRouter()
-	r.Use(AuthMiddleware("", "").Middleware)
+	r.Use(AuthMiddleware(owl.GetString("dashboard.key"), "dashboard.secret").Middleware)
 	r.PathPrefix("/img/").Handler(http.StripPrefix("/img/", http.FileServer(http.Dir(imgDir))))
 	api := r.PathPrefix("/v1/api").Subrouter()
 	api.HandleFunc("/jav/movie", GetJavMovie).Methods("GET")          // get jav movie list
