@@ -1,28 +1,31 @@
 package api
 
-import "net/http"
+import (
+	"net/http"
+)
 
-type HTTPAuthMiddle struct {
-	user     string
-	password string
+type KeyAuthMiddle struct {
+	key    string
+	secret string
 }
 
-func AuthMdiddleware(username, password string) *HTTPAuthMiddle {
-	return &HTTPAuthMiddle{
-		user:     username,
-		password: password,
+func AuthMiddleware(key, secret string) *KeyAuthMiddle {
+	return &KeyAuthMiddle{
+		key:    key,
+		secret: secret,
 	}
 }
 
-func (m *HTTPAuthMiddle) Middleware(next http.Handler) http.Handler {
+func (m *KeyAuthMiddle) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		reqUser, reqPasswd, hasAuth := r.BasicAuth()
-		if (m.user == "" && m.password == "") ||
-			(hasAuth && reqUser == m.user && reqPasswd == m.password) {
-			next.ServeHTTP(w, r)
+		var (
+			key    = r.Header.Get("x-auth-key")
+			secret = r.Header.Get("x-auth-secret")
+		)
+		if key != m.key || secret != m.secret {
+			w.WriteHeader(400)
 		} else {
-			w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+			next.ServeHTTP(w, r)
 		}
 	})
 }

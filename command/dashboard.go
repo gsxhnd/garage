@@ -58,7 +58,6 @@ var dashboardCmd = &cli.Command{
 		err := dao.Database.Default.AutoMigrate(
 			&model.JavMovie{},
 			&model.JavStar{},
-			&model.JavStarCode{},
 			&model.JavMovieSatr{},
 		)
 		if err != nil {
