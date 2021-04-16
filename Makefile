@@ -29,7 +29,7 @@ release:
 	ls -al ${BuildDIR}
 
 clean:
-	@go clean --cache
+	@go clean -cache
 	@rm -rvf build/*
 
 .PHONY: release clean
