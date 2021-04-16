@@ -2,18 +2,8 @@ package command
 
 import (
 	"fmt"
+	"garage/utils"
 	"github.com/urfave/cli/v2"
-	"runtime"
-)
-
-var (
-	gitTag       string
-	gitCommit    string
-	gitTreeState string
-	buildDate    string
-	goVersion    = runtime.Version()
-	compiler     = runtime.Compiler
-	platform     = fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH)
 )
 
 var versionCmd = &cli.Command{
@@ -21,13 +11,14 @@ var versionCmd = &cli.Command{
 	Usage:       "Show version",
 	Description: "Show version",
 	Action: func(context *cli.Context) error {
-		fmt.Println("version:     ", gitTag)
-		fmt.Println("commit:      ", gitCommit)
-		fmt.Println("tree state:  ", gitTreeState)
-		fmt.Println("build date:  ", buildDate)
-		fmt.Println("go version:  ", goVersion)
-		fmt.Println("go compiler: ", compiler)
-		fmt.Println("platform:    ", platform)
+		var info = utils.GetVersionInfo()
+		fmt.Println("version:     ", info.Version)
+		fmt.Println("commit:      ", info.GitCommit)
+		fmt.Println("tree state:  ", info.GitTreeState)
+		fmt.Println("build date:  ", info.BuildDate)
+		fmt.Println("go version:  ", info.GoVersion)
+		fmt.Println("go compiler: ", info.Compiler)
+		fmt.Println("platform:    ", info.Platform)
 		return nil
 	},
 }
