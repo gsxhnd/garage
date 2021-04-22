@@ -1,7 +1,7 @@
 package command
 
 import (
-	"github.com/gsxhnd/owl"
+	"fmt"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,22 +14,15 @@ var crawlCmd = &cli.Command{
 	Description: "crawl jav data, support javbus and javlibrary site.",
 	ArgsUsage:   "",
 	Flags: []cli.Flag{
-		confFlag,
 		searchFlag,
 		siteFlag,
 		baseFlag,
 	},
 	Before: func(ctx *cli.Context) error {
-		conf := ctx.String("conf")
-		owl.SetConfName(conf)
-		err := owl.ReadConf()
-		if err != nil {
-			return err
-		} else {
-			return nil
-		}
+		return nil
 	},
 	Action: func(ctx *cli.Context) error {
+		fmt.Println("crawl")
 		return nil
 	},
 }

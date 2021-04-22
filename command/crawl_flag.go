@@ -14,6 +14,7 @@ var (
 		Name:        "site",
 		Destination: nil,
 		HasBeenSet:  false,
+		Value:       "javbus",
 	}
 	baseFlag = &cli.StringFlag{
 		Name:        "base",
