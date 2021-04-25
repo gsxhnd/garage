@@ -46,13 +46,24 @@ func GetJavMovieInfo(code string) (interface{}, error) {
 		data = struct {
 			model.JavMovie
 			Star []model.JavStar `json:"star"`
+			Tag  []model.JavTag  `json:"tag"`
 		}{}
 	)
-	if row := db.Model(&model.JavMovie{}).Where("code = ?", code).Find(&data); row.Error != nil {
+	if row := db.Model(&model.JavMovie{}).
+		Where("code = ?", code).
+		Find(&data); row.Error != nil {
 		return nil, row.Error
 	}
 
-	if row := db.Model(&model.JavMovieSatr{}).Where("code = ?", code).Find(&data.Star); row.Error != nil {
+	if row := db.Model(&model.JavMovieSatr{}).
+		Where("code = ?", code).
+		Find(&data.Star); row.Error != nil {
+		return nil, row.Error
+	}
+
+	if row := db.Model(&model.JavMovieTag{}).
+		Where("jav_movie_code = ?", code).
+		Find(&data.Tag); row.Error != nil {
 		return nil, row.Error
 	}
 	return data, nil
