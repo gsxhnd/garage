@@ -17,6 +17,7 @@ var crawlCmd = &cli.Command{
 		searchFlag,
 		siteFlag,
 		baseFlag,
+		starFlag,
 	},
 	Before: func(ctx *cli.Context) error {
 		return nil

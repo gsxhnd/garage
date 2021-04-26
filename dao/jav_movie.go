@@ -68,3 +68,9 @@ func GetJavMovieInfo(code string) (interface{}, error) {
 	}
 	return data, nil
 }
+
+func DelJavMovie(code string) error {
+	var db = Database.Default
+	row := db.Where("code = ?", code).Delete(&model.JavMovie{})
+	return row.Error
+}

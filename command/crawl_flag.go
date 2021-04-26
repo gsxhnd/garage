@@ -22,4 +22,10 @@ var (
 		Destination: nil,
 		HasBeenSet:  false,
 	}
+	starFlag = &cli.StringFlag{
+		Name:        "star",
+		Aliases:     []string{"t"},
+		Destination: nil,
+		HasBeenSet:  false,
+	}
 )
