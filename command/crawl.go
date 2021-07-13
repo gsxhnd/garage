@@ -2,6 +2,7 @@ package command
 
 import (
 	"fmt"
+	"garage/crawl"
 	"github.com/urfave/cli/v2"
 )
 
@@ -24,6 +25,8 @@ var crawlCmd = &cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 		fmt.Println("crawl")
+		crawl.SetProxy("http://127.0.0.1:7890")
+		crawl.StartCrawl("https://www.javbus.com/MUKC-017")
 		return nil
 	},
 }
