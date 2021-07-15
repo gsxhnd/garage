@@ -10,7 +10,7 @@ func init() {
 	App.Name = "garage"
 	App.Commands = []*cli.Command{
 		crawlCmd,
-		dashboardCmd,
+		apiCmd,
 		versionCmd,
 	}
 }

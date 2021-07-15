@@ -12,6 +12,7 @@ var (
 	}
 	siteFlag = &cli.StringFlag{
 		Name:        "site",
+		Usage:       "选择爬取数据的网站",
 		Destination: nil,
 		HasBeenSet:  false,
 		Value:       "javbus",

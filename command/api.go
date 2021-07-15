@@ -11,12 +11,12 @@ import (
 )
 
 // start dashboard api
-var dashboardCmd = &cli.Command{
-	Name:        "dashboard",
+var apiCmd = &cli.Command{
+	Name:        "api",
 	Aliases:     nil,
-	Usage:       "dashboard",
-	UsageText:   "dashboard",
-	Description: "start web ui",
+	Usage:       "api",
+	UsageText:   "api",
+	Description: "start api server",
 	Before: func(ctx *cli.Context) error {
 		conf := ctx.String("conf")
 		owl.SetConfName(conf)
