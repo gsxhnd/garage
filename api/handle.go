@@ -34,8 +34,9 @@ func GetJavMovieInfo(w http.ResponseWriter, req *http.Request) {
 }
 
 func CrawlJavMovie(w http.ResponseWriter, req *http.Request) {
-
-	SendRes(w, nil, "movie")
+	vars := mux.Vars(req)
+	movieCode := vars["code"]
+	SendRes(w, nil, movieCode)
 }
 
 func CrawlJavStar(w http.ResponseWriter, req *http.Request) {

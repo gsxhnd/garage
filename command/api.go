@@ -10,7 +10,7 @@ import (
 	"log"
 )
 
-// start dashboard api
+// start api
 var apiCmd = &cli.Command{
 	Name:        "api",
 	Aliases:     nil,
