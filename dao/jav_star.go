@@ -3,7 +3,7 @@ package dao
 import "garage/model"
 
 func CreateJavStar(js *[]model.JavStar) error {
-	db := Database.Default
+	var db = Database.Default
 	row := db.Create(&js)
 	if row.Error != nil {
 		return nil
@@ -28,4 +28,27 @@ func GetJavStarList() (interface{}, error) {
 	} else {
 		return data, nil
 	}
+}
+
+func UpdateJavStar(data model.JavStar) error {
+	var db = Database.Default
+	row := db.Model(model.JavStar{}).Where("id = ?", data.Id).Updates(model.JavStar{
+		Name:               data.Name,
+		JavbusStarCode:     data.JavbusStarCode,
+		JavlibraryStarCode: data.JavlibraryStarCode,
+		Image:              data.Image,
+	})
+	if row.Error != nil {
+		return row.Error
+	}
+	return nil
+}
+
+func DelJavStar(id uint64) error {
+	var db = Database.Default
+	row := db.Where("id = ?", id).Delete(&model.JavStar{})
+	if row.Error != nil {
+		return row.Error
+	}
+	return nil
 }

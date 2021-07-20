@@ -1,6 +1,8 @@
 package dao
 
-import "garage/model"
+import (
+	"garage/model"
+)
 
 func GetAllJavTag() ([]model.JavTag, error) {
 	var (
@@ -13,4 +15,10 @@ func GetAllJavTag() ([]model.JavTag, error) {
 	} else {
 		return data, nil
 	}
+}
+
+func CreateJavTag(data []model.JavTag) error {
+	var db = Database.Default
+	row := db.Create(&data)
+	return row.Error
 }

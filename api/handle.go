@@ -1,6 +1,10 @@
 package api
 
-import "net/http"
+import (
+	"garage/dao"
+	"github.com/gorilla/mux"
+	"net/http"
+)
 
 func GetJavMovie(w http.ResponseWriter, req *http.Request) {
 	SendRes(w, nil, "movie")
@@ -19,10 +23,18 @@ func DeleteJavMovie(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetJavMovieInfo(w http.ResponseWriter, req *http.Request) {
-
+	vars := mux.Vars(req)
+	movieCode := vars["code"]
+	res, err := dao.GetJavMovieInfo(movieCode)
+	if err != nil {
+		SendRes(w, err, nil)
+		return
+	}
+	SendRes(w, nil, res)
 }
 
 func CrawlJavMovie(w http.ResponseWriter, req *http.Request) {
+
 	SendRes(w, nil, "movie")
 }
 

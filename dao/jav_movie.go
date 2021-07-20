@@ -5,19 +5,13 @@ import (
 )
 
 func CreateJavMovie(jm *[]model.JavMovie) error {
-	db := Database.Default
+	var db = Database.Default
 	row := db.Create(&jm)
-	if row.Error != nil {
-		return nil
-	} else {
-		return row.Error
-	}
+	return row.Error
 }
 
 func UpdateJavMovie(m model.JavMovie) error {
-	var (
-		db = Database.Default
-	)
+	var db = Database.Default
 	row := db.Model(&model.JavMovie{}).Where("code = ?", m.Code).Updates(m)
 	return row.Error
 }
@@ -44,19 +38,19 @@ func GetJavMovieInfo(code string) (interface{}, error) {
 	var (
 		db   = Database.Default
 		data = struct {
-			model.JavMovie
-			Star []model.JavStar `json:"star"`
-			Tag  []model.JavTag  `json:"tag"`
+			Movie model.JavMovie       `json:"movie"`
+			Star  []model.JavMovieSatr `json:"star"`
+			Tag   []model.JavMovieTag  `json:"tag"`
 		}{}
 	)
 	if row := db.Model(&model.JavMovie{}).
 		Where("code = ?", code).
-		Find(&data); row.Error != nil {
+		Take(&data.Movie); row.Error != nil {
 		return nil, row.Error
 	}
 
 	if row := db.Model(&model.JavMovieSatr{}).
-		Where("code = ?", code).
+		Where("jav_movie_code = ?", code).
 		Find(&data.Star); row.Error != nil {
 		return nil, row.Error
 	}

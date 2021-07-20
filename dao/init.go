@@ -18,7 +18,6 @@ func (d *datebase) ConnectPostgreSQL() error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -32,7 +31,6 @@ func (d *datebase) ConnectMySQL() error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
