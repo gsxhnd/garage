@@ -1,48 +1,17 @@
 # Garage
 
-Help you sync local jav's info.
+本仓库已归档。
+代码迁移到 [https://github.com/jav-garage][1]
 
-## 命令行
+- [crawl core][2] : 爬虫核心代码
+- [crawl][3]: 爬虫命令行工具
+- [API][4]: API 服务，提供相关信息和 Cover 保存(包含爬虫接口)
+- [APP][5]: 移动端 APP，配套`API`
+- [Desktop][6]: 桌面端 APP，配套`API`
 
-### 爬虫命令
-
-爬取指定视频对应的信息,封面。
-
-爬取数据暂时不提供磁链链接。
-
-```shell
-NAME:
-   garage.exe crawl - crawl jav data.
-
-USAGE:
-   crawl --site [javbus/javlibrary] -s XXX-001
-
-DESCRIPTION:
-   crawl jav data, support javbus and javlibrary site.
-
-OPTIONS:
-   --search value, -s value
-   --site value              选择爬取数据的网站 (default: "javbus")
-   --base value, -b value
-   --star value, -t value
-   --help, -h                show help (default: false)
-```
-
-
-
-### API命令
-
-`API`命令启动接口服务。服务提供多个接口服务：
-
-- 后台数据爬取
-- `jav`和`star`数据信息
-- 封面数据
-
-### UI
-
-`ui`部分提供`Windows`,`macOS`, 未来会支持 `linux` ,`iOS`,`Android`
-
-仓库地址 https://github.com/gsxhnd/garage_app
-
-
-
+[1]: https://github.com/jav-garage
+[2]: https://github.com/jav-garage/crawl_core
+[3]: https://github.com/jav-garage/crawl
+[4]: https://github.com/jav-garage/api
+[4]: https://github.com/jav-garage/app
+[4]: https://github.com/jav-garage/desktop
