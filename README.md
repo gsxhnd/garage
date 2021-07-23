@@ -13,5 +13,5 @@
 [2]: https://github.com/jav-garage/crawl_core
 [3]: https://github.com/jav-garage/crawl
 [4]: https://github.com/jav-garage/api
-[4]: https://github.com/jav-garage/app
-[4]: https://github.com/jav-garage/desktop
+[5]: https://github.com/jav-garage/app
+[6]: https://github.com/jav-garage/desktop
