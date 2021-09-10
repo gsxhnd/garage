@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gsxhnd/garage/command"
+	"github.com/gsxhnd/garage/cli/command"
 	"os"
 )
 
