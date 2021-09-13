@@ -37,7 +37,7 @@ var crawlCmd = &cli.Command{
 	Action: func(ctx *cli.Context) error {
 		c := garage.NewCrawlClient()
 		_ = c.SetProxy(ctx.String("proxy"))
-		c.StarCrawlJavbusMovie(ctx.String("code"))
+		c.StarCrawlJavbusMovie(ctx.String("code"), ctx.String("proxy"))
 		return nil
 	},
 }

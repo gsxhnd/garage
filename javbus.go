@@ -8,11 +8,12 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 )
 
-func (c2 *Client) StarCrawlJavbusMovie(code string) {
+func (c2 *Client) StarCrawlJavbusMovie(code, proxy string) {
 	var data JavMovie
 	var cover string
 	c2.collector.OnHTML(".container", func(e *colly.HTMLElement) {
@@ -66,9 +67,17 @@ func (c2 *Client) StarCrawlJavbusMovie(code string) {
 	}
 
 	if cover != "" {
-		resp, _ := http.Get(c2.javbusUrl + cover)
+		uri, _ := url.Parse(proxy)
+
+		client := http.Client{
+			Transport: &http.Transport{
+				// 设置代理
+				Proxy: http.ProxyURL(uri),
+			},
+		}
+		resp, _ := client.Get(c2.javbusUrl + cover)
 		body, _ := ioutil.ReadAll(resp.Body)
-		out, _ := os.Create("./javs/" + code + "/" + "cover.jpg")
+		out, _ := os.Create("./javs/" + code + "/" + code + ".jpg")
 		io.Copy(out, bytes.NewReader(body))
 	}
 	saveData, _ := json.Marshal(&data)
