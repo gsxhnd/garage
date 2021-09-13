@@ -1,4 +1,4 @@
-package main
+package garage
 
 import (
 	"github.com/gocolly/colly/v2"
@@ -13,10 +13,15 @@ type Client struct {
 }
 
 type JavMovie struct {
-	Code           string `json:"code"`
-	Title          string `json:"title"`
-	ProduceCompany string `json:"produce_company"`
-	PublishCompany string `json:"publish_company"`
+	Code           string   `json:"code"`
+	Title          string   `json:"title"`
+	PublishDate    string   `json:"publish_date"`
+	Length         string   `json:"length"`
+	Director       string   `json:"director"`
+	ProduceCompany string   `json:"produce_company"`
+	PublishCompany string   `json:"publish_company"`
+	Series         string   `json:"series"`
+	Stars          []string `json:"stars"`
 }
 
 func NewCrawlClient() *Client {

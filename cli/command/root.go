@@ -12,6 +12,11 @@ func init() {
 	RootCmd.Usage = "garage"
 	RootCmd.Version = ""
 	RootCmd.HideVersion = true
-	RootCmd.Flags = []cli.Flag{}
-	RootCmd.Commands = []*cli.Command{}
+	RootCmd.Flags = []cli.Flag{
+		proxyFlag,
+	}
+	RootCmd.Commands = []*cli.Command{
+		crawlCmd,
+		versionCmd,
+	}
 }

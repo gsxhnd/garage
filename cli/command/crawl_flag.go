@@ -17,9 +17,10 @@ var (
 		HasBeenSet:  false,
 		Value:       "javbus",
 	}
-	baseFlag = &cli.StringFlag{
-		Name:        "base",
-		Aliases:     []string{"b"},
+	codeFlag = &cli.StringFlag{
+		Name:        "code",
+		Aliases:     []string{"c"},
+		Usage:       "-c xxx-001",
 		Destination: nil,
 		HasBeenSet:  false,
 	}
