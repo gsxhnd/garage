@@ -21,6 +21,7 @@ var crawlCmd = &cli.Command{
 		starFlag,
 	},
 	Before: func(ctx *cli.Context) error {
+		Logger.Debug("checking javs dir exists...")
 		_, err := os.Stat("./javs")
 		if err != nil {
 			if os.IsNotExist(err) {
