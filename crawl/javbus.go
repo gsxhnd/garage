@@ -1,24 +1,33 @@
-package garage
+package crawl
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gocolly/colly/v2"
 	"io"
 	"io/ioutil"
-	"net/http"
-	"net/url"
 	"os"
 	"strings"
+
+	"github.com/gocolly/colly/v2"
 )
 
-func (c2 *Client) StarCrawlJavbusMovie(code, proxy string) {
+func (c2 *Client) StarCrawlJavbusMovie(code string) {
+	info, err := c2.DownloadInfo(code)
+	if err != nil {
+		return
+	}
+	err = c2.DownloadCover(info.Code, info.Cover)
+	if err != nil {
+		return
+	}
+}
+
+func (c2 *Client) DownloadInfo(code string) (*JavMovie, error) {
 	var data JavMovie
-	var cover string
 	c2.collector.OnHTML(".container", func(e *colly.HTMLElement) {
 		data.Title = e.ChildText("h3")
-		cover = e.ChildAttr(".screencap img", "src")
+		data.Cover = e.ChildAttr(".screencap img", "src")
 		e.ForEach(".info p", func(i int, element *colly.HTMLElement) {
 			key := element.ChildText("span")
 			switch i {
@@ -52,37 +61,21 @@ func (c2 *Client) StarCrawlJavbusMovie(code, proxy string) {
 	err := c2.collector.Visit(c2.javbusUrl + code)
 	if err != nil {
 		fmt.Println("err:", err)
-		return
-	}
-	_, err = os.Stat("./javs/" + code)
-	if err != nil {
-		if os.IsNotExist(err) {
-			err := os.Mkdir("./javs/"+code, os.ModePerm)
-			if err != nil {
-				return
-			}
-		} else {
-			return
-		}
-	}
-
-	if cover != "" {
-		uri, _ := url.Parse(proxy)
-
-		client := http.Client{
-			Transport: &http.Transport{
-				// 设置代理
-				Proxy: http.ProxyURL(uri),
-			},
-		}
-		resp, _ := client.Get(c2.javbusUrl + cover)
-		body, _ := ioutil.ReadAll(resp.Body)
-		out, _ := os.Create("./javs/" + code + "/" + code + ".jpg")
-		io.Copy(out, bytes.NewReader(body))
+		return nil, err
 	}
 	saveData, _ := json.Marshal(&data)
 	err = ioutil.WriteFile("./javs/"+code+"/info.json", saveData, os.ModeAppend)
 	if err != nil {
-		return
+		return nil, err
+	} else {
+		return &data, nil
 	}
+}
+
+func (c2 *Client) DownloadCover(code, cover string) error {
+	resp, _ := c2.httpClient.Get(c2.javbusUrl + cover)
+	body, _ := ioutil.ReadAll(resp.Body)
+	out, _ := os.Create("./javs/" + code + "/" + code + ".jpg")
+	io.Copy(out, bytes.NewReader(body))
+	return nil
 }

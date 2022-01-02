@@ -1,15 +1,14 @@
-package command
+package utils
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"os"
 	"time"
+
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
-var Logger *zap.Logger
-
-func init() {
+func GetLogger(name string) *zap.Logger {
 	debugEncoder := zapcore.NewConsoleEncoder(zapcore.EncoderConfig{
 		MessageKey:  "msg",
 		LevelKey:    "level",
@@ -23,9 +22,8 @@ func init() {
 			enc.AppendInt64(int64(d) / 1000000)
 		},
 	})
-	var core zapcore.Core
-	core = zapcore.NewTee(
+	var core = zapcore.NewTee(
 		zapcore.NewCore(debugEncoder, os.Stdout, zap.DebugLevel),
 	)
-	Logger = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+	return zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 }

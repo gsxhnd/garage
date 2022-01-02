@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/gsxhnd/garage/cli/command"
 	"os"
+
+	"github.com/gsxhnd/garage/command"
 )
 
 func main() {

@@ -1,6 +1,9 @@
 package command
 
-import "github.com/urfave/cli/v2"
+import (
+	"github.com/gsxhnd/garage/crawl"
+	"github.com/urfave/cli/v2"
+)
 
 var (
 	searchFlag = &cli.StringFlag{
@@ -31,3 +34,25 @@ var (
 		HasBeenSet:  false,
 	}
 )
+
+// crawl data
+var crawlCmd = &cli.Command{
+	Name:        "crawl",
+	Aliases:     nil,
+	Usage:       "crawl jav data.",
+	UsageText:   "crawl --site [javbus/javlibrary] -c XXX-001",
+	Description: "crawl jav data, support javbus and javlibrary site.",
+	ArgsUsage:   "",
+	Flags: []cli.Flag{
+		searchFlag,
+		siteFlag,
+		codeFlag,
+		starFlag,
+	},
+	Action: func(ctx *cli.Context) error {
+		c := crawl.NewCrawlClient()
+		_ = c.SetProxy(ctx.String("proxy"))
+		c.StarCrawlJavbusMovie(ctx.String("code"))
+		return nil
+	},
+}

@@ -69,4 +69,3 @@ OPTIONS:
 # 抓取所有影片封面和信息，保存到当前目录下的 javs 文件夹下以番号命名的子文件夹中
 garage --proxy [proxy_host] crawl -c xxx-01
 ```
-
