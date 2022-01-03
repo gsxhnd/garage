@@ -5,6 +5,7 @@ import (
 	"net/url"
 
 	"github.com/gocolly/colly/v2"
+	"go.uber.org/zap"
 )
 
 type Client struct {
@@ -14,6 +15,7 @@ type Client struct {
 	maxDepth   int
 	javbusUrl  string
 	javlibUrl  string
+	logger     *zap.Logger
 }
 
 type JavMovie struct {
@@ -34,7 +36,7 @@ type JavMovieMagnet struct {
 	Size string `json:"size"`
 }
 
-func NewCrawlClient() *Client {
+func NewCrawlClient(logger *zap.Logger) *Client {
 	return &Client{
 		collector:  colly.NewCollector(),
 		httpClient: &http.Client{},
@@ -42,6 +44,7 @@ func NewCrawlClient() *Client {
 		maxDepth:   100,
 		javbusUrl:  "https://www.javbus.com/",
 		javlibUrl:  "https://www.javbus.com/",
+		logger:     logger,
 	}
 }
 

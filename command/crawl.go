@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/gsxhnd/garage/crawl"
+	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -50,7 +51,8 @@ var crawlCmd = &cli.Command{
 		starFlag,
 	},
 	Action: func(ctx *cli.Context) error {
-		c := crawl.NewCrawlClient()
+		newLogger := utils.GetLogger()
+		c := crawl.NewCrawlClient(newLogger)
 		_ = c.SetProxy(ctx.String("proxy"))
 		c.StarCrawlJavbusMovie(ctx.String("code"))
 		return nil

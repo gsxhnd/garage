@@ -24,6 +24,7 @@ func (c2 *Client) StarCrawlJavbusMovie(code string) {
 }
 
 func (c2 *Client) DownloadInfo(code string) (*JavMovie, error) {
+	c2.logger.Info("Download info: " + code)
 	var data JavMovie
 	c2.collector.OnHTML(".container", func(e *colly.HTMLElement) {
 		data.Title = e.ChildText("h3")
