@@ -5,7 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch Package",
+      "name": "Command Version",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceRoot}/",
+      "args": ["version"],
+      "output": "${workspaceRoot}/build/garage",
+      "trace": "verbose",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Command Help",
       "type": "go",
       "request": "launch",
       "mode": "auto",

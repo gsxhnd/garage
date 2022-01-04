@@ -9,8 +9,6 @@ var (
 )
 
 func init() {
-	RootCmd.Usage = "garage"
-	RootCmd.Version = ""
 	RootCmd.HideVersion = true
 	RootCmd.Flags = []cli.Flag{
 		proxyFlag,
