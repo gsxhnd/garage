@@ -21,7 +21,7 @@ var crawlCmd = &cli.Command{
 	Name:        "crawl",
 	Aliases:     nil,
 	Usage:       "crawl jav data.",
-	UsageText:   "crawl --site [javbus/javlibrary] -c XXX-001",
+	UsageText:   "crawl --site [javbus/javlibrary] XXX-001",
 	Description: "crawl jav data, support javbus and javlibrary site.",
 	ArgsUsage:   "",
 	Flags: []cli.Flag{
@@ -29,9 +29,10 @@ var crawlCmd = &cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 		newLogger := utils.GetLogger()
+		var code = ctx.Args().Get(0)
 		c := crawl.NewCrawlClient(newLogger)
 		_ = c.SetProxy(ctx.String("proxy"))
-		c.StarCrawlJavbusMovie(ctx.String("code"))
+		c.StarCrawlJavbusMovie(code)
 		return nil
 	},
 }

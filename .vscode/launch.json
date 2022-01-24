@@ -23,7 +23,20 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
-      "args": ["crawl", "--help"],
+      "args": ["help"],
+      "output": "${workspaceRoot}/build/garage",
+      "trace": "verbose",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Command Crawl",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "showLog": true,
+      "debugAdapter": "dlv-dap",
+      "program": "${workspaceRoot}/",
+      "args": ["crawl", "TEST-001"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"

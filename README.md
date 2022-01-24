@@ -44,28 +44,27 @@ GLOBAL OPTIONS:
 
 ### Crawl 命令
 
-#### 选项
-
 ```shell
 $ ./build/garage-darwin-amd64 crawl  --help
 NAME:
    garage-darwin-amd64 crawl - crawl jav data.
 
 USAGE:
-   crawl --site [javbus/javlibrary] -c XXX-001
+   crawl --site [javbus/javlibrary] XXX-001
 
 DESCRIPTION:
    crawl jav data, support javbus and javlibrary site.
 
 OPTIONS:
    --site value              选择爬取数据的网站 (default: "javbus")
-   --code value, -c value    -c xxx-001
    --help, -h                show help (default: false)
 ```
 
-### 事例
-
 ```shell
 # 抓取所有影片封面和信息，保存到当前目录下的 javs 文件夹下以番号命名的子文件夹中
-garage --proxy [proxy_host] crawl -c xxx-01
+garage --proxy [proxy_host] crawl xxx-01
 ```
+
+### Star 命令
+
+### Series 命令
