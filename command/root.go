@@ -15,6 +15,8 @@ func init() {
 	}
 	RootCmd.Commands = []*cli.Command{
 		crawlCmd,
+		starCmd,
+		codeCommand,
 		versionCmd,
 	}
 }

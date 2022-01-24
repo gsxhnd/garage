@@ -7,32 +7,12 @@ import (
 )
 
 var (
-	searchFlag = &cli.StringFlag{
-		Name:        "search",
-		Aliases:     []string{"s"},
-		Usage:       "",
-		Destination: nil,
-		HasBeenSet:  false,
-	}
 	siteFlag = &cli.StringFlag{
 		Name:        "site",
 		Usage:       "选择爬取数据的网站",
 		Destination: nil,
 		HasBeenSet:  false,
 		Value:       "javbus",
-	}
-	codeFlag = &cli.StringFlag{
-		Name:        "code",
-		Aliases:     []string{"c"},
-		Usage:       "-c xxx-001",
-		Destination: nil,
-		HasBeenSet:  false,
-	}
-	starFlag = &cli.StringFlag{
-		Name:        "star",
-		Aliases:     []string{"t"},
-		Destination: nil,
-		HasBeenSet:  false,
 	}
 )
 
@@ -45,10 +25,7 @@ var crawlCmd = &cli.Command{
 	Description: "crawl jav data, support javbus and javlibrary site.",
 	ArgsUsage:   "",
 	Flags: []cli.Flag{
-		searchFlag,
 		siteFlag,
-		codeFlag,
-		starFlag,
 	},
 	Action: func(ctx *cli.Context) error {
 		newLogger := utils.GetLogger()
