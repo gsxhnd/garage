@@ -1,5 +1,7 @@
 # Garage
 
+`garage`是一个命令行工具，帮助你爬取指定番号，演员和番号系列数据，磁力链接和封面。
+
 支持网站： `javbus`,
 
 支持功能:
@@ -8,13 +10,13 @@
 - [x] Cover 图片下载
 - [ ] 磁力连接保存
 
+[更新日志](./CHANGELOG.md)
+
 ## 下载命令行工具 🔧
 
 命令行工具提供`Windows`、`macOS`、`Linux`平台。
 
-### 最新下载地址
-
-<https://github.com/gsxhnd/garage/releases>
+最新下载地址: <https://github.com/gsxhnd/garage/releases>
 
 ## 命令行选项
 
