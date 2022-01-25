@@ -7,7 +7,7 @@ gitTag = $(shell if [ "`git describe --tags --abbrev=0 2>/dev/null`" != "" ];the
 buildDate = $(shell TZ=Asia/Shanghai date +%FT%T%z)
 gitCommit = $(shell git log --pretty=format:'%H' -n 1)
 gitTreeState = $(shell if git status|grep -q 'clean';then echo clean; else echo dirty; fi)
-versionDir = "github.com/gsxhnd/owlcmd"
+versionDir = "github.com/gsxhnd/garage"
 ldflags= "-X ${versionDir}.gitTag=${gitTag} \
 -X ${versionDir}.buildDate=${buildDate} \
 -X ${versionDir}.gitCommit=${gitCommit} \
