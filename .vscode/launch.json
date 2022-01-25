@@ -36,7 +36,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
-      "args": ["crawl", "TEST-001"],
+      "args": ["code", "TEST-001"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"

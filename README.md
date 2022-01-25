@@ -36,7 +36,6 @@ COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --proxy value
    --help, -h     show help (default: false)
 ```
 
@@ -60,13 +59,14 @@ DESCRIPTION:
    crawl jav data, support javbus and javlibrary site.
 
 OPTIONS:
+   --proxy value  代理配置
    --site value  选择爬取数据的网站 (default: "javbus")
    --help, -h    show help (default: false)
 ```
 
 ```shell
 # 抓取所有影片封面和信息，保存到当前目录下的 javs 文件夹下以番号命名的子文件夹中
-garage --proxy [proxy_host] crawl xxx-01
+garage code --proxy "http://127.0.0.1:7890" xxx-01
 ```
 
 ### Star 命令
@@ -79,6 +79,7 @@ USAGE:
    garage-darwin-amd64 star [command options] [arguments...]
 
 OPTIONS:
+   --proxy value  代理配置
    --help, -h  show help (default: false)
 ```
 
@@ -92,5 +93,6 @@ USAGE:
    garage-darwin-amd64 prefix [command options] [arguments...]
 
 OPTIONS:
+   --proxy value  代理配置
    --help, -h  show help (default: false)
 ```

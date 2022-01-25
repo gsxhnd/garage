@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	proxyFlag = &cli.StringFlag{Name: "proxy", Usage: ""}
+	proxyFlag = &cli.StringFlag{Name: "proxy", Usage: "代理配置"}
 )

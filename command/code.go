@@ -25,6 +25,7 @@ var codeCmd = &cli.Command{
 	Description: "crawl jav data, support javbus and javlibrary site.",
 	ArgsUsage:   "",
 	Flags: []cli.Flag{
+		proxyFlag,
 		siteFlag,
 	},
 	Action: func(ctx *cli.Context) error {
