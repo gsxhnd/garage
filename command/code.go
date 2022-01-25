@@ -6,24 +6,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var (
-	siteFlag = &cli.StringFlag{
-		Name:        "site",
-		Usage:       "选择爬取数据的网站",
-		Destination: nil,
-		HasBeenSet:  false,
-		Value:       "javbus",
-	}
-)
-
-// crawl data
 var codeCmd = &cli.Command{
-	Name:        "code",
-	Aliases:     nil,
-	Usage:       "根据指定番号爬取数据",
-	UsageText:   "crawl --site [javbus/javlibrary] XXX-001",
-	Description: "crawl jav data, support javbus and javlibrary site.",
-	ArgsUsage:   "",
+	Name:      "code",
+	Aliases:   nil,
+	Usage:     "根据指定番号爬取数据",
+	UsageText: "code --site [javbus/javlibrary] XXX-001",
 	Flags: []cli.Flag{
 		proxyFlag,
 		siteFlag,

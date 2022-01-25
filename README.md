@@ -31,7 +31,7 @@ USAGE:
 COMMANDS:
    code     根据指定番号爬取数据
    star     根据演员ID爬取数据
-   prefix   根据番号前缀
+   prefix   根据番号前缀爬取数据
    version
    help, h  Shows a list of commands or help for one command
 
@@ -48,7 +48,7 @@ GLOBAL OPTIONS:
 ### code 命令
 
 ```shell
-$ ./build/garage-darwin-amd64 crawl  --help
+$ ./build/garage-darwin-amd64 code  --help
 NAME:
    garage-darwin-amd64 code - 根据指定番号爬取数据
 
@@ -69,9 +69,10 @@ OPTIONS:
 garage code --proxy "http://127.0.0.1:7890" xxx-01
 ```
 
-### Star 命令
+### star 命令
 
 ```shell
+$ ./build/garage-darwin-amd64 star --help
 NAME:
    garage-darwin-amd64 star - 根据演员ID爬取数据
 
@@ -86,6 +87,7 @@ OPTIONS:
 ### prefix 命令
 
 ```shell
+$ ./build/garage-darwin-amd64 prefix --help
 NAME:
    garage-darwin-amd64 prefix - 根据番号前缀爬取数据
 

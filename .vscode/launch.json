@@ -29,6 +29,19 @@
       "cwd": "${workspaceRoot}"
     },
     {
+      "name": "Command Code Help",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "showLog": true,
+      "debugAdapter": "dlv-dap",
+      "program": "${workspaceRoot}/",
+      "args": ["code", "--help"],
+      "output": "${workspaceRoot}/build/garage",
+      "trace": "verbose",
+      "cwd": "${workspaceRoot}"
+    },
+    {
       "name": "Command Crawl",
       "type": "go",
       "request": "launch",
