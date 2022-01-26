@@ -42,14 +42,14 @@
       "cwd": "${workspaceRoot}"
     },
     {
-      "name": "Command Crawl",
+      "name": "Command Code",
       "type": "go",
       "request": "launch",
       "mode": "auto",
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
-      "args": ["code", "TEST-001"],
+      "args": ["code", "--proxy=http://127.0.0.1:7890", "TEST-001"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"

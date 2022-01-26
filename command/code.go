@@ -16,10 +16,13 @@ var codeCmd = &cli.Command{
 		siteFlag,
 	},
 	Action: func(ctx *cli.Context) error {
-		newLogger := utils.GetLogger()
-		var code = ctx.Args().Get(0)
+		var (
+			newLogger = utils.GetLogger()
+			code      = ctx.Args().Get(0)
+			proxy     = ctx.String("proxy")
+		)
 		c := crawl.NewCrawlClient(newLogger)
-		_ = c.SetProxy(ctx.String("proxy"))
+		_ = c.SetProxy(proxy)
 		c.StarCrawlJavbusMovie(code)
 		return nil
 	},
