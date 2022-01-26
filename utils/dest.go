@@ -2,7 +2,7 @@ package utils
 
 import "os"
 
-func MkdirDistDir(dir_name string) error {
+func MkdirDestDir(dir_name string) error {
 	_, err := os.Stat(dir_name)
 	if err != nil {
 		if os.IsNotExist(err) {
