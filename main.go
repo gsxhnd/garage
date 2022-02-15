@@ -3,11 +3,11 @@ package main
 import (
 	"os"
 
-	"github.com/gsxhnd/garage/command"
+	"github.com/gsxhnd/garage/cmd"
 )
 
 func main() {
-	err := command.RootCmd.Run(os.Args)
+	err := cmd.RootCmd.Run(os.Args)
 	if err != nil {
 		panic(err)
 	}
