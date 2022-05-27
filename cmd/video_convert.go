@@ -8,12 +8,13 @@ import (
 	"github.com/gsxhnd/garage/batch"
 	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
+	"go.uber.org/zap"
 )
 
 var videoConvertCmd = &cli.Command{
 	Name:      "video_convert",
 	Aliases:   nil,
-	Usage:     "",
+	Usage:     "视频转换批处理",
 	UsageText: "",
 	Flags: []cli.Flag{
 		source_root_path_flag,
@@ -33,10 +34,23 @@ var videoConvertCmd = &cli.Command{
 			Advance:         c.String("advance"),
 			Logger:          logger,
 		}
-		vl, _ := vb.GetVideos()
+		vl, err := vb.GetVideos()
+		if err != nil {
+			vb.Logger.Error("Get videos error", zap.Error(err))
+			return nil
+		}
+
+		vb.Logger.Info("Get all videos, starting convert")
+		if err := vb.CreateDestDir(); err != nil {
+			return err
+		}
 		batch := vb.GetConvertBatch(vl)
 		if c.Bool("exec") {
-			execShell(batch)
+			if err := vb.CreateDestDir(); err != nil {
+				return err
+			} else {
+				execShell(batch)
+			}
 		} else {
 			for _, v := range batch {
 				fmt.Println(v)

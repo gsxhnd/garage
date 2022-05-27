@@ -62,11 +62,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
-      "args": [
-        "video_subtitle",
-        "--source_root_path=/mnt/h/queue/",
-        "--exec=false"
-      ],
+      "args": ["video_subtitle", "--source_root_path=test", "--exec=false"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
@@ -79,7 +75,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
-      "args": ["convert", "--source_root_path=/mnt/h/queue/1", "--exec=false"],
+      "args": ["video_convert", "--source_root_path=test", "--exec=false"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"

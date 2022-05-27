@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 0.0.3
+
+- FEAT: 添加了视频处理的相关命令
+
 ## Version 0.0.2
 
 - FEAT: 添加根据演员`ID`爬取数据

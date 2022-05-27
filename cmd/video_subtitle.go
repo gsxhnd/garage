@@ -12,11 +12,12 @@ import (
 var videoSubtitleCmd = &cli.Command{
 	Name:      "video_subtitle",
 	Aliases:   nil,
-	Usage:     "",
+	Usage:     "视频添加字幕批处理",
 	UsageText: "",
 	Flags: []cli.Flag{
 		source_root_path_flag,
 		source_video_type_flag,
+		source_subtitle_type_flag,
 		dest_path_flag,
 		dest_video_type_flag,
 		advance_flag,
@@ -39,6 +40,10 @@ var videoSubtitleCmd = &cli.Command{
 			return nil
 		}
 		vb.Logger.Info("Get all videos, starting add subtitle")
+
+		if err := vb.CreateDestDir(); err != nil {
+			return err
+		}
 
 		batch := vb.GetSubtitleBatch(vl)
 		if c.Bool("exec") {

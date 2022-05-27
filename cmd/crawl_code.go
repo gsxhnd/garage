@@ -7,7 +7,7 @@ import (
 )
 
 var codeCmd = &cli.Command{
-	Name:      "code",
+	Name:      "crawl_code",
 	Aliases:   nil,
 	Usage:     "根据指定番号爬取数据",
 	UsageText: "code --site [javbus/javlibrary] XXX-001",

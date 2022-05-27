@@ -22,7 +22,7 @@ var (
 	}
 	source_video_type_flag = &cli.StringFlag{
 		Name:  "source_video_type",
-		Value: "mkv",
+		Value: ".mkv",
 	}
 	source_subtitle_type_flag = &cli.StringFlag{
 		Name:  "source_subtitle_type",
@@ -34,7 +34,7 @@ var (
 	}
 	dest_video_type_flag = &cli.StringFlag{
 		Name:  "dest_video_type",
-		Value: "mkv",
+		Value: ".mkv",
 	}
 	exec_flag = &cli.BoolFlag{
 		Name:  "exec",
