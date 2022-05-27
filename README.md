@@ -1,14 +1,6 @@
 # Garage
 
-`garage`是一个命令行工具，帮助你爬取指定番号，演员和番号系列数据，磁力链接和封面。
-
-支持网站： `javbus`,
-
-支持功能:
-
-- [x] 数据基础信息
-- [x] Cover 图片下载
-- [ ] 磁力连接保存
+`garage`是一个命令行工具，提供爬虫和批处理等功能。
 
 [更新日志](./CHANGELOG.md)
 
@@ -18,7 +10,17 @@
 
 最新下载地址: <https://github.com/gsxhnd/garage/releases>
 
-## 命令行选项
+## 爬虫相关命令
+
+`crawl_code`帮助你爬取指定番号，演员和番号系列数据，磁力链接和封面。
+
+支持网站： `javbus`,
+
+支持功能:
+
+- [x] 数据基础信息
+- [x] Cover 图片下载
+- [ ] 磁力连接保存
 
 ```shell
 $ ./build/garage-darwin-amd64 help
@@ -39,13 +41,7 @@ GLOBAL OPTIONS:
    --help, -h     show help (default: false)
 ```
 
-### 全局选项
-
-#### 代理
-
-设置代理请求代理，非代理池。
-
-### code 命令
+### crawl_code 命令
 
 ```shell
 $ ./build/garage-darwin-amd64 code  --help
@@ -69,7 +65,7 @@ OPTIONS:
 garage code --proxy "http://127.0.0.1:7890" xxx-01
 ```
 
-### star 命令
+### crawl_star 命令
 
 ```shell
 $ ./build/garage-darwin-amd64 star --help
@@ -84,7 +80,7 @@ OPTIONS:
    --help, -h  show help (default: false)
 ```
 
-### prefix 命令
+### crawl_prefix 命令
 
 ```shell
 $ ./build/garage-darwin-amd64 prefix --help
@@ -97,4 +93,65 @@ USAGE:
 OPTIONS:
    --proxy value  代理配置
    --help, -h  show help (default: false)
+```
+
+## 视频批量处理
+
+> 系统环境中需要预先安装 ffmpeg
+
+使用 FFMPEG 对多个视频快速转码或其他操作
+
+### 字幕添加
+
+添加字幕文件替换掉已有字幕
+
+```shell
+## ffmpeg 对应命令
+ffmpeg.exe -i INPUT -c copy  -i INPUT.ass -sub_charenc UTF-8  -c copy -map 0 -map -0:s -map 1 -metadata:s:s:0 language=chi -metadata:s:s:0 title="jp&sc" OUTPUT
+## garage 对应命令
+garage video_subtitle --source_root_path="queue" --source_video_type="mkv" --source_subtitle_type=".ass" --dest_path="result/" --dest_video_type=".mkv" --exec=true
+```
+
+添加字幕同时添加多个字体
+
+```shell
+ffmpeg.exe -i INPUT -c copy -attach INPUT_FONT -metadata:s:t:0 mimetype=application/x-truetype-font
+```
+
+```shell
+garage video_subtitle --source_root_path="queue" --source_video_type="mkv" --source_subtitle_type=".ass" --dest_path="result/" --dest_video_type=".mkv" --advance="-attach INPUT_FONT -metadata:s:t:0 mimetype=application/x-truetype-font" --exec=true
+```
+
+### 视频转码
+
+```shell
+## ffmpeg 对应命令
+ffmpeg.exe -i INPUT -c:v h264_nvenc output.mp4
+
+## garage 对应命令
+garage.exe video_convert --source_root_path="queue" --source_video_type="mkv"  --dest_path="result/" --dest_video_type=".mkv" --advance="-c:v h264_nvenc"
+```
+
+h256_10bit 转码
+
+```shell
+ffmpeg -i INPUT -c:v libx265 -crf 20 -pix_fmt yuv420p10le
+
+## garage 对应命令
+garage.exe video_convert --source_root_path="queue" --source_video_type="mkv"  --dest_path="result/" --dest_video_type=".mkv" --advance="-c:v libx265 -crf 20 -pix_fmt yuv420p10le"
+```
+
+h256_10bit 转码 nvdia 硬件加速
+
+```shell
+ffmpeg -i INPUT -c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 27 OUTPUT
+
+## garage 对应命令
+garage.exe video_convert --source_root_path="queue" --source_video_type="mkv"  --dest_path="result/" --dest_video_type=".mkv" --advance="-c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 27"
+```
+
+### 导出字幕文件
+
+```shell
+ffmpeg -i input.mkv -map 0:s:0 subs.ass
 ```

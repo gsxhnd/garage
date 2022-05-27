@@ -53,6 +53,36 @@
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Command Subtitle",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "showLog": true,
+      "debugAdapter": "dlv-dap",
+      "program": "${workspaceRoot}/",
+      "args": [
+        "video_subtitle",
+        "--source_root_path=/mnt/h/queue/",
+        "--exec=false"
+      ],
+      "output": "${workspaceRoot}/build/garage",
+      "trace": "verbose",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Command Convert",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "showLog": true,
+      "debugAdapter": "dlv-dap",
+      "program": "${workspaceRoot}/",
+      "args": ["convert", "--source_root_path=/mnt/h/queue/1", "--exec=false"],
+      "output": "${workspaceRoot}/build/garage",
+      "trace": "verbose",
+      "cwd": "${workspaceRoot}"
     }
   ]
 }

@@ -14,3 +14,34 @@ var (
 		Value:       "javbus",
 	}
 )
+
+var (
+	source_root_path_flag = &cli.StringFlag{
+		Name:  "source_root_path",
+		Value: "./",
+	}
+	source_video_type_flag = &cli.StringFlag{
+		Name:  "source_video_type",
+		Value: "mkv",
+	}
+	source_subtitle_type_flag = &cli.StringFlag{
+		Name:  "source_subtitle_type",
+		Value: ".ass",
+	}
+	dest_path_flag = &cli.StringFlag{
+		Name:  "dest_path",
+		Value: "./result/",
+	}
+	dest_video_type_flag = &cli.StringFlag{
+		Name:  "dest_video_type",
+		Value: "mkv",
+	}
+	exec_flag = &cli.BoolFlag{
+		Name:  "exec",
+		Value: true,
+	}
+	advance_flag = &cli.StringFlag{
+		Name:  "advance",
+		Value: "",
+	}
+)

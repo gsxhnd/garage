@@ -16,6 +16,8 @@ func init() {
 		codeCmd,
 		starCmd,
 		prefixCmd,
+		videoConvertCmd,
+		videoSubtitleCmd,
 		versionCmd,
 	}
 }
