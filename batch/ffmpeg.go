@@ -12,13 +12,16 @@ import (
 )
 
 type VideoBatch struct {
-	SourceRootPath     string
-	SourceVideoType    string
-	SourceSubtitleType string
-	DestPath           string
-	DestVideoType      string
-	Advance            string
-	Logger             *zap.Logger
+	SourceRootPath         string
+	SourceVideoType        string
+	SourceSubtitleType     string
+	SourceSubtitleNumber   int
+	SourceSubtitleLanguage string
+	SourceSubtitleTitle    string
+	DestPath               string
+	DestVideoType          string
+	Advance                string
+	Logger                 *zap.Logger
 }
 
 func (vb *VideoBatch) GetVideos() ([]string, error) {
@@ -49,12 +52,13 @@ func (vb *VideoBatch) GetVideos() ([]string, error) {
 }
 
 func (vb *VideoBatch) GetSubtitleBatch(videos []string) []string {
-	t := `ffmpeg.exe -i "%v" -sub_charenc UTF-8 -i "%v" -metadata:s:s:0 language=chi -metadata:s:s:0 title="Chinese" -c copy %v "%v"`
+	t := `ffmpeg.exe -i "%v" -sub_charenc UTF-8 -i "%v" -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %v "%v"`
 	var batch = []string{}
 	for _, v := range videos {
 		sourceVideo := filepath.Join(vb.SourceRootPath, v+vb.SourceVideoType)
 		sourceSubtitle := filepath.Join(vb.SourceRootPath, v+vb.SourceSubtitleType)
-		s := fmt.Sprintf(t, sourceVideo, sourceSubtitle, vb.Advance, vb.DestPath+v+vb.DestVideoType)
+		destVideo := filepath.Join(vb.DestPath, v+vb.DestVideoType)
+		s := fmt.Sprintf(t, sourceVideo, sourceSubtitle, vb.SourceSubtitleNumber, vb.SourceSubtitleLanguage, vb.SourceSubtitleNumber, vb.SourceSubtitleTitle, vb.Advance, destVideo)
 		batch = append(batch, s)
 	}
 	return batch
@@ -72,8 +76,8 @@ func (vb *VideoBatch) GetConvertBatch(videos []string) []string {
 }
 
 func (vb *VideoBatch) CreateDestDir() error {
-	destDir := path.Join(vb.SourceRootPath, vb.DestPath)
-	vb.Logger.Info("Start creating destination directory" + destDir)
+	destDir := path.Join(vb.DestPath)
+	vb.Logger.Info("Start creating destination directory: " + destDir)
 	time.Sleep(500 * time.Millisecond)
 	if fi, err := os.Stat(destDir); err != nil {
 		if os.IsNotExist(err) {

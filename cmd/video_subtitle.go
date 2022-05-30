@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/gsxhnd/garage/batch"
 	"github.com/gsxhnd/garage/utils"
@@ -18,6 +19,9 @@ var videoSubtitleCmd = &cli.Command{
 		source_root_path_flag,
 		source_video_type_flag,
 		source_subtitle_type_flag,
+		source_subtitle_number_flag,
+		source_subtitle_language_flag,
+		source_subtitle_title_flag,
 		dest_path_flag,
 		dest_video_type_flag,
 		advance_flag,
@@ -26,13 +30,16 @@ var videoSubtitleCmd = &cli.Command{
 	Action: func(c *cli.Context) error {
 		logger := utils.GetLogger()
 		var vb = &batch.VideoBatch{
-			SourceRootPath:     c.String("source_root_path"),
-			SourceVideoType:    c.String("source_video_type"),
-			SourceSubtitleType: c.String("source_subtitle_type"),
-			DestPath:           c.String("dest_path"),
-			DestVideoType:      c.String("dest_video_type"),
-			Advance:            c.String("advance"),
-			Logger:             logger,
+			SourceRootPath:         c.String("source_root_path"),
+			SourceVideoType:        c.String("source_video_type"),
+			SourceSubtitleType:     c.String("source_subtitle_type"),
+			SourceSubtitleNumber:   c.Int("source_subtitle_number"),
+			SourceSubtitleLanguage: c.String("source_subtitle_language"),
+			SourceSubtitleTitle:    c.String("source_subtitle_title"),
+			DestPath:               c.String("dest_path"),
+			DestVideoType:          c.String("dest_video_type"),
+			Advance:                c.String("advance"),
+			Logger:                 logger,
 		}
 		vl, err := vb.GetVideos()
 		if err != nil {
@@ -44,6 +51,12 @@ var videoSubtitleCmd = &cli.Command{
 		if err := vb.CreateDestDir(); err != nil {
 			return err
 		}
+		vb.Logger.Info("Source videos directory: " + vb.SourceRootPath)
+		vb.Logger.Info("Get matching video count: " + strconv.Itoa(len(vl)))
+		vb.Logger.Info("Target video's subtitle stream number: " + strconv.Itoa(vb.SourceSubtitleNumber))
+		vb.Logger.Info("Target video's subtitle language: " + vb.SourceSubtitleLanguage)
+		vb.Logger.Info("Target video's subtitle title: " + vb.SourceSubtitleTitle)
+		vb.Logger.Info("Dest video directory: " + vb.DestPath)
 
 		batch := vb.GetSubtitleBatch(vl)
 		if c.Bool("exec") {

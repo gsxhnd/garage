@@ -28,6 +28,18 @@ var (
 		Name:  "source_subtitle_type",
 		Value: ".ass",
 	}
+	source_subtitle_number_flag = &cli.IntFlag{
+		Name:  "source_subtitle_number_type",
+		Value: 0,
+	}
+	source_subtitle_language_flag = &cli.StringFlag{
+		Name:  "source_subtitle_language",
+		Value: "chi",
+	}
+	source_subtitle_title_flag = &cli.StringFlag{
+		Name:  "source_subtitle_title",
+		Value: "Chinese",
+	}
 	dest_path_flag = &cli.StringFlag{
 		Name:  "dest_path",
 		Value: "./result/",

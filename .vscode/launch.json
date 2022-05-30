@@ -62,7 +62,12 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
-      "args": ["video_subtitle", "--source_root_path=test", "--exec=false"],
+      "args": [
+        "video_subtitle",
+        "--source_root_path=test",
+        "--dest_path=test/result",
+        "--exec=false"
+      ],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
