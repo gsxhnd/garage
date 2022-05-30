@@ -66,6 +66,7 @@
         "video_subtitle",
         "--source_root_path=test",
         "--dest_path=test/result",
+        "--advance=-attach \"123\"",
         "--exec=false"
       ],
       "output": "${workspaceRoot}/build/garage",
