@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version 0.0.5
+
+- FIX: 参数字符处理
+- FIX: 批量命令参数缺少导致异常
+
 ## Version 0.0.4
 
 - FIX: 修改视频输出文件未知错误
