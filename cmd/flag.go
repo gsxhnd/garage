@@ -29,7 +29,7 @@ var (
 		Value: ".ass",
 	}
 	source_subtitle_number_flag = &cli.IntFlag{
-		Name:  "source_subtitle_number_type",
+		Name:  "source_subtitle_number",
 		Value: 0,
 	}
 	source_subtitle_language_flag = &cli.StringFlag{
