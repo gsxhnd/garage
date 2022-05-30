@@ -52,7 +52,7 @@ func (vb *VideoBatch) GetVideos() ([]string, error) {
 }
 
 func (vb *VideoBatch) GetSubtitleBatch(videos []string) []string {
-	t := `ffmpeg.exe -i "%v" -sub_charenc UTF-8 -i "%v" -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %v "%v"`
+	t := `ffmpeg.exe -i "%v" -sub_charenc UTF-8 -i "%v" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %v "%v"`
 	var batch = []string{}
 	for _, v := range videos {
 		sourceVideo := filepath.Join(vb.SourceRootPath, v+vb.SourceVideoType)
