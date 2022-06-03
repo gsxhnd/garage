@@ -106,6 +106,29 @@ OPTIONS:
 添加字幕文件替换掉已有字幕
 
 ```shell
+$ garage video_subtitle --help
+
+NAME:
+   garage video_subtitle - 视频添加字幕批处理
+
+USAGE:
+   garage video_subtitle [command options] [arguments...]
+
+OPTIONS:
+   --source_root_path value          源视频路径 (default: "./")
+   --source_video_type value         源视频后缀 (default: ".mkv")
+   --source_subtitle_type value      添加的字幕后缀 (default: ".ass")
+   --source_subtitle_number value    添加的字幕所处流的位置 (default: 0)
+   --source_subtitle_language value  添加的字幕语言缩写，其他语言请参考ffmpeg (default: "chi")
+   --source_subtitle_title value     添加的字幕标题 (default: "Chinese")
+   --dest_path value                 转换后文件存储位置 (default: "./result/")
+   --dest_video_type value           转换后的视频后缀 (default: ".mkv")
+   --advance value                   高级自定义参数
+   --exec                            是否执行批处理命令，False时仅打印命令 (default: true)
+   --help, -h                        show help (default: false)
+```
+
+```shell
 ## ffmpeg 对应命令
 ffmpeg.exe -i INPUT -c copy  -i INPUT.ass -sub_charenc UTF-8  -c copy -map 0 -map -0:s -map 1 -metadata:s:s:0 language=chi -metadata:s:s:0 title="jp&sc" OUTPUT
 ## garage 对应命令

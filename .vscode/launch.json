@@ -55,6 +55,19 @@
       "cwd": "${workspaceRoot}"
     },
     {
+      "name": "Command Subtitle Help",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "showLog": true,
+      "debugAdapter": "dlv-dap",
+      "program": "${workspaceRoot}/",
+      "args": ["video_subtitle", "--help"],
+      "output": "${workspaceRoot}/build/garage",
+      "trace": "verbose",
+      "cwd": "${workspaceRoot}"
+    },
+    {
       "name": "Command Subtitle",
       "type": "go",
       "request": "launch",
