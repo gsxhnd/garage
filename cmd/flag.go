@@ -39,7 +39,7 @@ var (
 	source_subtitle_language_flag = &cli.StringFlag{
 		Name:  "source_subtitle_language",
 		Value: "chi",
-		Usage: "添加的字幕语言缩写，其他语言请参考ffmpeg",
+		Usage: "添加的字幕语言缩写其他语言请参考ffmpeg",
 	}
 	source_subtitle_title_flag = &cli.StringFlag{
 		Name:  "source_subtitle_title",
@@ -59,7 +59,12 @@ var (
 	exec_flag = &cli.BoolFlag{
 		Name:  "exec",
 		Value: true,
-		Usage: "是否执行批处理命令，False时仅打印命令",
+		Usage: "是否执行批处理命令False时仅打印命令",
+	}
+	fonts_flag = &cli.StringSliceFlag{
+		Name:    "fonts",
+		Aliases: []string{"f"},
+		Usage:   "添加字体文件",
 	}
 	advance_flag = &cli.StringFlag{
 		Name:  "advance",

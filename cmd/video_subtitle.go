@@ -22,6 +22,7 @@ var videoSubtitleCmd = &cli.Command{
 		source_subtitle_number_flag,
 		source_subtitle_language_flag,
 		source_subtitle_title_flag,
+		fonts_flag,
 		dest_path_flag,
 		dest_video_type_flag,
 		advance_flag,
@@ -41,6 +42,7 @@ var videoSubtitleCmd = &cli.Command{
 			Advance:                c.String("advance"),
 			Logger:                 logger,
 		}
+		fonts := c.StringSlice("fonts")
 		vl, err := vb.GetVideos()
 		if err != nil {
 			vb.Logger.Error("Get videos error", zap.Error(err))
@@ -56,6 +58,9 @@ var videoSubtitleCmd = &cli.Command{
 		vb.Logger.Info("Target video's subtitle stream number: " + strconv.Itoa(vb.SourceSubtitleNumber))
 		vb.Logger.Info("Target video's subtitle language: " + vb.SourceSubtitleLanguage)
 		vb.Logger.Info("Target video's subtitle title: " + vb.SourceSubtitleTitle)
+		for _, v := range fonts {
+			vb.Logger.Info("Target video's subtitlle fonts: " + v)
+		}
 		vb.Logger.Info("Dest video directory: " + vb.DestPath)
 
 		batch := vb.GetSubtitleBatch(vl)
