@@ -10,7 +10,7 @@ var (
 
 func init() {
 	RootCmd.HideVersion = true
-	RootCmd.Usage = "JAV命令行工具"
+	RootCmd.Usage = "命令行工具"
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
 		codeCmd,

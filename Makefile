@@ -37,4 +37,8 @@ clean:
 	@go clean --cache
 	@rm -rvf build/*
 
+mock_data:
+	mkdir test
+	touch ./test/1.{mkv,mp4,ass,ttf} ./test/2.ttf
+
 .PHONY: release_linux release_win release_mac clean
