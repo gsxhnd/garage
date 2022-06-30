@@ -6,11 +6,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var codeCmd = &cli.Command{
-	Name:      "crawl_code",
+var javCodeCmd = &cli.Command{
+	Name:      "jav_code",
 	Aliases:   nil,
 	Usage:     "根据指定番号爬取数据",
-	UsageText: "code --site [javbus/javlibrary] XXX-001",
+	UsageText: "jav_code --site [javbus/javlibrary] XXX-001",
 	Flags: []cli.Flag{
 		proxyFlag,
 		siteFlag,

@@ -13,9 +13,9 @@ func init() {
 	RootCmd.Usage = "命令行工具"
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
-		codeCmd,
-		starCmd,
-		prefixCmd,
+		javCodeCmd,
+		javStarCmd,
+		javPrefixCmd,
 		videoConvertCmd,
 		videoSubtitleCmd,
 		versionCmd,

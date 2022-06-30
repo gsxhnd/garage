@@ -6,13 +6,33 @@
 
 ## 下载命令行工具 🔧
 
-命令行工具提供`Windows`、`macOS`、`Linux`平台。
+命令行工具提供`Windows`、`macOS`、`Linux`平台预编译的二进制。
 
 最新下载地址: <https://github.com/gsxhnd/garage/releases>
 
+```shell
+NAME:
+   garage - 命令行工具
+
+USAGE:
+   garage [global options] command [command options] [arguments...]
+
+COMMANDS:
+   jav_code        根据指定番号爬取数据
+   jav_star        根据演员ID爬取数据
+   jav_prefix      根据番号前缀爬取数据
+   video_convert   视频转换批处理
+   video_subtitle  视频添加字幕批处理
+   version         
+   help, h         Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h  show help (default: false)
+```
+
 ## 爬虫相关命令
 
-`crawl_code`帮助你爬取指定番号，演员和番号系列数据，磁力链接和封面。
+帮助你爬取指定番号，演员和番号系列数据，磁力链接和封面。
 
 支持网站： `javbus`,
 
@@ -22,29 +42,10 @@
 - [x] Cover 图片下载
 - [ ] 磁力连接保存
 
-```shell
-$ ./build/garage-darwin-amd64 help
-NAME:
-   garage - JAV命令行工具
-
-USAGE:
-   garage [global options] command [command options] [arguments...]
-
-COMMANDS:
-   code     根据指定番号爬取数据
-   star     根据演员ID爬取数据
-   prefix   根据番号前缀爬取数据
-   version
-   help, h  Shows a list of commands or help for one command
-
-GLOBAL OPTIONS:
-   --help, -h     show help (default: false)
-```
-
-### crawl_code 命令
+### jav_code 命令
 
 ```shell
-$ ./build/garage-darwin-amd64 code  --help
+$ ./build/garage-darwin-amd64 jav_code  --help
 NAME:
    garage-darwin-amd64 code - 根据指定番号爬取数据
 
@@ -65,10 +66,10 @@ OPTIONS:
 garage code --proxy "http://127.0.0.1:7890" xxx-01
 ```
 
-### crawl_star 命令
+### jav_star 命令
 
 ```shell
-$ ./build/garage-darwin-amd64 star --help
+$ ./build/garage-darwin-amd64 jav_star --help
 NAME:
    garage-darwin-amd64 star - 根据演员ID爬取数据
 
@@ -83,7 +84,7 @@ OPTIONS:
 ### crawl_prefix 命令
 
 ```shell
-$ ./build/garage-darwin-amd64 prefix --help
+$ ./build/garage-darwin-amd64 jav_prefix --help
 NAME:
    garage-darwin-amd64 prefix - 根据番号前缀爬取数据
 
