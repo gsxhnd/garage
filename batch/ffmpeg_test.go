@@ -16,6 +16,7 @@ func TestVideoBatch_GetVideos(t *testing.T) {
 	}{
 		{"test_mkv", "../testdata", ".mkv", []string{"1"}, false},
 		{"test_mp4", "../testdata", ".mp4", []string{"1"}, false},
+		{"test_err", "./test", ".mp4", []string{}, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
