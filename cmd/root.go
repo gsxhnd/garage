@@ -18,6 +18,7 @@ func init() {
 		javPrefixCmd,
 		videoConvertCmd,
 		videoSubtitleCmd,
+		videoExtractSubtitleCmd,
 		versionCmd,
 	}
 }
