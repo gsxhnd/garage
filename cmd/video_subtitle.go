@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/gsxhnd/garage/batch"
@@ -43,13 +42,19 @@ var videoSubtitleCmd = &cli.Command{
 			Logger:                 logger,
 		}
 		fonts := c.StringSlice("fonts")
+
+		var (
+			cmd  = make(chan string)
+			done = make(chan bool)
+		)
+		go vb.CreateBatchFile(cmd, done)
+
 		vl, err := vb.GetVideos()
 		if err != nil {
 			vb.Logger.Error("Get videos error", zap.Error(err))
 			return nil
 		}
 		vb.Logger.Info("Get all videos, starting add subtitle")
-
 		if err := vb.CreateDestDir(); err != nil {
 			return err
 		}
@@ -58,18 +63,23 @@ var videoSubtitleCmd = &cli.Command{
 		vb.Logger.Info("Target video's subtitle stream number: " + strconv.Itoa(vb.SourceSubtitleNumber))
 		vb.Logger.Info("Target video's subtitle language: " + vb.SourceSubtitleLanguage)
 		vb.Logger.Info("Target video's subtitle title: " + vb.SourceSubtitleTitle)
+
 		for _, v := range fonts {
 			vb.Logger.Info("Target video's subtitlle fonts: " + v)
 		}
 		vb.Logger.Info("Dest video directory: " + vb.DestPath)
 
 		batch := vb.GetSubtitleBatch(vl)
-		if c.Bool("exec") {
-			execShell(batch)
+
+		for _, v := range batch {
+			cmd <- v
+		}
+		close(cmd)
+		d := <-done
+		if d {
+			vb.Logger.Info("Write batch file complete...")
 		} else {
-			for _, v := range batch {
-				fmt.Println(v)
-			}
+			vb.Logger.Info("Write batch file failed...")
 		}
 		return nil
 	},

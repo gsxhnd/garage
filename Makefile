@@ -39,8 +39,9 @@ clean:
 	@rm -rvf testdata/
 
 mock_data:
+	rm -rvf testdata
 	mkdir testdata
-	touch ./testdata/1.{mkv,mp4,ass,ttf} ./testdata/2.ttf
+	touch ./testdata/{1,2,3,4,5}.{mkv,mp4,ass,ttf}
 	ls -al ./testdata
 
 .PHONY: release_linux release_win release_mac clean

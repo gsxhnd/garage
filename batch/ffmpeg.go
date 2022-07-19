@@ -1,6 +1,7 @@
 package batch
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"path"
@@ -95,4 +96,40 @@ func (vb *VideoBatch) CreateDestDir() error {
 	}
 	vb.Logger.Info("Destination directory created")
 	return nil
+}
+
+func (vb *VideoBatch) CreateBatchFile(cmd chan string, done chan bool) {
+	vb.Logger.Info("Start creating batch file...")
+	file, err := os.OpenFile("batch.bat", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		vb.Logger.Error("Open file error", zap.Error(err), zap.Stack("err_stack"))
+	}
+	defer file.Close()
+	writer := bufio.NewWriter(file)
+	var content = `
+@echo off
+echo "Batch starting..."
+`
+
+	for s := range cmd {
+		content += s + "\n"
+	}
+
+	if _, err := writer.Write([]byte(content)); err != nil {
+		vb.Logger.Error("Write Error", zap.Error(err))
+		done <- false
+		return
+	}
+
+	vb.Logger.Info("Flush data to file...")
+	if err := writer.Flush(); err != nil {
+		vb.Logger.Error("Write Error", zap.Error(err), zap.Stack("err_stack"))
+		done <- false
+	}
+
+	if err := file.Close(); err != nil {
+		done <- false
+	} else {
+		done <- true
+	}
 }

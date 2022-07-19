@@ -80,8 +80,7 @@
         "--source_root_path=test",
         "--dest_path=test/result",
         "--fonts=parsed3 parsed4",
-        "--fonts=f-2",
-        "--exec=false"
+        "--fonts=f-2"
       ],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
@@ -95,7 +94,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
-      "args": ["video_convert", "--source_root_path=test", "--exec=false"],
+      "args": ["video_convert", "--source_root_path=testdata"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
