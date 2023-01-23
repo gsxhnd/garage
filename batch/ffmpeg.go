@@ -83,7 +83,7 @@ func (vb *VideoBatch) GetFontsParams() (string, error) {
 		return "", err
 	}
 	for i, v := range fonts_list {
-		font_params += fmt.Sprintf(font_params_template, filepath.Join(vb.FontsPath, v), i)
+		font_params += fmt.Sprintf(font_params_template, filepath.Join(vb.FontsPath, v), i) + " "
 	}
 	return font_params, nil
 }
