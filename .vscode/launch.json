@@ -62,7 +62,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
-      "args": ["video_subtitle", "--help"],
+      "args": ["video_import_subtitle", "--help"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
@@ -76,11 +76,10 @@
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
       "args": [
-        "video_subtitle",
-        "--source_root_path=test",
-        "--dest_path=test/result",
-        "--fonts=parsed3 parsed4",
-        "--fonts=f-2"
+        "video_import_subtitle",
+        "--source_root_path=testdata",
+        "--dest_path=testdata/result",
+        "--fonts_path=testdata/fonts"
       ],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",

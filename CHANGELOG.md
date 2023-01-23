@@ -1,5 +1,19 @@
 # CHANGELOG
 
+// TODO: update
+
+## Version 0.0.6
+
+### Video subcommands
+
+- REFACTOR: 不再自动执行命令而是生成脚本文件
+- REFACTOR: 修改单个字体文件，使用字体文件夹代替，自动识别 TTF 文件并添加
+- REFACTOR: 修改添加字幕子命令 `video_import_subtitle`
+
+### other
+
+- CHORE: 编译去除路径
+
 ## Version 0.0.5
 
 - FIX: 参数字符处理

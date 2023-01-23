@@ -5,7 +5,7 @@ import (
 )
 
 var videoExtractSubtitleCmd = &cli.Command{
-	Name:      "video_convert",
+	Name:      "video_export_subtitle",
 	Aliases:   nil,
 	Usage:     "视频提取字幕",
 	UsageText: "",

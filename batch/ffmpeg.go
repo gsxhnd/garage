@@ -6,6 +6,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,6 +20,7 @@ type VideoBatch struct {
 	SourceSubtitleNumber   int
 	SourceSubtitleLanguage string
 	SourceSubtitleTitle    string
+	FontsPath              string
 	DestPath               string
 	DestVideoType          string
 	Advance                string
@@ -52,14 +54,66 @@ func (vb *VideoBatch) GetVideos() ([]string, error) {
 	return vl, err
 }
 
-func (vb *VideoBatch) GetSubtitleBatch(videos []string) []string {
-	t := `ffmpeg.exe -i "%v" -sub_charenc UTF-8 -i "%v" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s "%v"`
-	var batch = []string{}
+// 获取字体
+func (vb *VideoBatch) GetFontsParams() (string, error) {
+	var fonts_list = make([]string, 0)
+	font_exts := []string{".ttf", ".otf", ".ttc"}
+	font_params_template := "-attach %s -metadata:s:t:%v mimetype=application/x-truetype-font"
+	var font_params string
+	if err := filepath.Walk(vb.FontsPath, func(path string, fi os.FileInfo, err error) error {
+		if fi == nil {
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+		if fi.IsDir() {
+			return nil
+		}
+		filename := fi.Name()
+		fileExt := filepath.Ext(filename)
+
+		for _, b := range font_exts {
+			if fileExt == b {
+				fonts_list = append(fonts_list, filename)
+			}
+		}
+		return nil
+	}); err != nil {
+		return "", err
+	}
+	for i, v := range fonts_list {
+		font_params += fmt.Sprintf(font_params_template, filepath.Join(vb.FontsPath, v), i)
+	}
+	return font_params, nil
+}
+
+func (vb *VideoBatch) GetImportSubtitleBatch(videos []string) []string {
+	t := `ffmpeg.exe -i "%v" -sub_charenc UTF-8 -i "%v" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s %s "%v"`
+	var (
+		batch        = []string{}
+		fonts_params string
+	)
+	vb.Logger.Info("Source videos directory: " + vb.SourceRootPath)
+	vb.Logger.Info("Get matching video count: " + strconv.Itoa(len(videos)))
+	vb.Logger.Info("Target video's subtitle stream number: " + strconv.Itoa(vb.SourceSubtitleNumber))
+	vb.Logger.Info("Target video's subtitle language: " + vb.SourceSubtitleLanguage)
+	vb.Logger.Info("Target video's subtitle title: " + vb.SourceSubtitleTitle)
+	if vb.FontsPath != "" {
+		vb.Logger.Info("Target video's font paths: " + vb.FontsPath)
+		fonts_params, _ = vb.GetFontsParams()
+		vb.Logger.Debug(fmt.Sprintf("Attach fonts parameters: %v", fonts_params))
+	}
+	vb.Logger.Info("Dest video directory: " + vb.DestPath)
+
 	for _, v := range videos {
 		sourceVideo := filepath.Join(vb.SourceRootPath, v+vb.SourceVideoType)
 		sourceSubtitle := filepath.Join(vb.SourceRootPath, v+vb.SourceSubtitleType)
 		destVideo := filepath.Join(vb.DestPath, v+vb.DestVideoType)
-		s := fmt.Sprintf(t, sourceVideo, sourceSubtitle, vb.SourceSubtitleNumber, vb.SourceSubtitleLanguage, vb.SourceSubtitleNumber, vb.SourceSubtitleTitle, vb.Advance, destVideo)
+		s := fmt.Sprintf(t,
+			sourceVideo, sourceSubtitle, vb.SourceSubtitleNumber,
+			vb.SourceSubtitleLanguage, vb.SourceSubtitleNumber, vb.SourceSubtitleTitle,
+			fonts_params, vb.Advance, destVideo)
 		batch = append(batch, s)
 	}
 	return batch

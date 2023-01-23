@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"strconv"
-
 	"github.com/gsxhnd/garage/batch"
 	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
@@ -10,7 +8,7 @@ import (
 )
 
 var videoSubtitleCmd = &cli.Command{
-	Name:      "video_subtitle",
+	Name:      "video_import_subtitle",
 	Aliases:   nil,
 	Usage:     "视频添加字幕批处理",
 	UsageText: "",
@@ -21,7 +19,7 @@ var videoSubtitleCmd = &cli.Command{
 		source_subtitle_number_flag,
 		source_subtitle_language_flag,
 		source_subtitle_title_flag,
-		fonts_flag,
+		fonts_path_flag,
 		dest_path_flag,
 		dest_video_type_flag,
 		advance_flag,
@@ -36,12 +34,12 @@ var videoSubtitleCmd = &cli.Command{
 			SourceSubtitleNumber:   c.Int("source_subtitle_number"),
 			SourceSubtitleLanguage: c.String("source_subtitle_language"),
 			SourceSubtitleTitle:    c.String("source_subtitle_title"),
+			FontsPath:              c.String("fonts_path"),
 			DestPath:               c.String("dest_path"),
 			DestVideoType:          c.String("dest_video_type"),
 			Advance:                c.String("advance"),
 			Logger:                 logger,
 		}
-		fonts := c.StringSlice("fonts")
 
 		var (
 			cmd  = make(chan string)
@@ -58,18 +56,8 @@ var videoSubtitleCmd = &cli.Command{
 		if err := vb.CreateDestDir(); err != nil {
 			return err
 		}
-		vb.Logger.Info("Source videos directory: " + vb.SourceRootPath)
-		vb.Logger.Info("Get matching video count: " + strconv.Itoa(len(vl)))
-		vb.Logger.Info("Target video's subtitle stream number: " + strconv.Itoa(vb.SourceSubtitleNumber))
-		vb.Logger.Info("Target video's subtitle language: " + vb.SourceSubtitleLanguage)
-		vb.Logger.Info("Target video's subtitle title: " + vb.SourceSubtitleTitle)
 
-		for _, v := range fonts {
-			vb.Logger.Info("Target video's subtitlle fonts: " + v)
-		}
-		vb.Logger.Info("Dest video directory: " + vb.DestPath)
-
-		batch := vb.GetSubtitleBatch(vl)
+		batch := vb.GetImportSubtitleBatch(vl)
 
 		for _, v := range batch {
 			cmd <- v
