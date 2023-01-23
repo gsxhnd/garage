@@ -58,7 +58,7 @@ func (vb *VideoBatch) GetVideos() ([]string, error) {
 func (vb *VideoBatch) GetFontsParams() (string, error) {
 	var fonts_list = make([]string, 0)
 	font_exts := []string{".ttf", ".otf", ".ttc"}
-	font_params_template := "-attach %s -metadata:s:t:%v mimetype=application/x-truetype-font"
+	font_params_template := `-attach "%s" -metadata:s:t:%v mimetype=application/x-truetype-font`
 	var font_params string
 	if err := filepath.Walk(vb.FontsPath, func(path string, fi os.FileInfo, err error) error {
 		if fi == nil {
