@@ -1,3 +1,5 @@
+![Alt](https://repobeats.axiom.co/api/embed/a600b32115176854e9ab824307882a9350d5d9de.svg "Repobeats analytics image")
+
 # Garage
 
 `garage`是一个命令行工具，提供爬虫和批处理等功能。
