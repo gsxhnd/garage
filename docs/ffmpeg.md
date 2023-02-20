@@ -48,6 +48,12 @@ ffmpeg.exe -i INPUT -c copy -attach INPUT_FONT -metadata:s:t:0 mimetype=applicat
 garage video_subtitle --source_root_path="queue" --source_video_type="mkv" --source_subtitle_type=".ass" --dest_path="result/" --dest_video_type=".mkv" --advance="-attach INPUT_FONT -metadata:s:t:0 mimetype=application/x-truetype-font" --exec=true
 ```
 
+## 导出字幕文件
+
+```shell
+ffmpeg -i input.mkv -map 0:s:0 subs.ass
+```
+
 ## 视频转码
 
 ```shell
@@ -74,10 +80,4 @@ ffmpeg -i INPUT -c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 27 OUTPUT
 
 ## garage 对应命令
 garage.exe video_convert --source_root_path="queue" --source_video_type="mkv"  --dest_path="result/" --dest_video_type=".mkv" --advance="-c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 27"
-```
-
-## 导出字幕文件
-
-```shell
-ffmpeg -i input.mkv -map 0:s:0 subs.ass
 ```
