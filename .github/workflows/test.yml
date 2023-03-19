@@ -28,7 +28,7 @@ jobs:
       - name: Mock Test Data
         run: make mock_data
       - name: Test
-        run: go test -v -coverprofile=coverage.out -covermode=atomic
+        run: go test -v -coverprofile=coverage.out -covermode=atomic ./...
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
