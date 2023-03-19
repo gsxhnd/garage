@@ -29,8 +29,6 @@ jobs:
         run: make mock_data
       - name: Test
         run: go test -v -coverprofile=profile.cov ./...
-        
-      - name: Send coverage
-        uses: shogo82148/actions-goveralls@v1
-        with:
-          path-to-profile: profile.cov
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
