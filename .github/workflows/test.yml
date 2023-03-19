@@ -16,7 +16,7 @@ jobs:
       - name: Set up Go 1.x
         uses: actions/setup-go@v2
         with:
-          go-version: ^1.16
+          go-version: ^1.18
         id: go
 
       - name: Check out code into the Go module directory
@@ -28,7 +28,7 @@ jobs:
       - name: Mock Test Data
         run: make mock_data
       - name: Test
-        run: go test -v -coverprofile=profile.cov ./...
+        run: go test -v -coverprofile=coverage.out -covermode=atomic
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
