@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"path"
+
 	"github.com/gsxhnd/garage/crawl"
 	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
@@ -14,14 +16,22 @@ var javCodeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		proxyFlag,
 		siteFlag,
+		destDirFlag,
 	},
 	Action: func(ctx *cli.Context) error {
 		var (
-			newLogger = utils.GetLogger()
-			code      = ctx.Args().Get(0)
-			proxy     = ctx.String("proxy")
+			logger  = utils.GetLogger()
+			code    = ctx.Args().Get(0)
+			proxy   = ctx.String("proxy")
+			destDir = "./javs"
 		)
-		c := crawl.NewCrawlClient(newLogger)
+
+		if err := utils.MkdirDestDir(path.Join(destDir, code)); err != nil {
+			logger.Panic("目录创建失败， Error: " + err.Error())
+			return err
+		}
+
+		c := crawl.NewCrawlClient(logger)
 		_ = c.SetProxy(proxy)
 		c.StarCrawlJavbusMovie(code)
 		return nil

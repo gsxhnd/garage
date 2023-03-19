@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 0.0.7
+
+- FIX: 爬虫部分没有提前创建下载数据
+
 ## Version 0.0.6
 
 - CHORE: 编译去除路径
