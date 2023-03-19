@@ -25,10 +25,9 @@ func TestVideoBatch_GetVideos(t *testing.T) {
 			vb.SourceVideoType = tt.sourceVideoType
 
 			got, err := vb.GetVideos()
-			if err != nil {
-				if tt.wantErr {
-					assert.Error(t, err)
-				}
+
+			if tt.wantErr {
+				assert.Error(t, err)
 			} else {
 				assert.Equal(t, tt.want, got)
 			}
