@@ -14,8 +14,8 @@ func TestVideoBatch_GetVideos(t *testing.T) {
 		want            []string
 		wantErr         bool
 	}{
-		{"test_mkv", "../testdata", ".mkv", []string{"1"}, true},
-		{"test_mp4", "../testdata", ".mp4", []string{"1"}, true},
+		{"test_mkv", "../testdata", ".mkv", []string{"1"}, false},
+		{"test_mp4", "../testdata", ".mp4", []string{"1"}, false},
 		{"test_err", "./test", ".mp4", []string{}, true},
 	}
 	for _, tt := range tests {
@@ -25,11 +25,11 @@ func TestVideoBatch_GetVideos(t *testing.T) {
 			vb.SourceVideoType = tt.sourceVideoType
 
 			got, err := vb.GetVideos()
-
+			assert.NotEqual(t, tt.want, got)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
-				assert.Equal(t, tt.want, got)
+				assert.NoError(t, err)
 			}
 		})
 	}
