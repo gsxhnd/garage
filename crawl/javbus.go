@@ -3,13 +3,13 @@ package crawl
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
+	"go.uber.org/zap"
 )
 
 func (c2 *Client) StarCrawlJavbusMovie(code string) {
@@ -58,15 +58,20 @@ func (c2 *Client) DownloadInfo(code string) (*JavMovie, error) {
 			star := element.Attr("title")
 			data.Stars = append(data.Stars, star)
 		})
+
+		// e.ForEach("#magnet-table , tr", func(i int, h *colly.HTMLElement) {
+		// 	fmt.Println(i)
+		// 	fmt.Println(h)
+		// })
 	})
 	err := c2.collector.Visit(c2.javbusUrl + code)
 	if err != nil {
-		fmt.Println("err:", err)
 		return nil, err
 	}
 	saveData, _ := json.Marshal(&data)
 	err = ioutil.WriteFile("./javs/"+code+"/info.json", saveData, os.ModeAppend)
 	if err != nil {
+		c2.logger.Error("", zap.Error(err))
 		return nil, err
 	} else {
 		return &data, nil

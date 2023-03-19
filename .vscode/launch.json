@@ -49,7 +49,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/",
-      "args": ["code", "--proxy=http://127.0.0.1:7890", "TEST-001"],
+      "args": ["jav_code", "--proxy=http://127.0.0.1:7890", "PCDE-016"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"

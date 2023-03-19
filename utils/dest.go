@@ -6,7 +6,7 @@ func MkdirDestDir(dir_name string) error {
 	_, err := os.Stat(dir_name)
 	if err != nil {
 		if os.IsNotExist(err) {
-			err = os.Mkdir(dir_name, os.ModePerm)
+			err = os.MkdirAll(dir_name, os.ModePerm)
 			if err != nil {
 				return err
 			}
