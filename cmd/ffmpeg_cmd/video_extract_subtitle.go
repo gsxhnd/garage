@@ -1,10 +1,10 @@
-package cmd
+package ffmpeg_cmd
 
 import (
 	"github.com/urfave/cli/v2"
 )
 
-var videoExtractSubtitleCmd = &cli.Command{
+var VideoExtractSubtitleCmd = &cli.Command{
 	Name:      "video_export_subtitle",
 	Aliases:   nil,
 	Usage:     "视频提取字幕",

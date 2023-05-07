@@ -1,4 +1,4 @@
-package cmd
+package jav_cmd
 
 import (
 	"path"
@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var javCodeCmd = &cli.Command{
+var CodeCmd = &cli.Command{
 	Name:      "jav_code",
 	Aliases:   nil,
 	Usage:     "根据指定番号爬取数据",

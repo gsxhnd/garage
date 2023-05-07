@@ -1,4 +1,4 @@
-package cmd
+package ffmpeg_cmd
 
 import (
 	"github.com/gsxhnd/garage/batch"
@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var videoConvertCmd = &cli.Command{
+var VideoConvertCmd = &cli.Command{
 	Name:      "video_convert",
 	Aliases:   nil,
 	Usage:     "视频转换批处理",

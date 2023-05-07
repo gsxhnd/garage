@@ -1,4 +1,4 @@
-package cmd
+package ffmpeg_cmd
 
 import (
 	"github.com/gsxhnd/garage/batch"
@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var videoSubtitleCmd = &cli.Command{
+var VideoSubtitleCmd = &cli.Command{
 	Name:      "video_import_subtitle",
 	Aliases:   nil,
 	Usage:     "视频添加字幕批处理",
