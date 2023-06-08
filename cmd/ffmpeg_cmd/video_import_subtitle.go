@@ -1,6 +1,9 @@
 package ffmpeg_cmd
 
 import (
+	"os"
+	"os/exec"
+
 	"github.com/gsxhnd/garage/batch"
 	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
@@ -41,16 +44,10 @@ var VideoSubtitleCmd = &cli.Command{
 			Logger:                 logger,
 		}
 
-		var (
-			cmd  = make(chan string)
-			done = make(chan bool)
-		)
-		go vb.CreateBatchFile(cmd, done)
-
 		vl, err := vb.GetVideos()
 		if err != nil {
 			vb.Logger.Error("Get videos error", zap.Error(err))
-			return nil
+			return err
 		}
 		vb.Logger.Info("Get all videos, starting add subtitle")
 		if err := vb.CreateDestDir(); err != nil {
@@ -58,17 +55,20 @@ var VideoSubtitleCmd = &cli.Command{
 		}
 
 		batch := vb.GetImportSubtitleBatch(vl)
+		for _, cmd := range batch {
+			if !c.Bool("exec") {
+				vb.Logger.Sugar().Infof("cmd: %v", cmd)
+			} else {
+				cmd := exec.Command("powershell", cmd)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				err := cmd.Run()
+				if err != nil {
+					vb.Logger.Sugar().Errorf("cmd errror: %v", err)
+				}
+			}
+		}
 
-		for _, v := range batch {
-			cmd <- v
-		}
-		close(cmd)
-		d := <-done
-		if d {
-			vb.Logger.Info("Write batch file complete...")
-		} else {
-			vb.Logger.Info("Write batch file failed...")
-		}
 		return nil
 	},
 }

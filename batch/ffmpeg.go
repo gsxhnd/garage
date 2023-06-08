@@ -89,7 +89,7 @@ func (vb *VideoBatch) GetFontsParams() (string, error) {
 }
 
 func (vb *VideoBatch) GetImportSubtitleBatch(videos []string) []string {
-	t := `ffmpeg.exe -i "%v" -sub_charenc UTF-8 -i "%v" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s %s "%v"`
+	t := `ffmpeg.exe -i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s %s "%v"`
 	var (
 		batch        = []string{}
 		fonts_params string

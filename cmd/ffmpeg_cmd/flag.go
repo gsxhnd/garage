@@ -50,11 +50,6 @@ var (
 		Value: false,
 		Usage: "是否执行批处理命令False时仅打印命令",
 	}
-	fonts_flag = &cli.StringSliceFlag{
-		Name:    "fonts",
-		Aliases: []string{"f"},
-		Usage:   "添加字体文件",
-	}
 	fonts_path_flag = &cli.StringFlag{
 		Name:  "fonts_path",
 		Usage: "添加的字体文件夹",
