@@ -62,6 +62,9 @@ ffmpeg.exe -i INPUT -c:v h264_nvenc output.mp4
 
 ## garage 对应命令
 garage.exe video_convert --source_root_path="queue" --source_video_type="mkv"  --dest_path="result/" --dest_video_type=".mkv" --advance="-c:v h264_nvenc"
+
+## h265
+--advance="-c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 25"
 ```
 
 h256_10bit 转码
@@ -82,8 +85,8 @@ ffmpeg -i INPUT -c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 27 OUTPUT
 garage.exe video_convert --source_root_path="queue" --source_video_type="mkv"  --dest_path="result/" --dest_video_type=".mkv" --advance="-c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 27"
 ```
 
-
 ## 切割视频
+
 ```
 ffmpeg -i input.wmv -ss 00:00:30.0 -c copy -t 00:00:10.0 output.wmv
 ```

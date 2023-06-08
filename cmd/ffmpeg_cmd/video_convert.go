@@ -1,6 +1,9 @@
 package ffmpeg_cmd
 
 import (
+	"os"
+	"os/exec"
+
 	"github.com/gsxhnd/garage/batch"
 	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
@@ -30,11 +33,6 @@ var VideoConvertCmd = &cli.Command{
 			Advance:         c.String("advance"),
 			Logger:          logger,
 		}
-		var (
-			cmd  = make(chan string)
-			done = make(chan bool)
-		)
-		go vb.CreateBatchFile(cmd, done)
 
 		vl, err := vb.GetVideos()
 		if err != nil {
@@ -46,19 +44,22 @@ var VideoConvertCmd = &cli.Command{
 		if err := vb.CreateDestDir(); err != nil {
 			return err
 		}
-		batch := vb.GetConvertBatch(vl)
 		if err := vb.CreateDestDir(); err != nil {
 			return err
 		}
-		for _, v := range batch {
-			cmd <- v
-		}
-		close(cmd)
-		d := <-done
-		if d {
-			vb.Logger.Info("Write batch file complete...")
-		} else {
-			vb.Logger.Info("Write batch file failed...")
+		batch := vb.GetConvertBatch(vl)
+		for _, cmd := range batch {
+			if !c.Bool("exec") {
+				vb.Logger.Sugar().Infof("cmd: %v", cmd)
+			} else {
+				cmd := exec.Command("powershell", cmd)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				err := cmd.Run()
+				if err != nil {
+					vb.Logger.Sugar().Errorf("cmd errror: %v", err)
+				}
+			}
 		}
 		return nil
 	},
