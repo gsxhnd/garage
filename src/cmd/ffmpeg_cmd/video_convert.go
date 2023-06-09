@@ -25,39 +25,28 @@ var VideoConvertCmd = &cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 		logger := utils.GetLogger()
-		var vb = batch.VideoBatch{
-			SourceRootPath:  c.String("source_root_path"),
-			SourceVideoType: c.String("source_video_type"),
-			DestPath:        c.String("dest_path"),
-			DestVideoType:   c.String("dest_video_type"),
-			Advance:         c.String("advance"),
-			Logger:          logger,
+		vb := batch.NewVideoBatch(logger, c.String("source_root_path"), c.String("source_video_type"))
+		if err := vb.CreateDestDir(c.String("dest_path")); err != nil {
+			logger.Panic("Create dest path error", zap.Error(err))
+			return err
 		}
 
-		vl, err := vb.GetVideos()
+		batch, err := vb.GetConvertBatch(c.String("advance"), c.String("dest_video_type"))
 		if err != nil {
-			vb.Logger.Error("Get videos error", zap.Error(err))
-			return nil
+			logger.Panic("Get convert cmd batch error", zap.Error(err))
 		}
 
-		vb.Logger.Info("Get all videos, starting convert")
-		if err := vb.CreateDestDir(); err != nil {
-			return err
-		}
-		if err := vb.CreateDestDir(); err != nil {
-			return err
-		}
-		batch := vb.GetConvertBatch(vl)
+		logger.Info("Get all videos, starting convert")
 		for _, cmd := range batch {
 			if !c.Bool("exec") {
-				vb.Logger.Sugar().Infof("cmd: %v", cmd)
+				logger.Sugar().Infof("cmd: %v", cmd)
 			} else {
 				cmd := exec.Command("powershell", cmd)
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
 				err := cmd.Run()
 				if err != nil {
-					vb.Logger.Sugar().Errorf("cmd errror: %v", err)
+					logger.Sugar().Errorf("cmd errror: %v", err)
 				}
 			}
 		}

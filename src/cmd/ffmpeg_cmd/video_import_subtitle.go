@@ -29,39 +29,22 @@ var VideoSubtitleCmd = &cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 		logger := utils.GetLogger()
-		// var vb = &batch.VideoBatch{
-		// 	SourceRootPath:         c.String("source_root_path"),
-		// 	SourceVideoType:        c.String("source_video_type"),
-		// 	SourceSubtitleType:     c.String("source_subtitle_type"),
-		// 	SourceSubtitleNumber:   c.Int("source_subtitle_number"),
-		// 	SourceSubtitleLanguage: c.String("source_subtitle_language"),
-		// 	SourceSubtitleTitle:    c.String("source_subtitle_title"),
-		// 	FontsPath:              c.String("fonts_path"),
-		// 	DestPath:               c.String("dest_path"),
-		// 	DestVideoType:          c.String("dest_video_type"),
-		// 	Advance:                c.String("advance"),
-		// 	Logger:                 logger,
-		// }
-		vb := batch.NewVideoBatch(logger)
-		videoNameList, err := vb.GetVideosList(c.String("source_root_path"), c.String("source_video_type"))
-		if err != nil {
-			logger.Panic("Get videos error", zap.Error(err))
-			return err
-		}
-
-		fontsString, err := vb.GetFontsParams(c.String("fonts_path"))
-		if err != nil {
-			logger.Panic("Get fonts error", zap.Error(err))
-			return err
-		}
-
+		vb := batch.NewVideoBatch(logger, c.String("source_root_path"), c.String("source_video_type"))
 		if err := vb.CreateDestDir(c.String("dest_path")); err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
 		}
 
-		batch := vb.GetImportSubtitleBatch(videoNameList, fontsString)
-
+		batch, err := vb.GetAddSubtitleBatch(
+			c.Int("source_subtitle_number"),
+			c.String("source_subtitle_type"),
+			c.String("source_subtitle_language"),
+			c.String("source_subtitle_title"),
+			c.String("fonts_path"),
+		)
+		if err != nil {
+			logger.Panic("Get add subtitle batch error", zap.Error(err))
+		}
 		logger.Info("Get all videos, starting add subtitle")
 		for _, cmd := range batch {
 			if !c.Bool("exec") {

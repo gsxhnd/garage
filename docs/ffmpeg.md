@@ -55,7 +55,7 @@ h256_10bit 转码 nvdia 硬件加速
 ffmpeg -i INPUT -c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 27 OUTPUT
 
 ## garage 对应命令
-garage.exe video_convert --source_root_path="queue" --source_video_type="mkv"  --dest_path="result/" --dest_video_type=".mkv" --advance="-c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 25"
+garage.exe video_convert --source_root_path="queue" --source_video_type=".mkv"  --dest_path="result/" --dest_video_type=".mkv" --advance="-c:v hevc_nvenc -pix_fmt p010le -rc vbr -cq:v 25"
 ```
 
 ## 切割视频 && 导出字幕文件
