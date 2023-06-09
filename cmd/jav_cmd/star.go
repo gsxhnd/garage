@@ -3,7 +3,7 @@ package jav_cmd
 import "github.com/urfave/cli/v2"
 
 var javStarCmd = &cli.Command{
-	Name:  "jav_star",
+	Name:  "jav_star_code",
 	Usage: "根据演员ID爬取数据",
 	Flags: []cli.Flag{
 		siteFlag,

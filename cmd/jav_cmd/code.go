@@ -23,7 +23,7 @@ var CodeCmd = &cli.Command{
 			logger  = utils.GetLogger()
 			code    = ctx.Args().Get(0)
 			proxy   = ctx.String("proxy")
-			destDir = "./javs"
+			destDir = ctx.String("dest_dir")
 		)
 
 		if err := utils.MkdirDestDir(path.Join(destDir, code)); err != nil {
@@ -32,7 +32,12 @@ var CodeCmd = &cli.Command{
 		}
 
 		c := crawl.NewCrawlClient(logger)
-		_ = c.SetProxy(proxy)
+		err := c.SetProxy(proxy)
+		if err != nil {
+			logger.Panic("crawl set proxy error: " + err.Error())
+			return err
+		}
+
 		c.StarCrawlJavbusMovie(code)
 		return nil
 	},

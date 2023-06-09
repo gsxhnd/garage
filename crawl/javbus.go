@@ -12,21 +12,25 @@ import (
 	"go.uber.org/zap"
 )
 
-func (c2 *Client) StarCrawlJavbusMovie(code string) {
-	info, err := c2.DownloadInfo(code)
+func (cc *CrawlClient) StarCrawlJavbusMovie(code string) {
+	info, err := cc.DownloadInfo(code)
 	if err != nil {
 		return
 	}
-	err = c2.DownloadCover(info.Code, info.Cover)
+	err = cc.DownloadCover(info.Code, info.Cover)
 	if err != nil {
 		return
 	}
 }
 
-func (c2 *Client) DownloadInfo(code string) (*JavMovie, error) {
-	c2.logger.Info("Download info: " + code)
+func (cc *CrawlClient) StarCrawlJavbusMovieByPrefix(prefixCode string) {}
+func (cc *CrawlClient) StarCrawlJavbusMovieByStar(starCode string)     {}
+
+
+func (cc *CrawlClient) DownloadInfo(code string) (*JavMovie, error) {
+	cc.logger.Info("Download info: " + code)
 	var data JavMovie
-	c2.collector.OnHTML(".container", func(e *colly.HTMLElement) {
+	cc.collector.OnHTML(".container", func(e *colly.HTMLElement) {
 		data.Title = e.ChildText("h3")
 		data.Cover = e.ChildAttr(".screencap img", "src")
 		e.ForEach(".info p", func(i int, element *colly.HTMLElement) {
@@ -54,32 +58,26 @@ func (c2 *Client) DownloadInfo(code string) (*JavMovie, error) {
 			}
 		})
 		e.ForEach("ul li .star-name a", func(i int, element *colly.HTMLElement) {
-			//href := element.Attr("href")
 			star := element.Attr("title")
 			data.Stars = append(data.Stars, star)
 		})
-
-		// e.ForEach("#magnet-table , tr", func(i int, h *colly.HTMLElement) {
-		// 	fmt.Println(i)
-		// 	fmt.Println(h)
-		// })
 	})
-	err := c2.collector.Visit(c2.javbusUrl + code)
+	err := cc.collector.Visit(cc.javbusUrl + code)
 	if err != nil {
 		return nil, err
 	}
 	saveData, _ := json.Marshal(&data)
 	err = ioutil.WriteFile("./javs/"+code+"/info.json", saveData, os.ModeAppend)
 	if err != nil {
-		c2.logger.Error("", zap.Error(err))
+		cc.logger.Error("", zap.Error(err))
 		return nil, err
 	} else {
 		return &data, nil
 	}
 }
 
-func (c2 *Client) DownloadCover(code, cover string) error {
-	resp, _ := c2.httpClient.Get(c2.javbusUrl + cover)
+func (cc *CrawlClient) DownloadCover(code, cover string) error {
+	resp, _ := cc.httpClient.Get(cc.javbusUrl + cover)
 	body, _ := ioutil.ReadAll(resp.Body)
 	out, _ := os.Create("./javs/" + code + "/" + code + ".jpg")
 	io.Copy(out, bytes.NewReader(body))

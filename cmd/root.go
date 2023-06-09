@@ -17,7 +17,6 @@ func init() {
 	RootCmd.Commands = []*cli.Command{
 		jav_cmd.CodeCmd,
 		ffmpeg_cmd.VideoConvertCmd,
-		ffmpeg_cmd.VideoExtractSubtitleCmd,
 		ffmpeg_cmd.VideoSubtitleCmd,
 		versionCmd,
 	}
