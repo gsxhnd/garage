@@ -1,4 +1,4 @@
-package crawl
+package jav
 
 import (
 	"bytes"
@@ -11,21 +11,6 @@ import (
 	"github.com/gocolly/colly/v2"
 	"go.uber.org/zap"
 )
-
-func (cc *CrawlClient) StarCrawlJavbusMovie(code string) {
-	info, err := cc.DownloadInfo(code)
-	if err != nil {
-		return
-	}
-	err = cc.DownloadCover(info.Code, info.Cover)
-	if err != nil {
-		return
-	}
-}
-
-func (cc *CrawlClient) StarCrawlJavbusMovieByPrefix(prefixCode string) {}
-func (cc *CrawlClient) StarCrawlJavbusMovieByStar(starCode string)     {}
-
 
 func (cc *CrawlClient) DownloadInfo(code string) (*JavMovie, error) {
 	cc.logger.Info("Download info: " + code)
@@ -83,3 +68,7 @@ func (cc *CrawlClient) DownloadCover(code, cover string) error {
 	io.Copy(out, bytes.NewReader(body))
 	return nil
 }
+
+func (cc *CrawlClient) SaveData()   {}
+func (cc *CrawlClient) SaveCover()  {}
+func (cc *CrawlClient) SaveMagent() {}

@@ -3,7 +3,7 @@ package jav_cmd
 import (
 	"path"
 
-	"github.com/gsxhnd/garage/crawl"
+	"github.com/gsxhnd/garage/jav"
 	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
 )
@@ -31,7 +31,7 @@ var CodeCmd = &cli.Command{
 			return err
 		}
 
-		c := crawl.NewCrawlClient(logger)
+		c := jav.NewCrawlClient(logger)
 		err := c.SetProxy(proxy)
 		if err != nil {
 			logger.Panic("crawl set proxy error: " + err.Error())
