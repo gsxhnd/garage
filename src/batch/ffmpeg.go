@@ -170,7 +170,7 @@ func (vb *videoBatch) GetConvertBatch(advance, destVideoType string) ([]string, 
 
 	for _, v := range vb.videosList {
 		sourceVideo := filepath.Join(vb.sourceRootPath, v+vb.sourceVideoType)
-		destVideo := filepath.Join(vb.destPath, v+vb.sourceVideoType)
+		destVideo := filepath.Join(vb.destPath, v+destVideoType)
 		s := fmt.Sprintf(template, sourceVideo, advance, destVideo)
 		vb.cmdBatch = append(vb.cmdBatch, s)
 	}
