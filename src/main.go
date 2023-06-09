@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/gsxhnd/garage/cmd"
+	"github.com/gsxhnd/garage/src/cmd"
 )
 
 func main() {

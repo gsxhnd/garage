@@ -3,8 +3,8 @@ package jav_cmd
 import (
 	"path"
 
-	"github.com/gsxhnd/garage/jav"
-	"github.com/gsxhnd/garage/utils"
+	"github.com/gsxhnd/garage/src/jav"
+	"github.com/gsxhnd/garage/src/utils"
 	"github.com/urfave/cli/v2"
 )
 

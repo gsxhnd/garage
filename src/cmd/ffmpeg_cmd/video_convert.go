@@ -4,8 +4,8 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/gsxhnd/garage/batch"
-	"github.com/gsxhnd/garage/utils"
+	"github.com/gsxhnd/garage/src/batch"
+	"github.com/gsxhnd/garage/src/utils"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 )

@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/gsxhnd/garage/cmd/ffmpeg_cmd"
-	"github.com/gsxhnd/garage/cmd/jav_cmd"
+	"github.com/gsxhnd/garage/src/cmd/ffmpeg_cmd"
+	"github.com/gsxhnd/garage/src/cmd/jav_cmd"
 	"github.com/urfave/cli/v2"
 )
 
