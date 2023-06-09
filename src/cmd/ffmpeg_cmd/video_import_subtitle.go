@@ -24,51 +24,58 @@ var VideoSubtitleCmd = &cli.Command{
 		source_subtitle_title_flag,
 		fonts_path_flag,
 		dest_path_flag,
-		dest_video_type_flag,
 		advance_flag,
 		exec_flag,
 	},
 	Action: func(c *cli.Context) error {
 		logger := utils.GetLogger()
-		var vb = &batch.VideoBatch{
-			SourceRootPath:         c.String("source_root_path"),
-			SourceVideoType:        c.String("source_video_type"),
-			SourceSubtitleType:     c.String("source_subtitle_type"),
-			SourceSubtitleNumber:   c.Int("source_subtitle_number"),
-			SourceSubtitleLanguage: c.String("source_subtitle_language"),
-			SourceSubtitleTitle:    c.String("source_subtitle_title"),
-			FontsPath:              c.String("fonts_path"),
-			DestPath:               c.String("dest_path"),
-			DestVideoType:          c.String("dest_video_type"),
-			Advance:                c.String("advance"),
-			Logger:                 logger,
-		}
-
-		vl, err := vb.GetVideos()
+		// var vb = &batch.VideoBatch{
+		// 	SourceRootPath:         c.String("source_root_path"),
+		// 	SourceVideoType:        c.String("source_video_type"),
+		// 	SourceSubtitleType:     c.String("source_subtitle_type"),
+		// 	SourceSubtitleNumber:   c.Int("source_subtitle_number"),
+		// 	SourceSubtitleLanguage: c.String("source_subtitle_language"),
+		// 	SourceSubtitleTitle:    c.String("source_subtitle_title"),
+		// 	FontsPath:              c.String("fonts_path"),
+		// 	DestPath:               c.String("dest_path"),
+		// 	DestVideoType:          c.String("dest_video_type"),
+		// 	Advance:                c.String("advance"),
+		// 	Logger:                 logger,
+		// }
+		vb := batch.NewVideoBatch(logger)
+		videoNameList, err := vb.GetVideosList(c.String("source_root_path"), c.String("source_video_type"))
 		if err != nil {
-			vb.Logger.Error("Get videos error", zap.Error(err))
-			return err
-		}
-		vb.Logger.Info("Get all videos, starting add subtitle")
-		if err := vb.CreateDestDir(); err != nil {
+			logger.Panic("Get videos error", zap.Error(err))
 			return err
 		}
 
-		batch := vb.GetImportSubtitleBatch(vl)
+		fontsString, err := vb.GetFontsParams(c.String("fonts_path"))
+		if err != nil {
+			logger.Panic("Get fonts error", zap.Error(err))
+			return err
+		}
+
+		if err := vb.CreateDestDir(c.String("dest_path")); err != nil {
+			logger.Panic("Create dest path error", zap.Error(err))
+			return err
+		}
+
+		batch := vb.GetImportSubtitleBatch(videoNameList, fontsString)
+
+		logger.Info("Get all videos, starting add subtitle")
 		for _, cmd := range batch {
 			if !c.Bool("exec") {
-				vb.Logger.Sugar().Infof("cmd: %v", cmd)
+				logger.Sugar().Infof("cmd: %v", cmd)
 			} else {
 				cmd := exec.Command("powershell", cmd)
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
 				err := cmd.Run()
 				if err != nil {
-					vb.Logger.Sugar().Errorf("cmd errror: %v", err)
+					logger.Sugar().Errorf("cmd errror: %v", err)
 				}
 			}
 		}
-
 		return nil
 	},
 }
