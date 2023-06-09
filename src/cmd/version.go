@@ -7,7 +7,8 @@ import (
 )
 
 var versionCmd = &cli.Command{
-	Name: "version",
+	Name:  "version",
+	Usage: "显示版本号",
 	Action: func(context *cli.Context) error {
 		fmt.Println("version cmd")
 		return nil

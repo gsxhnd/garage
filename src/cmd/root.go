@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/gsxhnd/garage/src/cmd/ffmpeg_cmd"
+	"github.com/gsxhnd/garage/src/cmd/jav_cmd"
 	"github.com/urfave/cli/v2"
 )
 
@@ -13,12 +15,9 @@ func init() {
 	RootCmd.Usage = "命令行工具"
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
-		javCodeCmd,
-		javStarCmd,
-		javPrefixCmd,
-		videoConvertCmd,
-		videoSubtitleCmd,
-		videoExtractSubtitleCmd,
+		jav_cmd.CodeCmd,
+		ffmpeg_cmd.VideoConvertCmd,
+		ffmpeg_cmd.VideoSubtitleCmd,
 		versionCmd,
 	}
 }

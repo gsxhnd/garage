@@ -1,4 +1,4 @@
-package crawl
+package jav
 
 import (
 	"net/http"
@@ -8,10 +8,9 @@ import (
 	"go.uber.org/zap"
 )
 
-type Client struct {
+type CrawlClient struct {
 	collector  *colly.Collector
 	httpClient *http.Client
-	proxy      string
 	maxDepth   int
 	javbusUrl  string
 	javlibUrl  string
@@ -36,11 +35,10 @@ type JavMovieMagnet struct {
 	Size string `json:"size"`
 }
 
-func NewCrawlClient(logger *zap.Logger) *Client {
-	return &Client{
+func NewCrawlClient(logger *zap.Logger) *CrawlClient {
+	return &CrawlClient{
 		collector:  colly.NewCollector(),
 		httpClient: &http.Client{},
-		proxy:      "",
 		maxDepth:   100,
 		javbusUrl:  "https://www.javbus.com/",
 		javlibUrl:  "https://www.javbus.com/",
@@ -48,12 +46,11 @@ func NewCrawlClient(logger *zap.Logger) *Client {
 	}
 }
 
-func (c2 *Client) SetProxy(proxy string) (err error) {
+func (cc *CrawlClient) SetProxy(proxy string) (err error) {
 	uri, _ := url.Parse(proxy)
-	err = c2.collector.SetProxy(proxy)
-	c2.httpClient = &http.Client{
+	err = cc.collector.SetProxy(proxy)
+	cc.httpClient = &http.Client{
 		Transport: &http.Transport{
-			// 设置代理
 			Proxy: http.ProxyURL(uri),
 		},
 	}

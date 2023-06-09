@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 0.0.8
+
+- REFACTOR: `ffmpeg`子命令添加自动执行参数
+- DOC: 文档更新
+- REFACTOR: 目录变更
+  <!-- - ADD: 爬虫添加前缀爬取 -->
+  <!-- - ADD: 爬虫添加前缀爬取 -->
+
 ## Version 0.0.7
 
 - FIX: 爬虫部分没有提前创建下载数据
@@ -7,7 +15,7 @@
 ## Version 0.0.6
 
 - CHORE: 编译去除路径
-- REFACTOR: `ffmpeg`部分子明令不再自动执行命令而是生成脚本文件
+- REFACTOR: `ffmpeg`部分子命令不再自动执行命令而是生成脚本文件
 - REFACTOR: 修改单个字体文件，使用字体文件夹代替，自动识别 TTF,OTF 文件并添加
 - REFACTOR: 修改添加字幕子命令 `video_import_subtitle`
 - REFACTOR: 修改导出字幕子命令 `video_export_subtitle`

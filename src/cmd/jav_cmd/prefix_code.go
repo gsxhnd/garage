@@ -1,12 +1,11 @@
-package cmd
+package jav_cmd
 
 import "github.com/urfave/cli/v2"
 
-var javStarCmd = &cli.Command{
-	Name:  "jav_star",
-	Usage: "根据演员ID爬取数据",
+var javPrefixCmd = &cli.Command{
+	Name:  "jav_prefix_code",
+	Usage: "根据番号前缀爬取数据",
 	Flags: []cli.Flag{
-		siteFlag,
 		proxyFlag,
 	},
 	Action: func(c *cli.Context) error {
