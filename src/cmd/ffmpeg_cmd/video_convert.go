@@ -41,6 +41,7 @@ var VideoConvertCmd = &cli.Command{
 			if !c.Bool("exec") {
 				logger.Sugar().Infof("cmd: %v", cmd)
 			} else {
+				logger.Sugar().Infof("Start convert video cmd: %v", cmd)
 				cmd := exec.Command("powershell", cmd)
 				cmd.Stdout = os.Stdout
 				cmd.Stderr = os.Stderr
@@ -48,6 +49,7 @@ var VideoConvertCmd = &cli.Command{
 				if err != nil {
 					logger.Sugar().Errorf("cmd errror: %v", err)
 				}
+				logger.Sugar().Infof("Finished convert video")
 			}
 		}
 		return nil
