@@ -2,10 +2,10 @@
 
 ## Version 0.0.8
 
-- REFACTOR: `ffmpeg`子命令添加自动执行参数
 - DOC: 文档更新
+- REFACTOR: `ffmpeg`子命令添加自动执行参数
 - REFACTOR: 目录变更
-  <!-- - ADD: 爬虫添加前缀爬取 -->
+- ADD: 爬虫添加前缀爬取
   <!-- - ADD: 爬虫添加前缀爬取 -->
 
 ## Version 0.0.7

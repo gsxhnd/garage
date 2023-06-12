@@ -7,25 +7,25 @@ import (
 )
 
 var JavPrefixCmd = &cli.Command{
-	Name:  "jav_prefix_code",
+	Name:  "jav-prefix-code",
 	Usage: "根据番号前缀爬取数据",
 	Flags: []cli.Flag{
 		proxyFlag,
 		siteFlag,
-		destDirFlag,
+		outputFlag,
 		prefixCodeFlag,
-		prefixMinNoFlag,
-		prefixMaxNoFlag,
+		prefixMinFlag,
+		prefixMaxFlag,
 	},
 	Action: func(c *cli.Context) error {
 		var logger = utils.GetLogger()
 
 		client, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
 			Proxy:       c.String("proxy"),
-			DestPath:    c.String("dest_dir"),
-			PrefixCode:  c.String("prefix_code"),
-			PrefixMinNo: c.Int("prefix_min_no"),
-			PrefixMaxNo: c.Int("prefix_max_no"),
+			DestPath:    c.String("output"),
+			PrefixCode:  c.String("prefix-code"),
+			PrefixMinNo: c.Int("prefix-min"),
+			PrefixMaxNo: c.Int("prefix-max"),
 		})
 
 		if err != nil {

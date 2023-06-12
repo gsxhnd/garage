@@ -13,6 +13,7 @@ func init() {
 	RootCmd.Usage = "命令行工具"
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
+		crawlCmd,
 		crawl_cmd.JavCodeCmd,
 		crawl_cmd.JavPrefixCmd,
 		crawl_cmd.JavStarCodeCmd,

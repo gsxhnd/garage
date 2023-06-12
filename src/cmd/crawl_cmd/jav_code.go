@@ -7,14 +7,14 @@ import (
 )
 
 var JavCodeCmd = &cli.Command{
-	Name:      "jav_code",
+	Name:      "jav-code",
 	Aliases:   nil,
 	Usage:     "根据指定番号爬取数据",
 	UsageText: "jav_code --site [javbus/javlibrary] XXX-001",
 	Flags: []cli.Flag{
 		proxyFlag,
 		siteFlag,
-		destDirFlag,
+		outputFlag,
 	},
 	Action: func(ctx *cli.Context) error {
 		var (
@@ -24,7 +24,7 @@ var JavCodeCmd = &cli.Command{
 
 		c, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
 			Proxy:    ctx.String("proxy"),
-			DestPath: ctx.String("dest_dir"),
+			DestPath: ctx.String("output"),
 		})
 		if err != nil {
 			logger.Panic("client init error: " + err.Error())
