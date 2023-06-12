@@ -6,7 +6,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-var CodeCmd = &cli.Command{
+var JavCodeCmd = &cli.Command{
 	Name:      "jav_code",
 	Aliases:   nil,
 	Usage:     "根据指定番号爬取数据",
