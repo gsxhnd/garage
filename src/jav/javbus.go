@@ -1,15 +1,13 @@
 package jav
 
-func (cc *CrawlClient) StarCrawlJavbusMovie(code string) {
-	info, err := cc.DownloadInfo(code)
-	if err != nil {
-		return
-	}
-	err = cc.DownloadCover(info.Code, info.Cover)
-	if err != nil {
-		return
-	}
+func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
+	return nil
 }
 
-func (cc *CrawlClient) StarCrawlJavbusMovieByPrefix(prefixCode string) {}
-func (cc *CrawlClient) StarCrawlJavbusMovieByStar(starCode string)     {}
+func (cc *crawlClient) StartCrawlJavbusMovieByPrefix(prefixCode string) error {
+	return nil
+}
+
+func (cc *crawlClient) StartCrawlJavbusMovieByStar(starCode string) error {
+	return nil
+}

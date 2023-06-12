@@ -8,7 +8,16 @@ import (
 	"go.uber.org/zap"
 )
 
-type CrawlClient struct {
+type CrawlClient interface {
+	SetProxy(proxy string) (err error)
+	StartCrawlJavbusMovie(code string) error
+	StartCrawlJavbusMovieByPrefix(prefixCode string) error
+	StartCrawlJavbusMovieByStar(starCode string) error
+	saveJavInfos() error
+	saveCovers() error
+	saveMagents() error
+}
+type crawlClient struct {
 	collector  *colly.Collector
 	httpClient *http.Client
 	maxDepth   int
@@ -17,26 +26,8 @@ type CrawlClient struct {
 	logger     *zap.Logger
 }
 
-type JavMovie struct {
-	Code           string   `json:"code"`
-	Title          string   `json:"title"`
-	Cover          string   `json:"cover"`
-	PublishDate    string   `json:"publish_date"`
-	Length         string   `json:"length"`
-	Director       string   `json:"director"`
-	ProduceCompany string   `json:"produce_company"`
-	PublishCompany string   `json:"publish_company"`
-	Series         string   `json:"series"`
-	Stars          []string `json:"stars"`
-}
-
-type JavMovieMagnet struct {
-	Link string `json:"link"`
-	Size string `json:"size"`
-}
-
-func NewCrawlClient(logger *zap.Logger) *CrawlClient {
-	return &CrawlClient{
+func NewCrawlClient(logger *zap.Logger) CrawlClient {
+	return &crawlClient{
 		collector:  colly.NewCollector(),
 		httpClient: &http.Client{},
 		maxDepth:   100,
@@ -46,7 +37,7 @@ func NewCrawlClient(logger *zap.Logger) *CrawlClient {
 	}
 }
 
-func (cc *CrawlClient) SetProxy(proxy string) (err error) {
+func (cc *crawlClient) SetProxy(proxy string) (err error) {
 	uri, _ := url.Parse(proxy)
 	err = cc.collector.SetProxy(proxy)
 	cc.httpClient = &http.Client{

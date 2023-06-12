@@ -38,7 +38,6 @@ var CodeCmd = &cli.Command{
 			return err
 		}
 
-		c.StarCrawlJavbusMovie(code)
 		return nil
 	},
 }

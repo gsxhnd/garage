@@ -8,11 +8,12 @@ import (
 	"os"
 	"strings"
 
+	"github.com/go-gota/gota/dataframe"
 	"github.com/gocolly/colly/v2"
 	"go.uber.org/zap"
 )
 
-func (cc *CrawlClient) DownloadInfo(code string) (*JavMovie, error) {
+func (cc *crawlClient) DownloadInfo(code string) (*JavMovie, error) {
 	cc.logger.Info("Download info: " + code)
 	var data JavMovie
 	cc.collector.OnHTML(".container", func(e *colly.HTMLElement) {
@@ -43,8 +44,8 @@ func (cc *CrawlClient) DownloadInfo(code string) (*JavMovie, error) {
 			}
 		})
 		e.ForEach("ul li .star-name a", func(i int, element *colly.HTMLElement) {
-			star := element.Attr("title")
-			data.Stars = append(data.Stars, star)
+			// star := element.Attr("title")
+			// data.Stars = append(data.Stars, star)
 		})
 	})
 	err := cc.collector.Visit(cc.javbusUrl + code)
@@ -61,7 +62,7 @@ func (cc *CrawlClient) DownloadInfo(code string) (*JavMovie, error) {
 	}
 }
 
-func (cc *CrawlClient) DownloadCover(code, cover string) error {
+func (cc *crawlClient) DownloadCover(code, cover string) error {
 	resp, _ := cc.httpClient.Get(cc.javbusUrl + cover)
 	body, _ := ioutil.ReadAll(resp.Body)
 	out, _ := os.Create("./javs/" + code + "/" + code + ".jpg")
@@ -69,6 +70,24 @@ func (cc *CrawlClient) DownloadCover(code, cover string) error {
 	return nil
 }
 
-func (cc *CrawlClient) SaveData()   {}
-func (cc *CrawlClient) SaveCover()  {}
-func (cc *CrawlClient) SaveMagent() {}
+func (cc *crawlClient) saveJavInfos() error {
+	var data = []JavMovie{
+		{
+			Code: "test-01",
+		},
+	}
+	df := dataframe.LoadStructs(data)
+	f, err := os.OpenFile("./../../test", os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	if err != nil {
+		// cc.logger.Error("")
+		return err
+	}
+	return df.WriteCSV(f)
+}
+
+func (cc *crawlClient) saveCovers() error {
+	return nil
+}
+func (cc *crawlClient) saveMagents() error {
+	return nil
+}
