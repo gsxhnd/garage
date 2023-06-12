@@ -16,6 +16,7 @@ func init() {
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
 		crawl_cmd.CodeCmd,
+		crawl_cmd.JavPrefixCmd,
 		ffmpeg_cmd.VideoConvertCmd,
 		ffmpeg_cmd.VideoSubtitleCmd,
 		versionCmd,

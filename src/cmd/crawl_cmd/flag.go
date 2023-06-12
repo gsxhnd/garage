@@ -14,4 +14,7 @@ var (
 		HasBeenSet:  false,
 		Value:       "javbus",
 	}
+	prefixCodeFlag  = &cli.StringFlag{Name: "prefix_code"}
+	prefixMinNoFlag = &cli.StringFlag{Name: "prefix_min_no", Value: "001"}
+	prefixMaxNoFlag = &cli.StringFlag{Name: "prefix_max_no", Value: "100"}
 )

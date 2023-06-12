@@ -1,8 +1,6 @@
 package crawl_cmd
 
 import (
-	"path"
-
 	"github.com/gsxhnd/garage/src/crawl"
 	"github.com/gsxhnd/garage/src/utils"
 	"github.com/urfave/cli/v2"
@@ -20,24 +18,23 @@ var CodeCmd = &cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 		var (
-			logger  = utils.GetLogger()
-			code    = ctx.Args().Get(0)
-			proxy   = ctx.String("proxy")
-			destDir = ctx.String("dest_dir")
+			logger = utils.GetLogger()
+			code   = ctx.Args().Get(0)
 		)
 
-		if err := utils.MkdirDestDir(path.Join(destDir, code)); err != nil {
-			logger.Panic("目录创建失败， Error: " + err.Error())
-			return err
-		}
-
-		c := crawl.NewCrawlClient(logger)
-		err := c.SetProxy(proxy)
+		c, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
+			Proxy:    ctx.String("proxy"),
+			DestPath: ctx.String("dest_dir"),
+		})
 		if err != nil {
-			logger.Panic("crawl set proxy error: " + err.Error())
+			logger.Panic("client init error: " + err.Error())
 			return err
 		}
 
+		if err := c.StartCrawlJavbusMovie(code); err != nil {
+			logger.Panic("crawl error: " + err.Error())
+			return err
+		}
 		return nil
 	},
 }
