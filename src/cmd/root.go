@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"github.com/gsxhnd/garage/src/cmd/crawl_cmd"
-	"github.com/gsxhnd/garage/src/cmd/ffmpeg_cmd"
 	"github.com/urfave/cli/v2"
 )
 
@@ -14,11 +12,10 @@ func init() {
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
 		crawlCmd,
-		crawl_cmd.JavCodeCmd,
-		crawl_cmd.JavPrefixCmd,
-		crawl_cmd.JavStarCodeCmd,
-		ffmpeg_cmd.VideoConvertCmd,
-		ffmpeg_cmd.VideoSubtitleCmd,
+		ffmpegBatchCmd,
 		versionCmd,
 	}
+	// RootCmd.CommandNotFound = func(ctx *cli.Context, s string) {
+	// 	fmt.Println(s)
+	// }
 }
