@@ -21,8 +21,11 @@ var JavPrefixCmd = &cli.Command{
 		var logger = utils.GetLogger()
 
 		client, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
-			Proxy:    c.String("proxy"),
-			DestPath: c.String("dest_dir"),
+			Proxy:       c.String("proxy"),
+			DestPath:    c.String("dest_dir"),
+			PrefixCode:  c.String("prefix_code"),
+			PrefixMinNo: c.Int("prefix_min_no"),
+			PrefixMaxNo: c.Int("prefix_max_no"),
 		})
 
 		if err != nil {
@@ -30,7 +33,7 @@ var JavPrefixCmd = &cli.Command{
 			return err
 		}
 
-		if err := client.StartCrawlJavbusMovieByPrefix(c.String("prefix_code")); err != nil {
+		if err := client.StartCrawlJavbusMovieByPrefix(); err != nil {
 			logger.Panic("crawl error: " + err.Error())
 			return err
 		}

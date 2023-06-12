@@ -12,41 +12,51 @@ import (
 
 type CrawlClient interface {
 	StartCrawlJavbusMovie(code string) error
-	StartCrawlJavbusMovieByPrefix(prefixCode string) error
+	StartCrawlJavbusMovieByPrefix() error
 	StartCrawlJavbusMovieByStar(starCode string) error
 	setProxy(proxy string) error
 	mkAllDir() error
-	getJavMovieInfoByJavbus(code string) error
+	// getJavMovieInfoByJavbus(code string) error
+	getJavMovieInfoByJavbus(element *colly.HTMLElement)
 	saveJavInfos() error
 	saveCovers(coverPath, name string) error
 	saveMagents() error
 }
 type crawlClient struct {
-	logger     *zap.Logger
-	collector  *colly.Collector
-	httpClient *http.Client
-	maxDepth   int
-	javbusUrl  string
-	javlibUrl  string
-	javInfos   []JavMovie
-	destPath   string
+	logger      *zap.Logger
+	collector   *colly.Collector
+	httpClient  *http.Client
+	maxDepth    int
+	javbusUrl   string
+	javlibUrl   string
+	javInfos    []JavMovie
+	destPath    string
+	prefixCode  string
+	prefixMinNo int
+	prefixMaxNo int
 }
 
 type CrawlOptions struct {
-	DestPath string
-	Proxy    string
+	DestPath    string
+	Proxy       string
+	PrefixCode  string
+	PrefixMinNo int
+	PrefixMaxNo int
 }
 
 func NewCrawlClient(logger *zap.Logger, option CrawlOptions) (CrawlClient, error) {
 	var client = &crawlClient{
-		collector:  colly.NewCollector(),
-		httpClient: &http.Client{},
-		maxDepth:   100,
-		javbusUrl:  "https://www.javbus.com/",
-		javlibUrl:  "https://www.javbus.com/",
-		logger:     logger,
-		javInfos:   make([]JavMovie, 0),
-		destPath:   option.DestPath,
+		collector:   colly.NewCollector(),
+		httpClient:  &http.Client{},
+		maxDepth:    100,
+		javbusUrl:   "https://www.javbus.com/",
+		javlibUrl:   "https://www.javbus.com/",
+		logger:      logger,
+		javInfos:    make([]JavMovie, 0),
+		destPath:    option.DestPath,
+		prefixCode:  option.PrefixCode,
+		prefixMinNo: option.PrefixMinNo,
+		prefixMaxNo: option.PrefixMaxNo,
 	}
 	if err := client.setProxy(option.Proxy); err != nil {
 		return nil, err
