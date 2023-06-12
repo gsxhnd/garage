@@ -1,23 +1,21 @@
 package cmd
 
 import (
-	"github.com/gsxhnd/garage/src/cmd/ffmpeg_cmd"
-	"github.com/gsxhnd/garage/src/cmd/jav_cmd"
 	"github.com/urfave/cli/v2"
 )
 
-var (
-	RootCmd = cli.NewApp()
-)
+var RootCmd = cli.NewApp()
 
 func init() {
 	RootCmd.HideVersion = true
 	RootCmd.Usage = "命令行工具"
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
-		jav_cmd.CodeCmd,
-		ffmpeg_cmd.VideoConvertCmd,
-		ffmpeg_cmd.VideoSubtitleCmd,
+		crawlCmd,
+		ffmpegBatchCmd,
 		versionCmd,
 	}
+	// RootCmd.CommandNotFound = func(ctx *cli.Context, s string) {
+	// 	fmt.Println(s)
+	// }
 }

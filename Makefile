@@ -37,6 +37,7 @@ clean:
 	@go clean --cache
 	@rm -rvf build/*
 	@rm -rvf testdata/
+	@rm -rvf javbus/
 
 mock_data:
 	rm -rvf testdata
