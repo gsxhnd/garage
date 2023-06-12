@@ -18,12 +18,13 @@ type CrawlClient interface {
 	saveMagents() error
 }
 type crawlClient struct {
+	logger     *zap.Logger
 	collector  *colly.Collector
 	httpClient *http.Client
 	maxDepth   int
 	javbusUrl  string
 	javlibUrl  string
-	logger     *zap.Logger
+	javInfos   []JavMovie
 }
 
 func NewCrawlClient(logger *zap.Logger) CrawlClient {
@@ -34,6 +35,7 @@ func NewCrawlClient(logger *zap.Logger) CrawlClient {
 		javbusUrl:  "https://www.javbus.com/",
 		javlibUrl:  "https://www.javbus.com/",
 		logger:     logger,
+		javInfos:   []JavMovie{},
 	}
 }
 

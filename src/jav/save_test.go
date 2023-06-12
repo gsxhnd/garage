@@ -2,6 +2,8 @@ package jav
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_crawlClient_saveJavInfos(t *testing.T) {
@@ -15,7 +17,7 @@ func Test_crawlClient_saveJavInfos(t *testing.T) {
 			cc := NewCrawlClient(nil)
 			err := cc.saveJavInfos()
 			if err != nil {
-				t.Error(err)
+				assert.Error(t, err, err)
 			}
 		})
 	}
