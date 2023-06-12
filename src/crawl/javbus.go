@@ -1,4 +1,4 @@
-package jav
+package crawl
 
 func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
 	return nil

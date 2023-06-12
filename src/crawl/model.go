@@ -1,4 +1,4 @@
-package jav
+package crawl
 
 type JavMovie struct {
 	Code           string `json:"code"`

@@ -1,4 +1,4 @@
-package jav_cmd
+package crawl_cmd
 
 import "github.com/urfave/cli/v2"
 
