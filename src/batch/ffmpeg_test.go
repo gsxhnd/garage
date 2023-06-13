@@ -7,7 +7,6 @@ import (
 )
 
 func Test_videoBatch_GetVideosList(t *testing.T) {
-	var s = &videoBatch{}
 	type args struct {
 		sourceRootPath  string
 		sourceVideoType string
@@ -24,6 +23,7 @@ func Test_videoBatch_GetVideosList(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			var s = &videoBatch{}
 			err := s.getVideosList()
 			if tt.wantErr {
 				assert.Error(t, err)

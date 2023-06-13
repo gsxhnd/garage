@@ -97,8 +97,8 @@ var ffmpegBatchConvertCmd = &cli.Command{
 			outputType = c.String("output-type")
 			advance    = c.String("advance")
 		)
-		vb := batch.NewVideoBatch(logger, inputPath, inputType)
-		if err := vb.CreateDestDir(outputPath); err != nil {
+		vb, err := batch.NewVideoBatch(logger, inputPath, inputType, outputPath)
+		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
 		}
@@ -156,8 +156,8 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 			inputFontsPath = c.String("input-fonts-path")
 			outputPath     = c.String("output-path")
 		)
-		vb := batch.NewVideoBatch(logger, inputPath, inputType)
-		if err := vb.CreateDestDir(outputPath); err != nil {
+		vb, err := batch.NewVideoBatch(logger, inputPath, inputType, outputPath)
+		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
 		}
