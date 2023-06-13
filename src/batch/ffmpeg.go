@@ -18,8 +18,7 @@ type VideoBatcher interface {
 	getVideosList() error
 	// 获取字体
 	getFontsParams(fontsPath string) error
-	// get bactch
-	GetAddSubtitleBatch(sourceSubtitleNumber int, sourceSubtitleType, sourceSubtitleLanguage, sourceSubtitleTitle, fontsPath string) ([]string, error)
+	GetAddSubtitleBatch(inputSubNo int, inputSubSuffix, inputSubLang, inputSubTitle, fontsPath string) ([]string, error)
 	GetConvertBatch(advance, destVideoType string) ([]string, error)
 }
 
@@ -65,41 +64,6 @@ func (vb *videoBatch) createDestDir() error {
 	}
 	vb.logger.Info("Destination directory created")
 	return nil
-}
-
-func (vb *videoBatch) GetAddSubtitleBatch(inputSubNo int, inputSubSuffix, inputSubLang, inputSubTitle, fontsPath string) ([]string, error) {
-	if err := vb.getVideosList(); err != nil {
-		return nil, err
-	}
-
-	vb.logger.Info("Source videos directory: " + vb.inputPath)
-	vb.logger.Info("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
-	vb.logger.Info("Target video's subtitle stream number: " + strconv.Itoa(inputSubNo))
-	vb.logger.Info("Target video's subtitle language: " + inputSubLang)
-	vb.logger.Info("Target video's subtitle title: " + inputSubTitle)
-	if fontsPath != "" {
-		if err := vb.getFontsParams(fontsPath); err != nil {
-			return nil, err
-		}
-		vb.logger.Info("Target video's font paths: " + fontsPath)
-		vb.logger.Info(fmt.Sprintf("Attach fonts parameters: %v", vb.fontsParams))
-	} else {
-		vb.logger.Info("Target video's font paths not set, skip.")
-	}
-	vb.logger.Info("Dest video directory: " + vb.outputPath)
-
-	template := `ffmpeg.exe -i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s "%v"`
-	for _, v := range vb.videosList {
-		sourceVideo := filepath.Join(vb.inputPath, v+vb.inputType)
-		sourceSubtitle := filepath.Join(vb.inputPath, v+inputSubSuffix)
-		destVideo := filepath.Join(vb.outputPath, v+vb.inputType)
-		s := fmt.Sprintf(template,
-			sourceVideo, sourceSubtitle, inputSubNo,
-			inputSubLang, inputSubNo, inputSubTitle,
-			vb.fontsParams, destVideo)
-		vb.cmdBatch = append(vb.cmdBatch, s)
-	}
-	return vb.cmdBatch, nil
 }
 
 func (vb *videoBatch) getVideosList() error {
@@ -172,6 +136,41 @@ func (vb *videoBatch) GetConvertBatch(advance, outputType string) ([]string, err
 		inputVideo := filepath.Join(vb.inputPath, v+vb.inputType)
 		outputVideo := filepath.Join(vb.outputPath, v+outputType)
 		s := fmt.Sprintf(template, inputVideo, advance, outputVideo)
+		vb.cmdBatch = append(vb.cmdBatch, s)
+	}
+	return vb.cmdBatch, nil
+}
+
+func (vb *videoBatch) GetAddSubtitleBatch(inputSubNo int, inputSubSuffix, inputSubLang, inputSubTitle, fontsPath string) ([]string, error) {
+	if err := vb.getVideosList(); err != nil {
+		return nil, err
+	}
+
+	vb.logger.Info("Source videos directory: " + vb.inputPath)
+	vb.logger.Info("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
+	vb.logger.Info("Target video's subtitle stream number: " + strconv.Itoa(inputSubNo))
+	vb.logger.Info("Target video's subtitle language: " + inputSubLang)
+	vb.logger.Info("Target video's subtitle title: " + inputSubTitle)
+	if fontsPath != "" {
+		if err := vb.getFontsParams(fontsPath); err != nil {
+			return nil, err
+		}
+		vb.logger.Info("Target video's font paths: " + fontsPath)
+		vb.logger.Info(fmt.Sprintf("Attach fonts parameters: %v", vb.fontsParams))
+	} else {
+		vb.logger.Info("Target video's font paths not set, skip.")
+	}
+	vb.logger.Info("Dest video directory: " + vb.outputPath)
+
+	template := `ffmpeg.exe -i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s "%v"`
+	for _, v := range vb.videosList {
+		sourceVideo := filepath.Join(vb.inputPath, v+vb.inputType)
+		sourceSubtitle := filepath.Join(vb.inputPath, v+inputSubSuffix)
+		destVideo := filepath.Join(vb.outputPath, v+vb.inputType)
+		s := fmt.Sprintf(template,
+			sourceVideo, sourceSubtitle, inputSubNo,
+			inputSubLang, inputSubNo, inputSubTitle,
+			vb.fontsParams, destVideo)
 		vb.cmdBatch = append(vb.cmdBatch, s)
 	}
 	return vb.cmdBatch, nil

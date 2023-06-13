@@ -83,3 +83,7 @@ func (cc *crawlClient) StartCrawlJavbusMovieByPrefix() error {
 func (cc *crawlClient) StartCrawlJavbusMovieByStar(starCode string) error {
 	return nil
 }
+
+func (cc *crawlClient) StartCrawlJavbusMovieByFilepath(inputPath string) error {
+	return nil
+}

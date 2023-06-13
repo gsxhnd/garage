@@ -11,15 +11,24 @@ import (
 )
 
 type CrawlClient interface {
+	// 通过番号爬取对应的电影信息
 	StartCrawlJavbusMovie(code string) error
+	// 通过番号前缀爬取对应的电影信息
 	StartCrawlJavbusMovieByPrefix() error
+	// 通过演员ID爬取对应的电影信息
 	StartCrawlJavbusMovieByStar(starCode string) error
+	// 访问文件夹下的视频列表爬取电影信息
+	StartCrawlJavbusMovieByFilepath(inputPath string) error
+	// 设置代理
 	setProxy(proxy string) error
+	// 创建输出目录
 	mkAllDir() error
-	// getJavMovieInfoByJavbus(code string) error
 	getJavMovieInfoByJavbus(element *colly.HTMLElement)
+	// 保存CSV格式的电影信息
 	saveJavInfos() error
+	// 下载电影封面
 	saveCovers(coverPath, name string) error
+	// 下载磁力列表
 	saveMagents() error
 }
 type crawlClient struct {
