@@ -3,6 +3,7 @@ package cmd
 import (
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/gsxhnd/garage/src/batch"
 	"github.com/gsxhnd/garage/src/utils"
@@ -113,6 +114,7 @@ var ffmpegBatchConvertCmd = &cli.Command{
 			if !c.Bool("exec") {
 				logger.Sugar().Infof("cmd: %v", cmd)
 			} else {
+				startTime := time.Now()
 				logger.Sugar().Infof("Start convert video cmd: %v", cmd)
 				cmd := exec.Command("powershell", cmd)
 				cmd.Stdout = os.Stdout
@@ -121,7 +123,7 @@ var ffmpegBatchConvertCmd = &cli.Command{
 				if err != nil {
 					logger.Sugar().Errorf("cmd errror: %v", err)
 				}
-				logger.Sugar().Infof("Finished convert video")
+				logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
 			}
 		}
 		return nil
@@ -177,6 +179,7 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 			if !c.Bool("exec") {
 				logger.Sugar().Infof("cmd: %v", cmd)
 			} else {
+				startTime := time.Now()
 				logger.Sugar().Infof("Start add subtitle into video, cmd: %v", cmd)
 				cmd := exec.Command("powershell", cmd)
 				cmd.Stdout = os.Stdout
@@ -186,6 +189,7 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 					logger.Sugar().Errorf("cmd errror: %v", err)
 				}
 				logger.Sugar().Infof("Finished  add subtitle into video")
+				logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
 			}
 		}
 		return nil
