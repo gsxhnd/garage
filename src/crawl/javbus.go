@@ -2,6 +2,8 @@ package crawl
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
@@ -85,5 +87,35 @@ func (cc *crawlClient) StartCrawlJavbusMovieByStar(starCode string) error {
 }
 
 func (cc *crawlClient) StartCrawlJavbusMovieByFilepath(inputPath string) error {
+	q, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
+	var videoExt = []string{".avi", ".mp4", ".mkv"}
+	if err := filepath.Walk(inputPath, func(path string, fi os.FileInfo, err error) error {
+		if fi == nil {
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+		if fi.IsDir() {
+			return nil
+		}
+		filename := fi.Name()
+		fileExt := filepath.Ext(filename)
+		for _, b := range videoExt {
+			if fileExt == b {
+				q.AddURL(cc.javbusUrl + filename)
+			}
+		}
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	cc.collector.OnRequest(func(r *colly.Request) {
+		cc.logger.Info("Visiting" + r.URL.String())
+	})
+	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
+	q.Run(cc.collector)
+	cc.collector.Wait()
 	return nil
 }

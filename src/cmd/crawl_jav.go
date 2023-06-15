@@ -72,7 +72,6 @@ var javPrefixCmd = &cli.Command{
 			PrefixMinNo: c.Int("prefix-min"),
 			PrefixMaxNo: c.Int("prefix-max"),
 		})
-
 		if err != nil {
 			logger.Panic("client init error: " + err.Error())
 			return err
@@ -95,6 +94,36 @@ var javStarCodeCmd = &cli.Command{
 		javProxyFlag,
 	},
 	Action: func(c *cli.Context) error {
+		return nil
+	},
+}
+
+var javStarCodeFromDirCmd = &cli.Command{
+	Name:  "jav-code-from-dir",
+	Usage: "根据演员ID爬取数据",
+	Flags: []cli.Flag{
+		javSiteFlag,
+		javOutputFlag,
+		javProxyFlag,
+		&cli.StringFlag{Name: "input", Required: true},
+	},
+	Action: func(c *cli.Context) error {
+		var logger = utils.GetLogger()
+
+		client, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
+			Proxy:      c.String("proxy"),
+			DestPath:   c.String("output"),
+			PrefixCode: c.String("prefix-code"),
+		})
+		if err != nil {
+			logger.Panic("client init error: " + err.Error())
+			return err
+		}
+
+		if err := client.StartCrawlJavbusMovieByFilepath(c.String("input")); err != nil {
+			logger.Panic("crawl error: " + err.Error())
+			return err
+		}
 		return nil
 	},
 }
