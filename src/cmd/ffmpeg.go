@@ -73,6 +73,7 @@ var ffmpegBatchCmd = &cli.Command{
 	Subcommands: []*cli.Command{
 		ffmpegBatchConvertCmd,
 		ffmpegBatchAddSubCmd,
+		ffmpegBatchAddFontCmd,
 	},
 }
 
@@ -175,6 +176,58 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 			logger.Panic("Get add subtitle batch error", zap.Error(err))
 		}
 		logger.Info("Get all videos, starting add subtitle")
+		for _, cmd := range batch {
+			if !c.Bool("exec") {
+				logger.Sugar().Infof("cmd: %v", cmd)
+			} else {
+				startTime := time.Now()
+				logger.Sugar().Infof("Start add subtitle into video, cmd: %v", cmd)
+				cmd := exec.Command("powershell", cmd)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				err := cmd.Run()
+				if err != nil {
+					logger.Sugar().Errorf("cmd errror: %v", err)
+				}
+				logger.Sugar().Infof("Finished  add subtitle into video")
+				logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
+			}
+		}
+		return nil
+	},
+}
+
+var ffmpegBatchAddFontCmd = &cli.Command{
+	Name:      "add-fonts",
+	Aliases:   nil,
+	Usage:     "视频添加字体批处理",
+	UsageText: "",
+	Flags: []cli.Flag{
+		ffmpegBatchInputPathFlag,
+		ffmpegBatchInputTypeFlag,
+		ffmpegBatchInputFontsPathFlag,
+		ffmpegBatchOutputDestPathFlag,
+		ffmpegBatchExecFlag,
+	},
+	Action: func(c *cli.Context) error {
+		var (
+			logger         = utils.GetLogger()
+			inputPath      = c.String("input-path")
+			inputType      = c.String("input-type")
+			inputFontsPath = c.String("input-fonts-path")
+			outputPath     = c.String("output-path")
+		)
+		vb, err := batch.NewVideoBatch(logger, inputPath, inputType, outputPath)
+		if err != nil {
+			logger.Panic("Create dest path error", zap.Error(err))
+			return err
+		}
+
+		batch, err := vb.GetAddFontsBatch(inputFontsPath)
+		if err != nil {
+			logger.Panic("Get add subtitle batch error", zap.Error(err))
+		}
+		logger.Info("Get all videos, starting add fonts")
 		for _, cmd := range batch {
 			if !c.Bool("exec") {
 				logger.Sugar().Infof("cmd: %v", cmd)

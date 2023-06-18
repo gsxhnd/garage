@@ -19,6 +19,7 @@ type VideoBatcher interface {
 	// 获取字体
 	getFontsParams(fontsPath string) error
 	GetAddSubtitleBatch(inputSubNo int, inputSubSuffix, inputSubLang, inputSubTitle, fontsPath string) ([]string, error)
+	GetAddFontsBatch(fontsPath string) ([]string, error)
 	GetConvertBatch(advance, destVideoType string) ([]string, error)
 }
 
@@ -171,6 +172,29 @@ func (vb *videoBatch) GetAddSubtitleBatch(inputSubNo int, inputSubSuffix, inputS
 			sourceVideo, sourceSubtitle, inputSubNo,
 			inputSubLang, inputSubNo, inputSubTitle,
 			vb.fontsParams, destVideo)
+		vb.cmdBatch = append(vb.cmdBatch, s)
+	}
+	return vb.cmdBatch, nil
+}
+
+func (vb *videoBatch) GetAddFontsBatch(fontsPath string) ([]string, error) {
+	if err := vb.getVideosList(); err != nil {
+		return nil, err
+	}
+	if err := vb.getFontsParams(fontsPath); err != nil {
+		return nil, err
+	}
+
+	vb.logger.Info("Source videos directory: " + vb.inputPath)
+	vb.logger.Info("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
+	vb.logger.Info("Target video's font paths: " + fontsPath)
+	vb.logger.Info(fmt.Sprintf("Attach fonts parameters: %v", vb.fontsParams))
+	vb.logger.Info("Dest video directory: " + vb.outputPath)
+	template := `ffmpeg.exe -i "%s" -c copy %s "%v"`
+	for _, v := range vb.videosList {
+		sourceVideo := filepath.Join(vb.inputPath, v+vb.inputType)
+		destVideo := filepath.Join(vb.outputPath, v+vb.inputType)
+		s := fmt.Sprintf(template, sourceVideo, vb.fontsParams, destVideo)
 		vb.cmdBatch = append(vb.cmdBatch, s)
 	}
 	return vb.cmdBatch, nil
