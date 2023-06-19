@@ -45,14 +45,26 @@ func (cc *crawlClient) getJavMovieInfoByJavbus(e *colly.HTMLElement) {
 	cc.javInfos = append(cc.javInfos, *info)
 }
 
+func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
+	fmt.Println(e)
+}
+
 func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
 	cc.logger.Info("Download info: " + code)
+	cc.collector.OnHTML("body script", cc.getJavMovieMagnetByJavbus)
 	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
 	cc.collector.OnRequest(func(r *colly.Request) {
 		cc.logger.Info("Visiting" + r.URL.String())
 	})
-	cc.collector.Visit(cc.javbusUrl + code)
+	if err := cc.collector.Visit(cc.javbusUrl + code); err != nil {
+		return err
+	}
+
 	cc.collector.Wait()
+
+	if len(cc.javInfos) == 0 {
+		return nil
+	}
 	if err := cc.saveJavInfos(); err != nil {
 		return err
 	}
