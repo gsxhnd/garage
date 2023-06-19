@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
@@ -46,15 +47,55 @@ func (cc *crawlClient) getJavMovieInfoByJavbus(e *colly.HTMLElement) {
 }
 
 func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
+	e.ForEach("script", func(i int, element *colly.HTMLElement) {
+		if i != 2 {
+			return
+		}
+		param := element.Text
+		param = strings.Replace(param, " ", "", -1)
+		param = strings.Replace(param, "\tvar", "", -1)
+		param = strings.Replace(param, "\r", "", -1)
+		param = strings.Replace(param, "\r\n", "", -1)
+		param = strings.Replace(param, "\n", "", -1)
+		param = strings.Replace(param, ";", "&", -1)
+		param = strings.Replace(param, "'", "", -1)
+		urlS := "https://www.javbus.com/ajax/uncledatoolsbyajax.php?" + param + "lang=zh&floor=442"
+		// u, _ := url.Parse(urlS)
+		// uGid := u.Query().Get("gid")
+		// uLang := u.Query().Get("lang")
+		// uImg := u.Query().Get("img")
+		// uUc := u.Query().Get("uc")
+		// uFloor := u.Query().Get("floor")
+		// urlS = "https://www.javbus.com/ajax/uncledatoolsbyajax.php?" +
+		// 	"gid=" + uGid + "&lang=" + uLang +
+		// 	"&img=" + uImg +
+		// 	"&uc=" + uUc +
+		// 	"&floor" + uFloor
+
+		cc.logger.Info("Get magnet url: " + urlS)
+		// res, _ := http.Get(urlS)
+		// body, _ := io.ReadAll(res.Body)
+		// fmt.Println(string(body))
+		e.Request.Visit(urlS)
+	})
+}
+
+func (cc *crawlClient) getJavMovieMagnetListByJavbus(e *colly.HTMLElement) {
+	cc.logger.Info("get jvabus magnet list")
 	fmt.Println(e)
+	fmt.Println(time.Now().Format(time.RFC3339))
+	e.ForEach("a", func(i int, element *colly.HTMLElement) {
+		fmt.Println(element)
+	})
 }
 
 func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
 	cc.logger.Info("Download info: " + code)
-	cc.collector.OnHTML("body script", cc.getJavMovieMagnetByJavbus)
+	cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
 	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
+	cc.collector.OnHTML("tr td", cc.getJavMovieMagnetListByJavbus)
 	cc.collector.OnRequest(func(r *colly.Request) {
-		cc.logger.Info("Visiting" + r.URL.String())
+		cc.logger.Info("Visiting: " + r.URL.String())
 	})
 	if err := cc.collector.Visit(cc.javbusUrl + code); err != nil {
 		return err

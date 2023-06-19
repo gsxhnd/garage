@@ -25,6 +25,7 @@ type CrawlClient interface {
 	mkAllDir() error
 	getJavMovieInfoByJavbus(element *colly.HTMLElement)
 	getJavMovieMagnetByJavbus(e *colly.HTMLElement)
+	getJavMovieMagnetListByJavbus(e *colly.HTMLElement)
 	// 保存CSV格式的电影信息
 	saveJavInfos() error
 	// 下载电影封面
@@ -68,8 +69,10 @@ func NewCrawlClient(logger *zap.Logger, option CrawlOptions) (CrawlClient, error
 		prefixMinNo: option.PrefixMinNo,
 		prefixMaxNo: option.PrefixMaxNo,
 	}
-	if err := client.setProxy(option.Proxy); err != nil {
-		return nil, err
+	if option.Proxy != "" {
+		if err := client.setProxy(option.Proxy); err != nil {
+			return nil, err
+		}
 	}
 
 	if err := client.mkAllDir(); err != nil {
