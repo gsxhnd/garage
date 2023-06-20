@@ -2,13 +2,18 @@ package crawl
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	"github.com/inhies/go-bytesize"
 )
 
 func (cc *crawlClient) getJavMovieInfoByJavbus(e *colly.HTMLElement) {
@@ -60,23 +65,60 @@ func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 		param = strings.Replace(param, ";", "&", -1)
 		param = strings.Replace(param, "'", "", -1)
 		urlS := "https://www.javbus.com/ajax/uncledatoolsbyajax.php?" + param + "lang=zh&floor=442"
-		// u, _ := url.Parse(urlS)
-		// uGid := u.Query().Get("gid")
-		// uLang := u.Query().Get("lang")
-		// uImg := u.Query().Get("img")
-		// uUc := u.Query().Get("uc")
-		// uFloor := u.Query().Get("floor")
-		// urlS = "https://www.javbus.com/ajax/uncledatoolsbyajax.php?" +
-		// 	"gid=" + uGid + "&lang=" + uLang +
-		// 	"&img=" + uImg +
-		// 	"&uc=" + uUc +
-		// 	"&floor" + uFloor
-
 		cc.logger.Info("Get magnet url: " + urlS)
-		// res, _ := http.Get(urlS)
-		// body, _ := io.ReadAll(res.Body)
-		// fmt.Println(string(body))
-		e.Request.Visit(urlS)
+		r, _ := http.NewRequest("GET", urlS, nil)
+		r.Header.Add("Referer", e.Request.URL.Scheme+"://"+e.Request.URL.Host+e.Request.URL.Path)
+		res, _ := cc.httpClient.Do(r)
+		body, _ := io.ReadAll(res.Body)
+		defer res.Body.Close()
+
+		doc, _ := htmlquery.Parse(strings.NewReader("<table><tbody>" + string(body) + "</tbody></table>"))
+		list, err := htmlquery.QueryAll(doc, "//tr")
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		var mList = make([]JavMovieMagnet, 0)
+		for _, n := range list {
+			// fmt.Println(n)
+			tdList, _ := htmlquery.QueryAll(n, "//td/a")
+			var m = JavMovieMagnet{
+				HD:       false,
+				Subtitle: false,
+			}
+			for tdIndex, tdValue := range tdList {
+				// fmt.Println(tdIndex)
+				switch tdIndex {
+				case 0:
+					m.Link = htmlquery.SelectAttr(tdValue, "href")
+					m.Name = htmlquery.InnerText(tdValue)
+				default:
+					if htmlquery.InnerText(tdValue) == "高清" {
+						m.HD = true
+					} else if htmlquery.InnerText(tdValue) == "字幕" {
+						m.Subtitle = true
+					} else {
+						var sizeStr string = htmlquery.InnerText(tdValue)
+						sizeStr = strings.Replace(sizeStr, " ", "", -1)
+						sizeStr = strings.Replace(sizeStr, "\n", "", -1)
+						sizeStr = strings.Replace(sizeStr, "\x09", "", -1)
+						_, err := time.Parse("2006-01-02", sizeStr)
+						if err != nil {
+							b, err := bytesize.Parse(sizeStr)
+							if err != nil {
+								return
+							}
+
+							sizeStr = strings.Replace(b.Format("%.2f", "MB", false), "MB", "", -1)
+							size, _ := strconv.ParseFloat(sizeStr, 64)
+							m.Size = size
+						}
+					}
+				}
+			}
+			mList = append(mList, m)
+			fmt.Println(mList)
+		}
 	})
 }
 
@@ -95,6 +137,8 @@ func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
 	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
 	cc.collector.OnHTML("tr td", cc.getJavMovieMagnetListByJavbus)
 	cc.collector.OnRequest(func(r *colly.Request) {
+		r.Headers.Set("Referer", "https://www.javbus.com/SUJI-188")
+		cc.logger.Info("referer: " + r.Headers.Get("Referer"))
 		cc.logger.Info("Visiting: " + r.URL.String())
 	})
 	if err := cc.collector.Visit(cc.javbusUrl + code); err != nil {
@@ -127,6 +171,7 @@ func (cc *crawlClient) StartCrawlJavbusMovieByPrefix() error {
 	cc.collector.OnRequest(func(r *colly.Request) {
 		cc.logger.Info("Visiting" + r.URL.String())
 	})
+
 	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
 	q.Run(cc.collector)
 	cc.collector.Wait()

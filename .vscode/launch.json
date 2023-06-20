@@ -36,7 +36,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/src",
-      "args": ["crawl", "jav-code", "SUJI-188"],
+      "args": ["crawl", "jav-code", "FSDSS-625"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"

@@ -15,6 +15,9 @@ type JavMovie struct {
 }
 
 type JavMovieMagnet struct {
-	Link string `json:"link"`
-	Size string `json:"size"`
+	Name     string  `json:"name"`
+	Link     string  `json:"link"`
+	Size     float64 `json:"size"`
+	Subtitle bool    `json:"subtitle"`
+	HD       bool    `json:"hd"`
 }
