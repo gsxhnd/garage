@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 	"go.uber.org/zap"
@@ -25,7 +26,6 @@ type CrawlClient interface {
 	mkAllDir() error
 	getJavMovieInfoByJavbus(element *colly.HTMLElement)
 	getJavMovieMagnetByJavbus(e *colly.HTMLElement)
-	getJavMovieMagnetListByJavbus(e *colly.HTMLElement)
 	// 保存CSV格式的电影信息
 	saveJavInfos() error
 	// 下载电影封面
@@ -34,41 +34,51 @@ type CrawlClient interface {
 	saveMagents() error
 }
 type crawlClient struct {
-	logger      *zap.Logger
-	collector   *colly.Collector
-	httpClient  *http.Client
-	maxDepth    int
-	javbusUrl   string
-	javlibUrl   string
-	javInfos    []JavMovie
-	destPath    string
-	prefixCode  string
-	prefixMinNo int
-	prefixMaxNo int
+	logger         *zap.Logger
+	collector      *colly.Collector
+	httpClient     *http.Client
+	maxDepth       int
+	javbusUrl      string
+	javlibUrl      string
+	javInfos       []JavMovie
+	javMagnets     []string
+	downloadMagent bool
+	destPath       string
+	prefixCode     string
+	prefixMinNo    int
+	prefixMaxNo    int
 }
 
 type CrawlOptions struct {
-	DestPath    string
-	Proxy       string
-	PrefixCode  string
-	PrefixMinNo int
-	PrefixMaxNo int
+	DestPath       string
+	Proxy          string
+	DownloadMagent bool
+	PrefixCode     string
+	PrefixMinNo    int
+	PrefixMaxNo    int
 }
 
 func NewCrawlClient(logger *zap.Logger, option CrawlOptions) (CrawlClient, error) {
 	var client = &crawlClient{
-		collector:   colly.NewCollector(),
-		httpClient:  &http.Client{},
-		maxDepth:    100,
-		javbusUrl:   "https://www.javbus.com/",
-		javlibUrl:   "https://www.javbus.com/",
-		logger:      logger,
-		javInfos:    make([]JavMovie, 0),
-		destPath:    option.DestPath,
-		prefixCode:  option.PrefixCode,
-		prefixMinNo: option.PrefixMinNo,
-		prefixMaxNo: option.PrefixMaxNo,
+		collector:      colly.NewCollector(),
+		httpClient:     &http.Client{},
+		maxDepth:       100,
+		javbusUrl:      "https://www.javbus.com",
+		javlibUrl:      "https://www.javbus.com",
+		logger:         logger,
+		javInfos:       make([]JavMovie, 0),
+		javMagnets:     make([]string, 0),
+		downloadMagent: option.DownloadMagent,
+		destPath:       option.DestPath,
+		prefixCode:     option.PrefixCode,
+		prefixMinNo:    option.PrefixMinNo,
+		prefixMaxNo:    option.PrefixMaxNo,
 	}
+
+	client.collector.Limit(&colly.LimitRule{
+		Parallelism: 1,
+		RandomDelay: 5 * time.Second,
+	})
 	if option.Proxy != "" {
 		if err := client.setProxy(option.Proxy); err != nil {
 			return nil, err

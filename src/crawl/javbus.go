@@ -66,28 +66,43 @@ func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 		param = strings.Replace(param, "'", "", -1)
 		urlS := "https://www.javbus.com/ajax/uncledatoolsbyajax.php?" + param + "lang=zh&floor=442"
 		cc.logger.Info("Get magnet url: " + urlS)
+
 		r, _ := http.NewRequest("GET", urlS, nil)
 		r.Header.Add("Referer", e.Request.URL.Scheme+"://"+e.Request.URL.Host+e.Request.URL.Path)
-		res, _ := cc.httpClient.Do(r)
-		body, _ := io.ReadAll(res.Body)
+		res, err := cc.httpClient.Do(r)
+		if err != nil {
+			cc.logger.Error("http client error: " + err.Error())
+			return
+		}
+
+		body, err := io.ReadAll(res.Body)
+		if err != nil {
+			cc.logger.Error("http read response error: " + err.Error())
+			return
+		}
 		defer res.Body.Close()
 
-		doc, _ := htmlquery.Parse(strings.NewReader("<table><tbody>" + string(body) + "</tbody></table>"))
+		doc, err := htmlquery.Parse(strings.NewReader("<table><tbody>" + string(body) + "</tbody></table>"))
+		if err != nil {
+			cc.logger.Error("html query error: " + err.Error())
+		}
 		list, err := htmlquery.QueryAll(doc, "//tr")
 		if err != nil {
-			fmt.Println(err)
+			cc.logger.Error("html query tr error: " + err.Error())
+		}
+		if len(list) == 0 {
+			cc.logger.Info("当前无磁力连接")
+			return
 		}
 
 		var mList = make([]JavMovieMagnet, 0)
 		for _, n := range list {
-			// fmt.Println(n)
 			tdList, _ := htmlquery.QueryAll(n, "//td/a")
 			var m = JavMovieMagnet{
 				HD:       false,
 				Subtitle: false,
 			}
 			for tdIndex, tdValue := range tdList {
-				// fmt.Println(tdIndex)
 				switch tdIndex {
 				case 0:
 					m.Link = htmlquery.SelectAttr(tdValue, "href")
@@ -108,7 +123,6 @@ func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 							if err != nil {
 								return
 							}
-
 							sizeStr = strings.Replace(b.Format("%.2f", "MB", false), "MB", "", -1)
 							size, _ := strconv.ParseFloat(sizeStr, 64)
 							m.Size = size
@@ -117,31 +131,32 @@ func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 				}
 			}
 			mList = append(mList, m)
-			fmt.Println(mList)
 		}
-	})
-}
 
-func (cc *crawlClient) getJavMovieMagnetListByJavbus(e *colly.HTMLElement) {
-	cc.logger.Info("get jvabus magnet list")
-	fmt.Println(e)
-	fmt.Println(time.Now().Format(time.RFC3339))
-	e.ForEach("a", func(i int, element *colly.HTMLElement) {
-		fmt.Println(element)
+		var maxSize float64 = 0
+		var bestMagnet string = ""
+		for _, m := range mList {
+			if m.Size > maxSize {
+				maxSize = m.Size
+				bestMagnet = m.Link
+			}
+		}
+		cc.javMagnets = append(cc.javMagnets, bestMagnet)
 	})
 }
 
 func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
 	cc.logger.Info("Download info: " + code)
-	cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
-	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
-	cc.collector.OnHTML("tr td", cc.getJavMovieMagnetListByJavbus)
 	cc.collector.OnRequest(func(r *colly.Request) {
-		r.Headers.Set("Referer", "https://www.javbus.com/SUJI-188")
-		cc.logger.Info("referer: " + r.Headers.Get("Referer"))
 		cc.logger.Info("Visiting: " + r.URL.String())
 	})
-	if err := cc.collector.Visit(cc.javbusUrl + code); err != nil {
+
+	if cc.downloadMagent {
+		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
+	}
+	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
+
+	if err := cc.collector.Visit(cc.javbusUrl + "/" + code); err != nil {
 		return err
 	}
 
@@ -159,24 +174,38 @@ func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
 			return err
 		}
 	}
+	cc.saveMagents()
 	return nil
 }
 
 func (cc *crawlClient) StartCrawlJavbusMovieByPrefix() error {
 	q, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
+
 	for i := cc.prefixMinNo; i <= cc.prefixMaxNo; i++ {
 		code := fmt.Sprintf("%s-%03d", cc.prefixCode, i)
-		q.AddURL(cc.javbusUrl + code)
+		q.AddURL(cc.javbusUrl + "/" + code)
 	}
+
 	cc.collector.OnRequest(func(r *colly.Request) {
-		cc.logger.Info("Visiting" + r.URL.String())
+		cc.logger.Info("Visiting " + r.URL.String())
 	})
+	if cc.downloadMagent {
+		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
+	}
 
 	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
+
 	q.Run(cc.collector)
 	cc.collector.Wait()
 
 	cc.saveJavInfos()
+	for _, v := range cc.javInfos {
+		err := cc.saveCovers(v.Cover, v.Code)
+		if err != nil {
+			return err
+		}
+	}
+	cc.saveMagents()
 	return nil
 }
 
@@ -212,8 +241,22 @@ func (cc *crawlClient) StartCrawlJavbusMovieByFilepath(inputPath string) error {
 	cc.collector.OnRequest(func(r *colly.Request) {
 		cc.logger.Info("Visiting" + r.URL.String())
 	})
+
+	if cc.downloadMagent {
+		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
+	}
 	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
+
 	q.Run(cc.collector)
 	cc.collector.Wait()
+
+	cc.saveJavInfos()
+	for _, v := range cc.javInfos {
+		err := cc.saveCovers(v.Cover, v.Code)
+		if err != nil {
+			return err
+		}
+	}
+	cc.saveMagents()
 	return nil
 }

@@ -16,6 +16,11 @@ var (
 		HasBeenSet:  false,
 		Value:       "javbus",
 	}
+	javMagnetFlag = &cli.BoolFlag{
+		Name:  "magnet",
+		Usage: "保存磁力链接,开启参数 --magnet",
+		Value: false,
+	}
 )
 
 var javCodeCmd = &cli.Command{
@@ -26,6 +31,7 @@ var javCodeCmd = &cli.Command{
 	Flags: []cli.Flag{
 		javProxyFlag,
 		javSiteFlag,
+		javMagnetFlag,
 		javOutputFlag,
 	},
 	Action: func(ctx *cli.Context) error {
@@ -35,8 +41,9 @@ var javCodeCmd = &cli.Command{
 		)
 
 		c, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
-			Proxy:    ctx.String("proxy"),
-			DestPath: ctx.String("output"),
+			DownloadMagent: ctx.Bool("magnet"),
+			Proxy:          ctx.String("proxy"),
+			DestPath:       ctx.String("output"),
 		})
 		if err != nil {
 			logger.Panic("client init error: " + err.Error())
@@ -58,19 +65,21 @@ var javPrefixCmd = &cli.Command{
 		javProxyFlag,
 		javSiteFlag,
 		javOutputFlag,
-		&cli.StringFlag{Name: "prefix-code", Required: true},
-		&cli.IntFlag{Name: "prefix-min", Required: true, Value: 1},
-		&cli.IntFlag{Name: "prefix-max", Required: true, Value: 5},
+		javMagnetFlag,
+		&cli.StringFlag{Name: "prefix-code", Value: "EKDV", Usage: "番号前缀"},
+		&cli.IntFlag{Name: "prefix-min", Value: 1, Usage: "番号开始编号"},
+		&cli.IntFlag{Name: "prefix-max", Value: 5, Usage: "番号结束编号"},
 	},
 	Action: func(c *cli.Context) error {
 		var logger = utils.GetLogger()
 
 		client, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
-			Proxy:       c.String("proxy"),
-			DestPath:    c.String("output"),
-			PrefixCode:  c.String("prefix-code"),
-			PrefixMinNo: c.Int("prefix-min"),
-			PrefixMaxNo: c.Int("prefix-max"),
+			Proxy:          c.String("proxy"),
+			DestPath:       c.String("output"),
+			DownloadMagent: c.Bool("magnet"),
+			PrefixCode:     c.String("prefix-code"),
+			PrefixMinNo:    c.Int("prefix-min"),
+			PrefixMaxNo:    c.Int("prefix-max"),
 		})
 		if err != nil {
 			logger.Panic("client init error: " + err.Error())
