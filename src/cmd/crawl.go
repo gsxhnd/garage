@@ -10,5 +10,6 @@ var crawlCmd = &cli.Command{
 		javCodeCmd,
 		javPrefixCmd,
 		javStarCodeCmd,
+		javStarCodeFromDirCmd,
 	},
 }
