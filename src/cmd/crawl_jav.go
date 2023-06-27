@@ -120,9 +120,8 @@ var javStarCodeFromDirCmd = &cli.Command{
 		var logger = utils.GetLogger()
 
 		client, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
-			Proxy:      c.String("proxy"),
-			DestPath:   c.String("output"),
-			PrefixCode: c.String("prefix-code"),
+			Proxy:    c.String("proxy"),
+			DestPath: c.String("output"),
 		})
 		if err != nil {
 			logger.Panic("client init error: " + err.Error())

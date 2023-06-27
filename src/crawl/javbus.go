@@ -230,7 +230,7 @@ func (cc *crawlClient) StartCrawlJavbusMovieByFilepath(inputPath string) error {
 		fileExt := filepath.Ext(filename)
 		for _, b := range videoExt {
 			if fileExt == b {
-				q.AddURL(cc.javbusUrl + filename)
+				q.AddURL(cc.javbusUrl + "/" + filename)
 			}
 		}
 		return nil
@@ -239,12 +239,8 @@ func (cc *crawlClient) StartCrawlJavbusMovieByFilepath(inputPath string) error {
 	}
 
 	cc.collector.OnRequest(func(r *colly.Request) {
-		cc.logger.Info("Visiting" + r.URL.String())
+		cc.logger.Info("Visiting: " + r.URL.String())
 	})
-
-	if cc.downloadMagent {
-		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
-	}
 	cc.collector.OnHTML(".container", cc.getJavMovieInfoByJavbus)
 
 	q.Run(cc.collector)
