@@ -230,7 +230,8 @@ func (cc *crawlClient) StartCrawlJavbusMovieByFilepath(inputPath string) error {
 		fileExt := filepath.Ext(filename)
 		for _, b := range videoExt {
 			if fileExt == b {
-				q.AddURL(cc.javbusUrl + "/" + filename)
+				filePrefix := strings.Replace(filename, b, "", -1)
+				q.AddURL(cc.javbusUrl + "/" + filePrefix)
 			}
 		}
 		return nil
