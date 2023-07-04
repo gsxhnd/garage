@@ -18,28 +18,18 @@ jobs:
         with:
           go-version: ^1.20
         id: go
+
       - run: go version
+
       - name: Get dependencies
         run:
           go get -v -t -d ./...
 
-      - name: Build
-        run: make
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+      - uses: goreleaser/goreleaser-action@v4
+        with:
+          # either 'goreleaser' (default) or 'goreleaser-pro':
+          distribution: goreleaser
+          version: latest
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: Auto generated release
-          draft: false
-          prerelease: false
-      - name: Upload Assets to Release with a wildcard
-        uses: csexton/release-asset-action@v2
-        with:
-          pattern: "build/*"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          release-url: ${{ steps.create_release.outputs.upload_url }}
