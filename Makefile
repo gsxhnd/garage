@@ -8,30 +8,27 @@ buildDate = $(shell TZ=Asia/Shanghai date +%FT%T%z)
 gitCommit = $(shell git log --pretty=format:'%H' -n 1)
 gitTreeState = $(shell if git status|grep -q 'clean';then echo clean; else echo dirty; fi)
 versionDir = "github.com/gsxhnd/garage"
-ldflags= "-X ${versionDir}.gitTag=${gitTag} \
+ldflags= "-s -w -X ${versionDir}.gitTag=${gitTag} \
 -X ${versionDir}.buildDate=${buildDate} \
 -X ${versionDir}.gitCommit=${gitCommit} \
 -X ${versionDir}.gitTreeState=${gitTreeState}"
 
-all: release_linux release_win release_mac
-
-release_linux:
+all:
 	# Build for linux
 	go clean
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -trimpath  -ldflags ${ldflags} -o ${BuildDIR}/${APP}-linux64-amd64 ./src
 	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -v -trimpath -ldflags ${ldflags} -o ${BuildDIR}/${APP}-linux64-arm64 ./src
-
-release_win:
 	# Build for win
 	go clean
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -v -trimpath -ldflags ${ldflags} -o ${BuildDIR}/${APP}-windows-amd64.exe ./src
 	CGO_ENABLED=0 GOOS=windows GOARCH=arm go build -v -trimpath -ldflags ${ldflags} -o ${BuildDIR}/${APP}-windows-arm.exe ./src
-
-release_mac:
 	# Build for mac
 	go clean
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -v -trimpath -ldflags ${ldflags} -o ${BuildDIR}/${APP}-darwin-amd64 ./src
 	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -v -trimpath -ldflags ${ldflags} -o ${BuildDIR}/${APP}-darwin-arm64 ./src
+
+test:
+	goreleaser release --clean --skip-publish --skip-validate
 
 clean:
 	@go clean --cache
