@@ -4,6 +4,7 @@
 project_name: garage
 git:
   tag_sort: -version:creatordate
+report_sizes: true
 
 before:
   hooks:
@@ -20,16 +21,19 @@ builds:
       - -trimpath
     ldflags:
       - -s -w
+      - -X "{{.ModulePath}}/src/cmd.tag={{.Tag}}"
+      - -X "{{.ModulePath}}/src/cmd.buildDate={{.Now}}"
+      - -X "{{.ModulePath}}/src/cmd.gitCommit={{.FullCommit}}"
     goos:
-      - freebsd
       - linux
-      - windows
-      - darwin
+      # - freebsd
+      # - windows
+      # - darwin
     goarch:
-      - "386"
       - amd64
-      - arm
-      - arm64
+      # - "386"
+      # - arm
+      # - arm64
     goarm:
       - "6"
       - "7"
