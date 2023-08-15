@@ -26,6 +26,7 @@ type CrawlClient interface {
 	mkAllDir() error
 	getJavMovieInfoByJavbus(element *colly.HTMLElement)
 	getJavMovieMagnetByJavbus(e *colly.HTMLElement)
+	getJavStarMovieByJavbus(e *colly.HTMLElement)
 	// 保存CSV格式的电影信息
 	saveJavInfos() error
 	// 下载电影封面

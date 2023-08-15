@@ -145,6 +145,8 @@ func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 	})
 }
 
+func (cc *crawlClient) getJavStarMovieByJavbus(e *colly.HTMLElement) {}
+
 func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
 	cc.logger.Info("Download info: " + code)
 	cc.collector.OnRequest(func(r *colly.Request) {
