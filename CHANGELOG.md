@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 0.0.9
+
+### bate-01
+
+- FEAT: add crawl info by jav star code
+
 ## Version 0.0.8
 
 - DOC: 文档更新

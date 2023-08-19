@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -14,9 +15,134 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 	"github.com/inhies/go-bytesize"
+	"go.uber.org/zap"
 )
 
-func (cc *crawlClient) getJavMovieInfoByJavbus(e *colly.HTMLElement) {
+type JavbusCrawl interface { // 通过番号爬取对应的电影信息
+	StartCrawlJavbusMovie(code string) error
+	// 通过番号前缀爬取对应的电影信息
+	StartCrawlJavbusMovieByPrefix() error
+	// 通过演员ID爬取对应的电影信息
+	StartCrawlJavbusMovieByStar(starCode string) error
+	// 访问文件夹下的视频列表爬取电影信息
+	StartCrawlJavbusMovieByFilepath(inputPath string) error
+	// 设置代理
+	setProxy(proxy string) error
+	// 创建输出目录
+	mkAllDir() error
+	getJavMovieInfoByJavbus(element *colly.HTMLElement)
+	getJavMovieMagnetByJavbus(e *colly.HTMLElement)
+	getJavStarMovieByJavbus(e *colly.HTMLElement)
+
+	// 保存CSV格式的电影信息
+	saveJavInfos() error
+	// 下载电影封面
+	saveCovers(coverPath, name string) error
+	// 下载磁力列表
+	saveMagents() error
+}
+
+type javbusCrawl struct {
+	logger         *zap.Logger
+	collector      *colly.Collector
+	pageCollector  *colly.Collector
+	httpClient     *http.Client
+	maxDepth       int
+	javbusUrl      string
+	javInfos       []JavMovie
+	javMagnets     []string
+	downloadMagent bool
+	destPath       string
+	starCode       string
+	starPage       int
+	prefixCode     string
+	prefixMinNo    int
+	prefixMaxNo    int
+	javQueue       *queue.Queue
+}
+
+type CrawlOptions struct {
+	DestPath       string
+	Proxy          string
+	DownloadMagent bool
+	StarCode       string
+	PrefixCode     string
+	PrefixMinNo    int
+	PrefixMaxNo    int
+}
+
+func NewJavbusCrawl(logger *zap.Logger, option CrawlOptions) (JavbusCrawl, error) {
+	q, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
+	var client = &javbusCrawl{
+		collector:      colly.NewCollector(),
+		pageCollector:  nil,
+		httpClient:     &http.Client{},
+		maxDepth:       100,
+		javbusUrl:      "https://www.javbus.com",
+		logger:         logger,
+		javInfos:       make([]JavMovie, 0),
+		javMagnets:     make([]string, 0),
+		downloadMagent: option.DownloadMagent,
+		destPath:       option.DestPath,
+		prefixCode:     option.PrefixCode,
+		prefixMinNo:    option.PrefixMinNo,
+		prefixMaxNo:    option.PrefixMaxNo,
+		starPage:       2,
+		javQueue:       q,
+	}
+
+	client.collector.Limit(&colly.LimitRule{
+		Parallelism: 1,
+		RandomDelay: 5 * time.Second,
+	})
+	if option.Proxy != "" {
+		if err := client.setProxy(option.Proxy); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := client.mkAllDir(); err != nil {
+		return nil, err
+	} else {
+		return client, nil
+	}
+}
+
+func (cc *javbusCrawl) setProxy(proxy string) error {
+	if err := cc.collector.SetProxy(proxy); err != nil {
+		return err
+	}
+	uri, err := url.Parse(proxy)
+	if err != nil {
+		return err
+	}
+	cc.httpClient = &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(uri),
+		},
+	}
+	return nil
+}
+
+func (cc *javbusCrawl) mkAllDir() error {
+	fullPath := filepath.Join(cc.destPath, "cover")
+	_, err := os.Stat(fullPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			err = os.MkdirAll(fullPath, os.ModePerm)
+			if err != nil {
+				return err
+			}
+		} else if os.IsExist(err) {
+			return nil
+		} else {
+			return err
+		}
+	}
+	return nil
+}
+
+func (cc *javbusCrawl) getJavMovieInfoByJavbus(e *colly.HTMLElement) {
 	var info = &JavMovie{}
 	info.Title = e.ChildText("h3")
 	info.Cover = e.ChildAttr(".screencap img", "src")
@@ -51,7 +177,7 @@ func (cc *crawlClient) getJavMovieInfoByJavbus(e *colly.HTMLElement) {
 	cc.javInfos = append(cc.javInfos, *info)
 }
 
-func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
+func (cc *javbusCrawl) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 	e.ForEach("script", func(i int, element *colly.HTMLElement) {
 		if i != 2 {
 			return
@@ -145,7 +271,19 @@ func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 	})
 }
 
-func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
+func (cc *javbusCrawl) getJavStarMovieByJavbus(e *colly.HTMLElement) {
+	e.ForEach("#waterfall > div", func(i int, element *colly.HTMLElement) {
+		cc.javQueue.AddURL(element.ChildAttr("a", "href"))
+	})
+	e.ForEach("div.text-center.hidden-xs > ul", func(i int, element *colly.HTMLElement) {
+		page := element.ChildAttr("a#next", "href")
+		if page != "" {
+			cc.pageCollector.Visit(cc.javbusUrl + element.ChildAttr("a#next", "href"))
+		}
+	})
+}
+
+func (cc *javbusCrawl) StartCrawlJavbusMovie(code string) error {
 	cc.logger.Info("Download info: " + code)
 	cc.collector.OnRequest(func(r *colly.Request) {
 		cc.logger.Info("Visiting: " + r.URL.String())
@@ -178,7 +316,7 @@ func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
 	return nil
 }
 
-func (cc *crawlClient) StartCrawlJavbusMovieByPrefix() error {
+func (cc *javbusCrawl) StartCrawlJavbusMovieByPrefix() error {
 	q, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
 
 	for i := cc.prefixMinNo; i <= cc.prefixMaxNo; i++ {
@@ -209,11 +347,48 @@ func (cc *crawlClient) StartCrawlJavbusMovieByPrefix() error {
 	return nil
 }
 
-func (cc *crawlClient) StartCrawlJavbusMovieByStar(starCode string) error {
+func (cc *javbusCrawl) StartCrawlJavbusMovieByStar(starCode string) error {
+	cc.starCode = starCode
+	cc.logger.Debug("Getting star code: " + starCode)
+	cc.pageCollector = cc.collector.Clone()
+
+	cc.pageCollector.OnRequest(func(r *colly.Request) {
+		cc.logger.Info("Visiting: " + r.URL.String())
+	})
+	cc.pageCollector.OnHTML("body", cc.getJavStarMovieByJavbus)
+
+	if err := cc.pageCollector.Visit(cc.javbusUrl + "/star/" + starCode); err != nil {
+		return err
+	}
+	cc.pageCollector.Wait()
+	if cc.javQueue.IsEmpty() {
+		return nil
+	}
+
+	infoCrawlClient := cc.collector.Clone()
+	infoCrawlClient.OnRequest(func(r *colly.Request) {
+		cc.logger.Info("Visiting: " + r.URL.String())
+	})
+	if cc.downloadMagent {
+		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
+	}
+	infoCrawlClient.OnHTML(".container", cc.getJavMovieInfoByJavbus)
+	cc.javQueue.Run(infoCrawlClient)
+
+	cc.collector.Wait()
+
+	cc.saveJavInfos()
+	for _, v := range cc.javInfos {
+		err := cc.saveCovers(v.Cover, v.Code)
+		if err != nil {
+			return err
+		}
+	}
+	cc.saveMagents()
 	return nil
 }
 
-func (cc *crawlClient) StartCrawlJavbusMovieByFilepath(inputPath string) error {
+func (cc *javbusCrawl) StartCrawlJavbusMovieByFilepath(inputPath string) error {
 	q, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
 	var videoExt = []string{".avi", ".mp4", ".mkv"}
 	if err := filepath.Walk(inputPath, func(path string, fi os.FileInfo, err error) error {
