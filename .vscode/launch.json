@@ -40,6 +40,19 @@
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Command Javbus Star Crawl",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "showLog": true,
+      "debugAdapter": "dlv-dap",
+      "program": "${workspaceRoot}/src",
+      "args": ["crawl", "jav-star-code"],
+      "output": "${workspaceRoot}/build/garage",
+      "trace": "verbose",
+      "cwd": "${workspaceRoot}"
     }
   ]
 }

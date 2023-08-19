@@ -14,7 +14,7 @@ func Test_crawlClient_saveJavInfos(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cc, _ := NewCrawlClient(nil, CrawlOptions{})
+			cc, _ := NewJavbusCrawl(nil, CrawlOptions{})
 			err := cc.saveJavInfos()
 			if err != nil {
 				assert.Error(t, err, err)

@@ -40,7 +40,7 @@ var javCodeCmd = &cli.Command{
 			code   = ctx.Args().Get(0)
 		)
 
-		c, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
+		c, err := crawl.NewJavbusCrawl(logger, crawl.CrawlOptions{
 			DownloadMagent: ctx.Bool("magnet"),
 			Proxy:          ctx.String("proxy"),
 			DestPath:       ctx.String("output"),
@@ -73,7 +73,7 @@ var javPrefixCmd = &cli.Command{
 	Action: func(c *cli.Context) error {
 		var logger = utils.GetLogger()
 
-		client, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
+		client, err := crawl.NewJavbusCrawl(logger, crawl.CrawlOptions{
 			Proxy:          c.String("proxy"),
 			DestPath:       c.String("output"),
 			DownloadMagent: c.Bool("magnet"),
@@ -99,6 +99,7 @@ var javStarCodeCmd = &cli.Command{
 	Usage: "根据演员ID爬取数据",
 	Flags: []cli.Flag{
 		javSiteFlag,
+		javMagnetFlag,
 		javOutputFlag,
 		javProxyFlag,
 		&cli.StringFlag{Name: "star-code", Value: "vfn", Usage: "演员番号"},
@@ -109,7 +110,7 @@ var javStarCodeCmd = &cli.Command{
 			startCode = ctx.String("star-code")
 		)
 
-		c, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
+		c, err := crawl.NewJavbusCrawl(logger, crawl.CrawlOptions{
 			DownloadMagent: ctx.Bool("magnet"),
 			Proxy:          ctx.String("proxy"),
 			DestPath:       ctx.String("output"),
@@ -139,7 +140,7 @@ var javStarCodeFromDirCmd = &cli.Command{
 	Action: func(c *cli.Context) error {
 		var logger = utils.GetLogger()
 
-		client, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
+		client, err := crawl.NewJavbusCrawl(logger, crawl.CrawlOptions{
 			Proxy:    c.String("proxy"),
 			DestPath: c.String("output"),
 		})

@@ -12,7 +12,7 @@ import (
 	"github.com/go-gota/gota/dataframe"
 )
 
-func (cc *crawlClient) saveJavInfos() error {
+func (cc *javbusCrawl) saveJavInfos() error {
 	df := dataframe.LoadStructs(cc.javInfos)
 	f, err := os.OpenFile(path.Join(cc.destPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_info.csv"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
@@ -23,7 +23,7 @@ func (cc *crawlClient) saveJavInfos() error {
 	return df.WriteCSV(f)
 }
 
-func (cc *crawlClient) saveCovers(coverPath, code string) error {
+func (cc *javbusCrawl) saveCovers(coverPath, code string) error {
 	var urlImg = ""
 	u, err := url.ParseRequestURI(coverPath)
 	if err != nil {
@@ -56,7 +56,7 @@ func (cc *crawlClient) saveCovers(coverPath, code string) error {
 	return nil
 }
 
-func (cc *crawlClient) saveMagents() error {
+func (cc *javbusCrawl) saveMagents() error {
 	if len(cc.javMagnets) == 0 {
 		return nil
 	}
