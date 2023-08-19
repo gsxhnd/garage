@@ -101,8 +101,28 @@ var javStarCodeCmd = &cli.Command{
 		javSiteFlag,
 		javOutputFlag,
 		javProxyFlag,
+		&cli.StringFlag{Name: "star-code", Value: "vfn", Usage: "演员番号"},
 	},
-	Action: func(c *cli.Context) error {
+	Action: func(ctx *cli.Context) error {
+		var (
+			logger    = utils.GetLogger()
+			startCode = ctx.String("star-code")
+		)
+
+		c, err := crawl.NewCrawlClient(logger, crawl.CrawlOptions{
+			DownloadMagent: ctx.Bool("magnet"),
+			Proxy:          ctx.String("proxy"),
+			DestPath:       ctx.String("output"),
+		})
+		if err != nil {
+			logger.Panic("client init error: " + err.Error())
+			return err
+		}
+
+		if err := c.StartCrawlJavbusMovieByStar(startCode); err != nil {
+			logger.Panic("crawl error: " + err.Error())
+			return err
+		}
 		return nil
 	},
 }

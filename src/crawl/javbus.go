@@ -145,7 +145,9 @@ func (cc *crawlClient) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 	})
 }
 
-func (cc *crawlClient) getJavStarMovieByJavbus(e *colly.HTMLElement) {}
+func (cc *crawlClient) getJavStarMovieByJavbus(e *colly.HTMLElement) {
+
+}
 
 func (cc *crawlClient) StartCrawlJavbusMovie(code string) error {
 	cc.logger.Info("Download info: " + code)
@@ -212,6 +214,13 @@ func (cc *crawlClient) StartCrawlJavbusMovieByPrefix() error {
 }
 
 func (cc *crawlClient) StartCrawlJavbusMovieByStar(starCode string) error {
+	cc.logger.Debug("Getting star code: " + starCode)
+	cc.collector.OnRequest(func(r *colly.Request) {
+		cc.logger.Info("Visiting: " + r.URL.String())
+	})
+	if err := cc.collector.Visit(cc.javbusUrl + "/star/" + starCode); err != nil {
+		return err
+	}
 	return nil
 }
 

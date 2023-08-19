@@ -15,3 +15,6 @@ tasks:
       - rm -rvf dist
       - rm -rvf testdata/
       - rm -rvf javbus/
+  build:
+    cmds:
+      - go build -o build/garage ./src

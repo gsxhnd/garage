@@ -45,6 +45,7 @@ type crawlClient struct {
 	javMagnets     []string
 	downloadMagent bool
 	destPath       string
+	starCode       string
 	prefixCode     string
 	prefixMinNo    int
 	prefixMaxNo    int
@@ -54,6 +55,7 @@ type CrawlOptions struct {
 	DestPath       string
 	Proxy          string
 	DownloadMagent bool
+	StarCode       string
 	PrefixCode     string
 	PrefixMinNo    int
 	PrefixMaxNo    int
