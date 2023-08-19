@@ -26,14 +26,14 @@ builds:
       - -X "{{.ModulePath}}/src/cmd.gitCommit={{.FullCommit}}"
     goos:
       - linux
-      # - freebsd
-      # - windows
-      # - darwin
+      - freebsd
+      - windows
+      - darwin
     goarch:
       - amd64
-      # - "386"
-      # - arm
-      # - arm64
+      - "386"
+      - arm
+      - arm64
     goarm:
       - "6"
       - "7"
