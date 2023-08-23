@@ -49,7 +49,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/src",
-      "args": ["crawl", "jav-star-code"],
+      "args": ["crawl", "jav-star-code", "--magnet"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"

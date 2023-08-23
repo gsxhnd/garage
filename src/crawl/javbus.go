@@ -337,13 +337,13 @@ func (cc *javbusCrawl) StartCrawlJavbusMovieByPrefix() error {
 	cc.collector.Wait()
 
 	cc.saveJavInfos()
+	cc.saveMagents()
 	for _, v := range cc.javInfos {
 		err := cc.saveCovers(v.Cover, v.Code)
 		if err != nil {
 			return err
 		}
 	}
-	cc.saveMagents()
 	return nil
 }
 
@@ -370,7 +370,7 @@ func (cc *javbusCrawl) StartCrawlJavbusMovieByStar(starCode string) error {
 		cc.logger.Info("Visiting: " + r.URL.String())
 	})
 	if cc.downloadMagent {
-		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
+		infoCrawlClient.OnHTML("body", cc.getJavMovieMagnetByJavbus)
 	}
 	infoCrawlClient.OnHTML(".container", cc.getJavMovieInfoByJavbus)
 	cc.javQueue.Run(infoCrawlClient)
@@ -378,13 +378,13 @@ func (cc *javbusCrawl) StartCrawlJavbusMovieByStar(starCode string) error {
 	cc.collector.Wait()
 
 	cc.saveJavInfos()
+	cc.saveMagents()
 	for _, v := range cc.javInfos {
 		err := cc.saveCovers(v.Cover, v.Code)
 		if err != nil {
 			return err
 		}
 	}
-	cc.saveMagents()
 	return nil
 }
 
