@@ -91,6 +91,11 @@ func NewJavbusCrawl(logger *zap.Logger, option CrawlOptions) (JavbusCrawl, error
 		javQueue:       q,
 	}
 
+	client.collector.ParseHTTPErrorResponse = true
+	client.collector.SetRedirectHandler(func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	})
+
 	client.collector.Limit(&colly.LimitRule{
 		Parallelism: 1,
 		RandomDelay: 5 * time.Second,
