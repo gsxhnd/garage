@@ -54,6 +54,9 @@ var javCodeCmd = &cli.Command{
 			logger.Panic("crawl error: " + err.Error())
 			return err
 		}
+
+		// s := crawl.NewJavSave(logger, ctx.String("output"), nil)
+		// s.Save(false, false)
 		return nil
 	},
 }
