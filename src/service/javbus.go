@@ -18,6 +18,7 @@ import (
 	"github.com/go-gota/gota/dataframe"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	"github.com/gsxhnd/garage/src/model"
 	"github.com/inhies/go-bytesize"
 	"go.uber.org/zap"
 )
@@ -46,13 +47,13 @@ type JavbusCrawl interface { // 通过番号爬取对应的电影信息
 
 type javbusCrawl struct {
 	logger         *zap.Logger
-	option         *JavCrawlConfig
+	option         *model.JavCrawlConfig
 	collector      *colly.Collector
 	pageCollector  *colly.Collector
 	httpClient     *http.Client
 	maxDepth       int
 	javbusUrl      string
-	javInfos       []JavMovie
+	javInfos       []model.JavMovie
 	javMagnets     []string
 	downloadMagent bool
 	destPath       string
@@ -74,7 +75,7 @@ type CrawlOptions struct {
 	PrefixMaxNo    int
 }
 
-func NewJavbusCrawl(logger *zap.Logger, option *JavCrawlConfig) (JavbusCrawl, error) {
+func NewJavbusCrawl(logger *zap.Logger, option *model.JavCrawlConfig) (JavbusCrawl, error) {
 	collector := colly.NewCollector()
 	collector.ParseHTTPErrorResponse = true
 	collector.SetRedirectHandler(func(req *http.Request, via []*http.Request) error {
@@ -114,7 +115,7 @@ func NewJavbusCrawl(logger *zap.Logger, option *JavCrawlConfig) (JavbusCrawl, er
 		httpClient:    httpClient,
 		maxDepth:      100,
 		javbusUrl:     "https://www.javbus.com",
-		javInfos:      make([]JavMovie, 0),
+		javInfos:      make([]model.JavMovie, 0),
 		javMagnets:    make([]string, 0),
 		starPage:      2,
 		javQueue:      q,
@@ -140,7 +141,7 @@ func (cc *javbusCrawl) mkAllDir() error {
 }
 
 func (cc *javbusCrawl) getJavMovieInfoByJavbus(e *colly.HTMLElement) {
-	var info = &JavMovie{}
+	var info = &model.JavMovie{}
 	info.Title = e.ChildText("h3")
 	info.Cover = e.ChildAttr(".screencap img", "src")
 	e.ForEach(".info p", func(i int, element *colly.HTMLElement) {
@@ -218,10 +219,10 @@ func (cc *javbusCrawl) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 			return
 		}
 
-		var mList = make([]JavMovieMagnet, 0)
+		var mList = make([]model.JavMovieMagnet, 0)
 		for _, n := range list {
 			tdList, _ := htmlquery.QueryAll(n, "//td/a")
-			var m = JavMovieMagnet{
+			var m = model.JavMovieMagnet{
 				HD:       false,
 				Subtitle: false,
 			}
@@ -418,6 +419,8 @@ func (cc *javbusCrawl) StartCrawlJavbusMovieByFilepath(inputPath string) error {
 	return nil
 }
 
+func (cc *javbusCrawl) save() {}
+
 func (cc *javbusCrawl) saveJavInfos() error {
 	df := dataframe.LoadStructs(cc.javInfos)
 	f, err := os.OpenFile(path.Join(cc.destPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_info.csv"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
@@ -427,6 +430,24 @@ func (cc *javbusCrawl) saveJavInfos() error {
 	}
 	defer f.Close()
 	return df.WriteCSV(f)
+}
+
+func (cc *javbusCrawl) saveMagents() error {
+	if len(cc.javMagnets) == 0 {
+		return nil
+	}
+
+	f, err := os.OpenFile(path.Join(cc.destPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_magnet.text"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	if err != nil {
+		cc.logger.Error("Save jav info file failed error: %s" + err.Error())
+		return err
+	}
+	defer f.Close()
+
+	for _, v := range cc.javMagnets {
+		f.WriteString(v + "\n")
+	}
+	return nil
 }
 
 func (cc *javbusCrawl) saveCovers(coverPath, code string) error {
@@ -458,24 +479,6 @@ func (cc *javbusCrawl) saveCovers(coverPath, code string) error {
 	defer f.Close()
 	if _, err := io.Copy(f, bytes.NewReader(body)); err != nil {
 		return err
-	}
-	return nil
-}
-
-func (cc *javbusCrawl) saveMagents() error {
-	if len(cc.javMagnets) == 0 {
-		return nil
-	}
-
-	f, err := os.OpenFile(path.Join(cc.destPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_magnet.text"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
-	if err != nil {
-		cc.logger.Error("Save jav info file failed error: %s" + err.Error())
-		return err
-	}
-	defer f.Close()
-
-	for _, v := range cc.javMagnets {
-		f.WriteString(v + "\n")
 	}
 	return nil
 }

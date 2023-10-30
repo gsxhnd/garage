@@ -1,0 +1,5 @@
+[workspace]
+members = ["jav-collect"]
+
+[path]
+jav_collect = { path = "jav-collect" }
