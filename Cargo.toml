@@ -1,5 +1,42 @@
 [workspace]
-members = ["jav-collect"]
+members = ["garage-jav", "garage-ffmpeg", "garage"]
+
+[workspace.package]
+name = "garage"
+version = "0.1.0"
+edition = "2021"
+authors = ["gsxhnd"]
+homepage = ""
+description = ""
+repository = "https://github.com/gsxhnd/garage"
+license = "MIT license"
+categories = ["network"]
+keywords = [""]
+exclude = [".gitignore", ".cargo/config"]
+rust-version = "1.72"
 
 [path]
-jav_collect = { path = "jav-collect" }
+garage = { path = "garage" }
+garage_jav = { path = "garage-jav" }
+garage_ffmpeg = { path = "garage-ffmpeg" }
+
+[workspace.dependencies]
+axum = { version = "0.6" }
+bytes = { version = "1.4", features = ["serde"] }
+clap = { version = "4.3", features = ["derive", "env"] }
+futures = { version = "0.3" }
+futures-util = { version = "0.3" }
+sea-orm = { version = "0.12", features = [
+    "sqlx-sqlite",
+    "runtime-tokio-rustls",
+    "macros",
+] }
+sea-query = "0"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+tokio = { version = "1.28", features = ["full"] }
+tokio-util = { version = "0.7", features = ["codec"] }
+tokio-stream = "0.1.14"
+tokio-tungstenite = { version = "0.19" }
+tracing = { version = "0.1" }
+tracing-subscriber = "0.3"
