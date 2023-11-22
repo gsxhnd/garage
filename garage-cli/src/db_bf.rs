@@ -46,4 +46,10 @@ impl DbSyncBf {
         println!("jav_sync_db_bf, csv: {:?}", self.csv_path);
         println!("jav_sync_db_bf, db: {:?}", self.db_path);
     }
+
+    pub fn read_csv(&self) {}
+
+    pub fn db_add_star(&self) {}
+
+    pub fn code_bin_star(&self) {}
 }

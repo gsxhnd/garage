@@ -1,5 +1,5 @@
 [workspace]
-members = ["garage-jav", "garage-ffmpeg", "garage"]
+members = ["garage-jav", "garage-ffmpeg", "garage-cli", "garage-spider"]
 
 [workspace.package]
 name = "garage"
@@ -16,9 +16,11 @@ exclude = [".gitignore", ".cargo/config"]
 rust-version = "1.72"
 
 [path]
-garage = { path = "garage" }
 garage_jav = { path = "garage-jav" }
 garage_ffmpeg = { path = "garage-ffmpeg" }
+garage_cli = { path = "garage-cli" }
+garage_spider = { path = "garage-spider" }
+
 
 [workspace.dependencies]
 axum = { version = "0.6" }
