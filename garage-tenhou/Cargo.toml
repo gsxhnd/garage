@@ -1,5 +1,5 @@
 [package]
-name = "garage_cli"
+name = "garage_tenhou"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -14,12 +14,5 @@ rust-version.workspace = true
 
 
 [dependencies]
-clap = { workspace = true, features = ["derive", "env"] }
-sea-orm = { workspace = true, features = [
-    "sqlx-sqlite",
-    "runtime-tokio-rustls",
-    "macros",
-] }
-sea-query = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
-tokio = { workspace = true, features = ["full"] }
+serde_yaml = { workspace = true }

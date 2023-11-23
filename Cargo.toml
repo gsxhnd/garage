@@ -1,5 +1,11 @@
 [workspace]
-members = ["garage-jav", "garage-ffmpeg", "garage-cli", "garage-spider"]
+members = [
+    "garage-jav",
+    "garage-ffmpeg",
+    "garage-tenhou",
+    "garage-cli",
+    "garage-spider",
+]
 
 [workspace.package]
 name = "garage"
@@ -20,7 +26,7 @@ garage_jav = { path = "garage-jav" }
 garage_ffmpeg = { path = "garage-ffmpeg" }
 garage_cli = { path = "garage-cli" }
 garage_spider = { path = "garage-spider" }
-
+garage_tenhou = { path = "garage-tenhou" }
 
 [workspace.dependencies]
 axum = { version = "0.6" }

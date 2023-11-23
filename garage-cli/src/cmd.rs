@@ -16,11 +16,12 @@ pub fn new_cmd() -> Command {
         .about("about")
         .subcommand_required(true)
         .subcommand(jav_sync_db_bf_cmd())
+        .subcommand(tenhou_cmd())
 }
 
 pub fn jav_sync_db_bf_cmd() -> Command {
     Command::new("jav_sync_db_bf")
-        .about("crawl tenhou data")
+        .about("jav info data sync to bf database")
         .arg(
             Arg::new("from_csv")
                 .long("from_csv")
@@ -37,4 +38,8 @@ pub fn jav_sync_db_bf_cmd() -> Command {
                 .value_parser(value_parser!(PathBuf))
                 .help("billfish database path"),
         )
+}
+
+pub fn tenhou_cmd() -> Command {
+    Command::new("tenhou").about("crawl tenhou data")
 }
