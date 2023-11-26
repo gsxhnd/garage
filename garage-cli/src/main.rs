@@ -1,9 +1,11 @@
 mod cmd;
 mod jav;
+use ruspider::Ruspider;
 
 #[tokio::main]
 async fn main() {
     let cmd = cmd::new_cmd();
+    let _ = Ruspider::new();
 
     match cmd.get_matches().subcommand() {
         Some(("jav", sub_m)) => {

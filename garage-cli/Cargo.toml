@@ -14,6 +14,8 @@ rust-version.workspace = true
 
 
 [dependencies]
+ruspider = { path = "../ruspider" }
+
 clap = { workspace = true, features = ["derive", "env"] }
 sea-orm = { workspace = true, features = [
     "sqlx-sqlite",
