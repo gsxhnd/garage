@@ -785,18 +785,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "garage-jav"
-version = "0.1.0"
-dependencies = [
- "sea-orm",
- "sea-query",
-]
-
-[[package]]
 name = "garage_cli"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "garage_jav",
  "ruspider",
  "sea-orm",
  "sea-query",
@@ -807,6 +800,14 @@ dependencies = [
 [[package]]
 name = "garage_ffmpeg"
 version = "0.1.0"
+
+[[package]]
+name = "garage_jav"
+version = "0.1.0"
+dependencies = [
+ "sea-orm",
+ "sea-query",
+]
 
 [[package]]
 name = "garage_spider"
