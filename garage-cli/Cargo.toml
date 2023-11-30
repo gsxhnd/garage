@@ -15,6 +15,7 @@ rust-version.workspace = true
 
 [dependencies]
 garage_jav = { path = "../garage-jav" }
+garage_ffmpeg = { path = "../garage-ffmpeg" }
 ruspider = { path = "../ruspider" }
 
 clap = { workspace = true, features = ["derive", "env"] }

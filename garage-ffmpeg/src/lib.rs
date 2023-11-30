@@ -1,14 +1,22 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+mod args;
+use std::process::Command;
+use std::process::Stdio;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub struct Batchffmpeg {}
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+impl Batchffmpeg {
+    pub fn new() -> Self {
+        Batchffmpeg {}
+    }
+
+    pub fn set_dest_path(&self) {}
+
+    pub fn convert(&self) {
+        let mut cmd = Command::new("wget")
+            .arg("https://www.baidu.com")
+            .stdout(Stdio::inherit())
+            .spawn()
+            .expect("fail to execute");
+        cmd.wait().unwrap();
     }
 }

@@ -1,4 +1,5 @@
 mod cmd;
+mod ffmpeg;
 mod jav;
 use ruspider::Ruspider;
 
@@ -15,7 +16,10 @@ async fn main() {
         }
         Some(("crawl", _sub_m)) => todo!(),
         Some(("tenhou", _sub_m)) => todo!(),
-        Some(("ffmpeg-batch", _sub_m)) => todo!(),
+        Some(("ffmpeg-batch", sub_m)) => {
+            let sub_cmd = sub_m.subcommand().unwrap();
+            ffmpeg::sub_ffmpeg_cmd(sub_cmd.0, sub_cmd.1)
+        }
         _ => {}
     }
 }
