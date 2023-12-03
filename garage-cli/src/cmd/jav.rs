@@ -27,6 +27,7 @@ pub fn crawl_movie_code_from_dir() -> Command {
     Command::new("crawl_movie_code_from_dir").about("crawl jav movie info by directory movie ext")
 }
 
+
 pub fn sync_db_bf_cmd() -> Command {
     Command::new("sync_db_bf")
         .about("jav info data sync to bf database")

@@ -6,8 +6,8 @@ pub fn sub_ffmpeg_cmd(sub_cmd: &str, args: &ArgMatches) {
     match sub_cmd {
         "convert" => {
             let input_path = args
-                .get_one::<PathBuf>("from_csv")
-                .expect("csv path not set")
+                .get_one::<PathBuf>("input_path")
+                .expect("input path not set")
                 .to_owned();
 
             let opt = BatchffmpegOptions::new().input_path(input_path);

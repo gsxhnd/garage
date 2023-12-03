@@ -4,7 +4,7 @@ version: '3'
 tasks:
   gen_test:
     cmds: 
-      - rm -rvf testdata
+      - rm -rvf testdata/
       - mkdir testdata
       - touch ./testdata/{1,2,3,4,5}.{mkv,mp4,ass,ttf}
       - ls -al ./testdata
