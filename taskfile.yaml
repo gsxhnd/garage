@@ -3,10 +3,10 @@ version: '3'
 
 tasks:
   gen_test:
-    cmds: 
+    cmds:
       - rm -rvf testdata/
-      - mkdir testdata
-      - touch ./testdata/{1,2,3,4,5}.{mkv,mp4,ass,ttf}
+      - mkdir -p testdata/{1,2,3,4}
+      - touch ./testdata/{1,2,3,4}/{1,2,3,4,5}.{mkv,mp4,ass,ttf}
       - ls -al ./testdata
   clean:
     cmds:

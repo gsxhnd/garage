@@ -10,7 +10,9 @@ pub fn sub_ffmpeg_cmd(sub_cmd: &str, args: &ArgMatches) {
                 .expect("input path not set")
                 .to_owned();
 
-            let opt = BatchffmpegOptions::new().input_path(input_path);
+            let opt = BatchffmpegOptions::new()
+                .input_path(input_path)
+                .input_format("mkv".to_string());
             let f = Batchffmpeg::new(opt);
             f.convert();
         }
