@@ -40,8 +40,11 @@ impl BatchffmpegOptions {
         self
     }
 
-    pub fn advance(mut self, advance: String) -> Self {
-        self.advance = advance;
+    pub fn advance(mut self, advance: Option<&String>) -> Self {
+        match advance {
+            Some(a) => self.advance = a.to_owned(),
+            None => {}
+        }
         self
     }
 }

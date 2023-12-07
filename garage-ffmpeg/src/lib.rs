@@ -1,5 +1,4 @@
 mod option;
-use std::io;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -31,7 +30,6 @@ impl Batchffmpeg {
                         match Path::new(dir_entry.file_name()).extension() {
                             Some(format) => {
                                 if format.to_str() == Some(input_format.trim()) {
-                                    println!("format: {:?}", format);
                                     file_list
                                         .push(dir_entry.file_name().to_str().unwrap().to_string())
                                 }
@@ -45,24 +43,53 @@ impl Batchffmpeg {
         file_list
     }
 
-    pub fn get_fonts_params(&self) {}
-
     pub fn convert(&self) {
         let video_list = self.get_video_list(
             self.option.input_path.clone(),
             self.option.input_format.clone(),
         );
-        println!("video_list: {:?}", video_list);
+        let mut args: Vec<Vec<String>> = Vec::new();
 
-        let mut cmd = Command::new("ping")
-            .arg("www.baidu.com")
-            .stdout(Stdio::inherit())
-            .spawn()
-            .expect("fail to execute");
-        cmd.wait().unwrap();
+        for v in video_list {
+            let mut output = PathBuf::new();
+            let mut input = PathBuf::new();
+
+            input.push(self.option.input_path.clone());
+            input.push(v.clone());
+
+            let file_name = Path::new(&v)
+                .file_name()
+                .unwrap_or_default()
+                .to_str()
+                .unwrap_or_default();
+            output.push(self.option.output_path.clone());
+            output.push(format!(
+                "{}.{}",
+                file_name,
+                self.option.output_format.clone()
+            ));
+
+            let arg = vec![
+                "-i".to_string(),
+                input.to_str().unwrap().to_owned(),
+                output.to_str().unwrap().to_owned(),
+            ];
+            args.push(arg);
+        }
+
+        for arg in args {
+            let mut child = Command::new("ffmpeg")
+                .args(arg)
+                .stdout(Stdio::inherit())
+                .spawn()
+                .expect("fail to execute");
+            child.wait().unwrap();
+        }
     }
 
     pub fn add_sub(&self) {}
 
     pub fn add_fonts(&self) {}
+
+    pub fn get_fonts_params(&self) {}
 }
