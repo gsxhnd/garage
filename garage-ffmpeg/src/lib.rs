@@ -3,6 +3,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 use std::process::Stdio;
+use tracing::info;
 use walkdir::{DirEntry, WalkDir};
 
 pub use option::BatchffmpegOptions;
@@ -76,14 +77,17 @@ impl Batchffmpeg {
             ];
             args.push(arg);
         }
-
         for arg in args {
-            let mut child = Command::new("ffmpeg")
-                .args(arg)
-                .stdout(Stdio::inherit())
-                .spawn()
-                .expect("fail to execute");
-            child.wait().unwrap();
+            if self.option.exec {
+                let mut child = Command::new("ffmpeg")
+                    .args(arg)
+                    .stdout(Stdio::inherit())
+                    .spawn()
+                    .expect("fail to execute");
+                child.wait().unwrap();
+            } else {
+                info!("ffmpeg {} {} {}", arg[0], arg[1], arg[2])
+            }
         }
     }
 

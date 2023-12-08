@@ -7,6 +7,7 @@ pub struct BatchffmpegOptions {
     pub output_format: String,
     pub output_path: PathBuf,
     pub advance: String,
+    pub exec: bool,
 }
 
 impl BatchffmpegOptions {
@@ -17,6 +18,7 @@ impl BatchffmpegOptions {
             output_path: PathBuf::new(),
             output_format: "".to_string(),
             advance: "".to_string(),
+            exec: false,
         }
     }
 
@@ -45,6 +47,11 @@ impl BatchffmpegOptions {
             Some(a) => self.advance = a.to_owned(),
             None => {}
         }
+        self
+    }
+
+    pub fn exec(mut self, exec: bool) -> Self {
+        self.exec = exec;
         self
     }
 }

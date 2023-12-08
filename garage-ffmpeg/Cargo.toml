@@ -16,3 +16,4 @@ rust-version.workspace = true
 
 [dependencies]
 walkdir = { workspace = true }
+tracing = { workspace = true }
