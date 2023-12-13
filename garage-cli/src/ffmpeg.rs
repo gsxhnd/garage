@@ -4,6 +4,7 @@ use std::path::PathBuf;
 
 struct Args {
     input_path: Arg,
+    font_path: Arg,
     input_format: Arg,
     output_path: Arg,
     output_format: Arg,
@@ -23,8 +24,13 @@ pub fn ffmpeg_cmd() -> Command {
             .long("input_format")
             .value_name("FILE Extension")
             .value_parser(value_parser!(String))
-            .default_value("mp4")
             .help("input directory path"),
+        font_path: Arg::new("font_path")
+            .long("font_path")
+            .value_name("FILE")
+            .value_parser(value_parser!(PathBuf))
+            .required(true)
+            .help("input fonts directory path"),
         output_path: Arg::new("output_path")
             .long("output_path")
             .value_name("FILE")
@@ -53,7 +59,7 @@ pub fn ffmpeg_cmd() -> Command {
         .about("ffmpeg batch")
         .subcommand(Command::new("convert").about("").args([
             args.input_path.clone(),
-            args.input_format.clone(),
+            args.input_format.clone().default_value("mp4"),
             args.output_path.clone(),
             args.output_format.clone(),
             args.advance.clone(),
@@ -64,11 +70,15 @@ pub fn ffmpeg_cmd() -> Command {
                 .about("")
                 .args([args.input_path.clone()]),
         )
-        .subcommand(
-            Command::new("add_fonts")
-                .about("")
-                .args([args.input_path.clone()]),
-        )
+        .subcommand(Command::new("add_fonts").about("").args([
+            args.input_path.clone(),
+            args.input_format.clone().default_value("mkv"),
+            args.font_path.clone(),
+            args.output_path.clone(),
+            args.output_format.clone(),
+            args.advance.clone(),
+            args.exec.clone(),
+        ]))
 }
 
 pub fn parse_ffmpeg_cmd(sub_cmd: &str, args: &ArgMatches) {
@@ -78,12 +88,13 @@ pub fn parse_ffmpeg_cmd(sub_cmd: &str, args: &ArgMatches) {
         .to_owned();
     let input_format = args.get_one::<String>("input_format").expect("").to_owned();
     let output_path = args.get_one::<PathBuf>("output_path").expect("").to_owned();
-    let output_formart = args
+    let output_format = args
         .get_one::<String>("output_format")
         .expect("")
         .to_owned();
     let advance = args.try_get_one::<String>("advance").expect("").to_owned();
     let exec = args.get_flag("exec");
+    // println!("input path: {:?}", input_path);
 
     match sub_cmd {
         "convert" => {
@@ -91,14 +102,25 @@ pub fn parse_ffmpeg_cmd(sub_cmd: &str, args: &ArgMatches) {
                 .input_path(input_path)
                 .input_format(input_format)
                 .output_path(output_path)
-                .output_format(output_formart)
+                .output_format(output_format)
                 .advance(advance)
                 .exec(exec);
             let f = Batchffmpeg::new(opt);
             f.convert();
         }
         "add_sub" => {}
-        "add_fonts" => {}
+        "add_fonts" => {
+            let font_path = args.get_one::<PathBuf>("font_path").expect("").to_owned();
+            let opt = BatchffmpegOptions::new()
+                .input_path(input_path)
+                .input_format(input_format)
+                .output_path(output_path)
+                .font_path(font_path)
+                .advance(advance)
+                .exec(exec);
+            let f = Batchffmpeg::new(opt);
+            f.add_fonts();
+        }
         _ => {
             todo!()
         }

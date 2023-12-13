@@ -4,6 +4,7 @@ use std::path::PathBuf;
 pub struct BatchffmpegOptions {
     pub input_path: PathBuf,
     pub input_format: String,
+    pub font_path: PathBuf,
     pub output_format: String,
     pub output_path: PathBuf,
     pub advance: String,
@@ -15,6 +16,7 @@ impl BatchffmpegOptions {
         BatchffmpegOptions {
             input_path: PathBuf::new(),
             input_format: "".to_string(),
+            font_path: PathBuf::new(),
             output_path: PathBuf::new(),
             output_format: "".to_string(),
             advance: "".to_string(),
@@ -29,6 +31,11 @@ impl BatchffmpegOptions {
 
     pub fn input_format(mut self, format: String) -> Self {
         self.input_format = format;
+        self
+    }
+
+    pub fn font_path(mut self, font_path: PathBuf) -> Self {
+        self.font_path = font_path;
         self
     }
 

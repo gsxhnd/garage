@@ -1,4 +1,5 @@
 mod option;
+use std::fmt::format;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -77,15 +78,17 @@ impl Batchffmpeg {
             ];
             args.push(arg);
         }
-        for arg in args {
-            if self.option.exec {
+        if self.option.exec {
+            for arg in args {
                 let mut child = Command::new("ffmpeg")
                     .args(arg)
                     .stdout(Stdio::inherit())
                     .spawn()
                     .expect("fail to execute");
                 child.wait().unwrap();
-            } else {
+            }
+        } else {
+            for arg in args {
                 info!("ffmpeg {} {} {}", arg[0], arg[1], arg[2])
             }
         }
@@ -93,7 +96,41 @@ impl Batchffmpeg {
 
     pub fn add_sub(&self) {}
 
-    pub fn add_fonts(&self) {}
+    pub fn add_fonts(&self) {
+        let video_list = self.get_video_list(
+            self.option.input_path.clone(),
+            self.option.input_format.clone(),
+        );
+        let font_list = self.get_fonts_params(self.option.font_path.clone());
+        for f in font_list {
+            println!("font: {}", f);
+        }
+    }
 
-    pub fn get_fonts_params(&self) {}
+    pub fn get_fonts_params(&self, font_path: PathBuf) -> Vec<String> {
+        let mut file_list: Vec<String> = Vec::new();
+        let font_format_list = vec!["oft", "ttf"];
+        for entry in WalkDir::new(font_path) {
+            match entry {
+                Err(err) => {
+                    println!("error: {:?}", err);
+                }
+                Ok(dir_entry) => {
+                    if dir_entry.file_type().is_file() {
+                        match Path::new(dir_entry.file_name()).extension() {
+                            Some(format) => {
+                                let file_name = dir_entry.file_name().to_str().unwrap();
+                                let font_format = format.to_str().unwrap();
+                                if font_format_list.contains(&font_format) {
+                                    file_list.push(format!("{}.{}", file_name, font_format))
+                                }
+                            }
+                            None => {}
+                        }
+                    }
+                }
+            }
+        }
+        file_list
+    }
 }
