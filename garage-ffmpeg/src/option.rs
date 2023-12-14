@@ -5,6 +5,8 @@ pub struct BatchffmpegOptions {
     pub input_path: PathBuf,
     pub input_format: String,
     pub font_path: PathBuf,
+    pub sub_suffix: String,
+    pub sub_number: u32,
     pub output_format: String,
     pub output_path: PathBuf,
     pub advance: String,
@@ -17,6 +19,8 @@ impl BatchffmpegOptions {
             input_path: PathBuf::new(),
             input_format: "".to_string(),
             font_path: PathBuf::new(),
+            sub_suffix: "".to_string(),
+            sub_number: 0,
             output_path: PathBuf::new(),
             output_format: "".to_string(),
             advance: "".to_string(),
@@ -36,6 +40,11 @@ impl BatchffmpegOptions {
 
     pub fn font_path(mut self, font_path: PathBuf) -> Self {
         self.font_path = font_path;
+        self
+    }
+
+    pub fn sub_suffix(mut self, suffix: String) -> Self {
+        self.sub_suffix = suffix;
         self
     }
 

@@ -4,8 +4,10 @@ use std::path::PathBuf;
 
 struct Args {
     input_path: Arg,
-    font_path: Arg,
     input_format: Arg,
+    font_path: Arg,
+    sub_suffix: Arg,
+    sub_number: Arg,
     output_path: Arg,
     output_format: Arg,
     advance: Arg,
@@ -31,6 +33,17 @@ pub fn ffmpeg_cmd() -> Command {
             .value_parser(value_parser!(PathBuf))
             .required(true)
             .help("input fonts directory path"),
+        sub_suffix: Arg::new("sub_suffix")
+            .long("sub_suffix")
+            .value_name("FILE")
+            .value_parser(value_parser!(String))
+            .default_value("ass")
+            .help("sub suffix and extension"),
+        sub_number: Arg::new("sub_number")
+            .long("sub_number")
+            .value_name("FILE")
+            .value_parser(value_parser!(u32))
+            .help("sub number"),
         output_path: Arg::new("output_path")
             .long("output_path")
             .value_name("FILE")
@@ -65,11 +78,14 @@ pub fn ffmpeg_cmd() -> Command {
             args.advance.clone(),
             args.exec.clone(),
         ]))
-        .subcommand(
-            Command::new("add_sub")
-                .about("")
-                .args([args.input_path.clone()]),
-        )
+        .subcommand(Command::new("add_sub").about("").args([
+            args.input_path.clone(),
+            args.input_format.clone().default_value("mkv"),
+            args.sub_suffix.clone(),
+            args.sub_number.clone().default_value("0"),
+            args.output_path.clone(),
+            args.exec.clone(),
+        ]))
         .subcommand(Command::new("add_fonts").about("").args([
             args.input_path.clone(),
             args.input_format.clone().default_value("mkv"),
@@ -94,30 +110,28 @@ pub fn parse_ffmpeg_cmd(sub_cmd: &str, args: &ArgMatches) {
         .to_owned();
     let advance = args.try_get_one::<String>("advance").expect("").to_owned();
     let exec = args.get_flag("exec");
-    // println!("input path: {:?}", input_path);
+
+    let opt = BatchffmpegOptions::new()
+        .input_path(input_path)
+        .input_format(input_format)
+        .output_path(output_path)
+        .output_format(output_format)
+        .advance(advance)
+        .exec(exec);
 
     match sub_cmd {
         "convert" => {
-            let opt = BatchffmpegOptions::new()
-                .input_path(input_path)
-                .input_format(input_format)
-                .output_path(output_path)
-                .output_format(output_format)
-                .advance(advance)
-                .exec(exec);
             let f = Batchffmpeg::new(opt);
             f.convert();
         }
-        "add_sub" => {}
+        "add_sub" => {
+            let opt = opt.sub_suffix("".to_string());
+            let f = Batchffmpeg::new(opt);
+            f.add_sub();
+        }
         "add_fonts" => {
             let font_path = args.get_one::<PathBuf>("font_path").expect("").to_owned();
-            let opt = BatchffmpegOptions::new()
-                .input_path(input_path)
-                .input_format(input_format)
-                .output_path(output_path)
-                .font_path(font_path)
-                .advance(advance)
-                .exec(exec);
+            let opt = opt.font_path(font_path);
             let f = Batchffmpeg::new(opt);
             f.add_fonts();
         }

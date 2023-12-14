@@ -1,5 +1,4 @@
 mod option;
-use std::fmt::format;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -20,8 +19,8 @@ impl Batchffmpeg {
 
     pub fn create_dest_dir() {}
 
-    pub fn get_video_list(&self, input_path: PathBuf, input_format: String) -> Vec<String> {
-        let mut file_list: Vec<String> = Vec::new();
+    pub fn get_video_list(&self, input_path: PathBuf, input_format: String) -> Vec<PathBuf> {
+        let mut file_list: Vec<PathBuf> = Vec::new();
         for entry in WalkDir::new(input_path) {
             match entry {
                 Err(err) => {
@@ -32,8 +31,7 @@ impl Batchffmpeg {
                         match Path::new(dir_entry.file_name()).extension() {
                             Some(format) => {
                                 if format.to_str() == Some(input_format.trim()) {
-                                    file_list
-                                        .push(dir_entry.file_name().to_str().unwrap().to_string())
+                                    file_list.push(dir_entry.path().to_path_buf())
                                 }
                             }
                             None => {}
@@ -54,10 +52,6 @@ impl Batchffmpeg {
 
         for v in video_list {
             let mut output = PathBuf::new();
-            let mut input = PathBuf::new();
-
-            input.push(self.option.input_path.clone());
-            input.push(v.clone());
 
             let file_name = Path::new(&v)
                 .file_name()
@@ -73,7 +67,7 @@ impl Batchffmpeg {
 
             let arg = vec![
                 "-i".to_string(),
-                input.to_str().unwrap().to_owned(),
+                v.to_str().unwrap().to_owned(),
                 output.to_str().unwrap().to_owned(),
             ];
             args.push(arg);
@@ -94,21 +88,68 @@ impl Batchffmpeg {
         }
     }
 
-    pub fn add_sub(&self) {}
-
-    pub fn add_fonts(&self) {
+    pub fn add_sub(&self) {
         let video_list = self.get_video_list(
             self.option.input_path.clone(),
             self.option.input_format.clone(),
         );
-        let font_list = self.get_fonts_params(self.option.font_path.clone());
-        for f in font_list {
-            println!("font: {}", f);
+    }
+
+    pub fn add_fonts(&self) {
+        let mut args: Vec<Vec<String>> = Vec::new();
+        let mut fonts_params: Vec<String> = Vec::new();
+        let video_list = self.get_video_list(
+            self.option.input_path.clone(),
+            self.option.input_format.clone(),
+        );
+        let font_list = self.get_fonts(self.option.font_path.clone());
+        for (i, font) in font_list.iter().enumerate() {
+            fonts_params.push("-attach".to_string());
+            fonts_params.push(font.to_str().unwrap().to_string());
+            fonts_params.push(format!("-metadata:s:t:{}", i));
+            fonts_params.push("mimetype=application/x-truetype-font".to_string());
+        }
+
+        if !font_list.is_empty() && !video_list.is_empty() {
+            for v in video_list {
+                let filename = v.file_name().unwrap().to_str().unwrap().to_string();
+                let mut output = PathBuf::new();
+                output.push(self.option.output_path.clone());
+                output.push(filename);
+
+                let mut arg = vec![
+                    "-i".to_string(),
+                    v.to_str().unwrap().to_owned(),
+                    "-c".to_string(),
+                    "copy".to_string(),
+                ];
+
+                arg.append(&mut fonts_params.clone());
+                arg.push(output.to_str().unwrap().to_owned());
+                args.push(arg);
+            }
+        } else {
+            return;
+        }
+
+        if self.option.exec {
+            for arg in args {
+                let mut child = Command::new("ffmpeg")
+                    .args(arg)
+                    .stdout(Stdio::inherit())
+                    .spawn()
+                    .expect("fail to execute");
+                child.wait().unwrap();
+            }
+        } else {
+            for arg in args {
+                info!("ffmpeg {:?}", arg);
+            }
         }
     }
 
-    pub fn get_fonts_params(&self, font_path: PathBuf) -> Vec<String> {
-        let mut file_list: Vec<String> = Vec::new();
+    pub fn get_fonts(&self, font_path: PathBuf) -> Vec<PathBuf> {
+        let mut file_list: Vec<PathBuf> = Vec::new();
         let font_format_list = vec!["oft", "ttf"];
         for entry in WalkDir::new(font_path) {
             match entry {
@@ -119,10 +160,9 @@ impl Batchffmpeg {
                     if dir_entry.file_type().is_file() {
                         match Path::new(dir_entry.file_name()).extension() {
                             Some(format) => {
-                                let file_name = dir_entry.file_name().to_str().unwrap();
                                 let font_format = format.to_str().unwrap();
                                 if font_format_list.contains(&font_format) {
-                                    file_list.push(format!("{}.{}", file_name, font_format))
+                                    file_list.push(dir_entry.path().to_path_buf());
                                 }
                             }
                             None => {}
