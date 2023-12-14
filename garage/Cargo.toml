@@ -1,5 +1,5 @@
 [package]
-name = "garage_spider"
+name = "garage"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

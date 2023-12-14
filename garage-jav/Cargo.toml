@@ -1,5 +1,5 @@
 [package]
-name = "garage_jav"
+name = "garage-jav"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

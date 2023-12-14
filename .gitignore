@@ -6,7 +6,6 @@ Thumbs.db
 
 build/
 javbus/
+testdata/
 dist/
 target
-testdata/
-testdb/
