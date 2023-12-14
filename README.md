@@ -4,6 +4,8 @@
 
 # Garage
 
+Unstable version,change to rust
+
 `garage`是一个命令行工具，提供爬虫和批处理等功能。
 
 [更新日志](./CHANGELOG.md)
