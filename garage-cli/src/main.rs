@@ -18,15 +18,15 @@ async fn main() {
         .subcommand(jav::jav_cmd())
         .subcommand(tenhou::tenhou_cmd())
         .subcommand(ffmpeg::ffmpeg_cmd());
-    let _ = Ruspider::new();
 
     match cmd.get_matches().subcommand() {
         Some(("jav", sub_m)) => {
-            println!("jav:: sync_db_bf");
             let sub_cmd = sub_m.subcommand().unwrap();
             jav::parse_jav_cmd(sub_cmd.0, sub_cmd.1).await;
         }
-        Some(("crawl", _sub_m)) => todo!(),
+        Some(("crawl", _sub_m)) => {
+            let _r = Ruspider::new();
+        }
         Some(("tenhou", _sub_m)) => todo!(),
         Some(("ffmpeg-batch", sub_m)) => {
             info!("ffmpeg-batch starting...");

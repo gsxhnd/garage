@@ -18,10 +18,12 @@ impl Ruspider {
 
     pub async fn visit(&self, url: &str) {
         let req_client = reqwest::Client::builder()
-            .proxy(self.proxy.clone().unwrap())
+            // .proxy(self.proxy.clone())
             .build()
             .unwrap();
         let req = req_client.request(reqwest::Method::GET, url);
-        let _resp = req.send().await.unwrap();
+        let resp = req.send().await.unwrap();
+        // resp.text()
+        println!("response: {:?}", resp.text().await)
     }
 }

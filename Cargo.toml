@@ -6,6 +6,7 @@ members = [
     "garage-cli",
     "garage-spider",
     "ruspider",
+    "garage-gui/src-tauri",
 ]
 
 [workspace.package]
