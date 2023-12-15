@@ -1,10 +1,12 @@
 mod ffmpeg;
 mod jav;
+mod spider;
 mod tenhou;
 use clap::Command;
-use ruspider::Ruspider;
 use tracing::info;
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
+
+use garage_jav::Crawl;
 
 #[tokio::main]
 async fn main() {
@@ -16,6 +18,7 @@ async fn main() {
         .about("about")
         .subcommand_required(true)
         .subcommand(jav::jav_cmd())
+        .subcommand(spider::spider_cmd())
         .subcommand(tenhou::tenhou_cmd())
         .subcommand(ffmpeg::ffmpeg_cmd());
 
@@ -24,8 +27,9 @@ async fn main() {
             let sub_cmd = sub_m.subcommand().unwrap();
             jav::parse_jav_cmd(sub_cmd.0, sub_cmd.1).await;
         }
-        Some(("crawl", _sub_m)) => {
-            let _r = Ruspider::new();
+        Some(("spider", _sub_m)) => {
+            let r = Crawl::new();
+            r.start();
         }
         Some(("tenhou", _sub_m)) => todo!(),
         Some(("ffmpeg-batch", sub_m)) => {

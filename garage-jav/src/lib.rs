@@ -1,3 +1,6 @@
+mod crawl;
+pub use crawl::Crawl;
+
 use sea_orm::{ConnectOptions, Database, DatabaseConnection};
 use std::time::Duration;
 

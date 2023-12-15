@@ -84,6 +84,8 @@ pub fn ffmpeg_cmd() -> Command {
             args.sub_suffix.clone(),
             args.sub_number.clone().default_value("0"),
             args.output_path.clone(),
+            args.output_format.clone().default_value("mkv"),
+            args.advance.clone(),
             args.exec.clone(),
         ]))
         .subcommand(Command::new("add_fonts").about("").args([
