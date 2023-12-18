@@ -20,6 +20,8 @@ edition = "2021"
 crate-type = ["rlib", "cdylib", "staticlib"]
 
 [dependencies]
-ruspider = { path = "../ruspider" }
 sea-orm = { workspace = true }
 sea-query = { workspace = true }
+scraper = "0.18"
+reqwest = { version = "0.11", features = ["json"] }
+tokio = { version = "1", features = ["full"] }

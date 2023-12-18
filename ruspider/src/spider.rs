@@ -5,6 +5,7 @@ use scraper::Html;
 pub struct Ruspider {
     proxy: Option<reqwest::Proxy>,
     document: Option<Html>,
+    callbacks: Option<fn(Element) -> T>,
 }
 
 impl Ruspider {
@@ -12,6 +13,7 @@ impl Ruspider {
         Ruspider {
             proxy: None,
             document: None,
+            callbacks: None,
         }
     }
 
@@ -23,8 +25,8 @@ impl Ruspider {
 
     pub fn on_response() {}
 
-    pub fn on_html(&self, query_selector: &str) -> Element {
-        Element::new()
+    pub fn on_html<T>(&self, query_selector: &str, callback: impl Fn(Element) -> T) {
+        // Element::new()
     }
 
     pub async fn visit(&self, url: &str) {

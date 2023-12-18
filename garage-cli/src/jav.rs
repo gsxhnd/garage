@@ -1,5 +1,6 @@
 use clap::ArgMatches;
 use clap::{value_parser, Arg, ArgAction, Command, Parser, Subcommand};
+use garage_jav::Crawl;
 use garage_jav::DbSyncBf;
 use std::path::PathBuf;
 
@@ -67,6 +68,9 @@ pub async fn parse_jav_cmd(sub_cmd: &str, args: &ArgMatches) {
                 .to_owned();
             let action = DbSyncBf::new().await;
             action.sync();
+        }
+        "crawl_code" => {
+            let c = Crawl::new();
         }
         _ => println!("no complete sub command"),
     }

@@ -6,8 +6,6 @@ use clap::Command;
 use tracing::info;
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
-use garage_jav::Crawl;
-
 #[tokio::main]
 async fn main() {
     tracing_subscriber::registry().with(fmt::layer()).init();
@@ -27,10 +25,7 @@ async fn main() {
             let sub_cmd = sub_m.subcommand().unwrap();
             jav::parse_jav_cmd(sub_cmd.0, sub_cmd.1).await;
         }
-        Some(("spider", _sub_m)) => {
-            let r = Crawl::new();
-            r.start();
-        }
+        Some(("spider", _sub_m)) => {}
         Some(("tenhou", _sub_m)) => todo!(),
         Some(("ffmpeg-batch", sub_m)) => {
             info!("ffmpeg-batch starting...");
