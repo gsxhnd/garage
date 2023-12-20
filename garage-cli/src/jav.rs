@@ -69,8 +69,9 @@ pub async fn parse_jav_cmd(sub_cmd: &str, args: &ArgMatches) {
             let action = DbSyncBf::new().await;
             action.sync();
         }
-        "crawl_code" => {
+        "crawl_movie_code" => {
             let c = Crawl::new();
+            c.start_jav_code().await;
         }
         _ => println!("no complete sub command"),
     }

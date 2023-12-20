@@ -1,14 +1,37 @@
-use scraper::Html;
+#[derive(Debug, Clone)]
+pub struct Element {
+    pub link: String,
+    pub html: String,
+}
 
-#[derive(Debug)]
-pub struct Element;
+pub struct ElementBuilder {
+    link: Option<String>,
+    html: Option<String>,
+}
 
 impl Element {
-    pub fn new() -> Self {
-        Element
+    pub fn new() -> ElementBuilder {
+        ElementBuilder {
+            link: None,
+            html: None,
+        }
+    }
+}
+
+impl ElementBuilder {
+    pub fn set_link(mut self, link: String) -> Self {
+        self.link = Some(link);
+        self
     }
 
-    fn parse() {
-        let a = Html::parse_document("");
+    pub fn parse(mut self, content: String) -> Self {
+        self.html = Some(content);
+        self
+    }
+
+    pub fn build(self) -> Element {
+        let link = self.link.expect("error no link");
+        let html = self.html.unwrap();
+        Element { link, html }
     }
 }

@@ -1,19 +1,27 @@
 use crate::element::Element;
-use reqwest;
+use reqwest::{Client, Proxy, Request, Response};
 use scraper::Html;
+use tokio::sync::mpsc::{self, Receiver, Sender};
 
+#[derive(Debug)]
 pub struct Ruspider {
+    req_client: Client,
     proxy: Option<reqwest::Proxy>,
-    document: Option<Html>,
-    callbacks: Option<fn(Element) -> T>,
+    tx: Sender<Element>,
 }
 
 impl Ruspider {
-    pub fn new() -> Self {
+    pub fn new(tx: Sender<Element>) -> Self {
+        // let (tx, rx) = mpsc::channel(10);
+        let req_client = reqwest::Client::builder()
+            // .proxy(self.proxy.clone())
+            .build()
+            .unwrap();
         Ruspider {
+            req_client,
             proxy: None,
-            document: None,
-            callbacks: None,
+            // document: None,
+            tx,
         }
     }
 
@@ -25,17 +33,22 @@ impl Ruspider {
 
     pub fn on_response() {}
 
-    pub fn on_html<T>(&self, query_selector: &str, callback: impl Fn(Element) -> T) {
-        // Element::new()
+    pub fn sub(&self) {
+        // self.tx
+        // self.rx
     }
 
-    pub async fn visit(&self, url: &str) {
-        let req_client = reqwest::Client::builder()
-            // .proxy(self.proxy.clone())
-            .build()
-            .unwrap();
-        let req = req_client.request(reqwest::Method::GET, url);
+    pub async fn visit(&self, url: String) {
+        let req = self.req_client.request(reqwest::Method::GET, url.clone());
         let resp = req.send().await.unwrap();
-        println!("response: {:?}", resp.text().await)
+        match resp.text().await {
+            Ok(s) => {
+                let e = Element::new().set_link(url.clone()).parse(s).build();
+                self.tx.send(e).await.unwrap();
+            }
+            Err(_) => {}
+        }
+        // println!("response: {:?}", resp.text().await)
     }
+    pub fn stop(&self) {}
 }

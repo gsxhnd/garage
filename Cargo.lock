@@ -813,6 +813,7 @@ name = "garage_jav"
 version = "0.1.0"
 dependencies = [
  "reqwest",
+ "ruspider",
  "scraper",
  "sea-orm",
  "sea-query",
