@@ -3,7 +3,7 @@ use tokio::sync::mpsc::{self, Receiver, Sender};
 use tokio::sync::Mutex;
 use tokio::time::{sleep, Duration};
 
-use ruspider::{Element, Ruspider};
+use ruspider::{Element, Queue, Ruspider};
 use scraper::Html;
 
 pub struct Crawl {
@@ -17,14 +17,29 @@ impl Crawl {
     }
 
     pub async fn start_jav_code(&self) {
-        // let mut rx = r.sub();
         let (tx, mut rx) = mpsc::channel(10);
-        let infos = self.infos.clone();
-        let r = Ruspider::new(tx);
+        let r = Ruspider::new().set_sender(tx).build();
+        tokio::spawn(async move {
+            r.visit("https://www.baidu.com".to_string()).await;
+        });
+        while let Some(message) = rx.recv().await {
+            println!("GOT = {:?}", message);
+        }
+    }
+
+    pub async fn start_jav_star_code(&self) {
+        let (tx, mut rx) = mpsc::channel(10);
+        let mut queue = Queue::new(Ruspider::new().set_sender(tx).build());
 
         tokio::spawn(async move {
-            r.visit("https://wwww.baidu.com".to_string()).await;
-            r.visit("https://wwww.baidu.com".to_string()).await;
+            queue.add_url("https://www.baidu.com".to_string());
+            queue.add_url("https://www.baidu.com".to_string());
+            queue.add_url("https://www.baidu.com".to_string());
+            queue.add_url("https://www.baidu.com".to_string());
+            queue.add_url("https://www.baidu.com".to_string());
+            queue.add_url("https://www.baidu.com".to_string());
+            queue.add_url("https://www.baidu.com".to_string());
+            queue.run().await;
         });
 
         while let Some(message) = rx.recv().await {
@@ -33,7 +48,8 @@ impl Crawl {
 
         println!("infos: {:?}", self.infos)
     }
-    pub fn start_jav_star_code() {}
+
     pub fn start_jav_code_form_dir() {}
+
     pub fn start_jav_prefiex_code() {}
 }

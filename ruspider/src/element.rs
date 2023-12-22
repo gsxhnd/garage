@@ -24,7 +24,7 @@ impl ElementBuilder {
         self
     }
 
-    pub fn parse(mut self, content: String) -> Self {
+    pub fn set_content(mut self, content: String) -> Self {
         self.html = Some(content);
         self
     }
