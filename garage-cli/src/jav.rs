@@ -6,27 +6,17 @@ use std::path::PathBuf;
 pub fn jav_cmd() -> Command {
     Command::new("jav")
         .about("jav data crawl and process")
-        .subcommand(crawl_movie_code())
-        .subcommand(crawl_star_code())
-        .subcommand(crawl_movie_prefix_code())
-        .subcommand(crawl_movie_code_from_dir())
+        .subcommand(Command::new("crawl_movie_code").about("crawl jav movie info by movie code"))
+        .subcommand(
+            Command::new("crawl_movie_prefix_code")
+                .about("crawl jav movie info by movie prefix code"),
+        )
+        .subcommand(
+            Command::new("crawl_movie_code_from_dir")
+                .about("crawl jav movie info by directory movie ext"),
+        )
+        .subcommand(Command::new("crawl_star_code").about("crawl jav movie info by star code"))
         .subcommand(sync_db_bf_cmd())
-}
-
-pub fn crawl_movie_code() -> Command {
-    Command::new("crawl_movie_code").about("crawl jav movie info by movie code")
-}
-
-pub fn crawl_star_code() -> Command {
-    Command::new("crawl_star_code").about("crawl jav movie info by star code")
-}
-
-pub fn crawl_movie_prefix_code() -> Command {
-    Command::new("crawl_movie_prefix_code").about("crawl jav movie info by movie prefix code")
-}
-
-pub fn crawl_movie_code_from_dir() -> Command {
-    Command::new("crawl_movie_code_from_dir").about("crawl jav movie info by directory movie ext")
 }
 
 pub fn sync_db_bf_cmd() -> Command {
@@ -71,6 +61,10 @@ pub async fn parse_jav_cmd(sub_cmd: &str, args: &ArgMatches) {
         "crawl_movie_code" => {
             let c = Crawl::new();
             c.start_jav_code().await;
+        }
+        "crawl_movie_prefix_code" => {
+            let c = Crawl::new();
+            c.start_jav_prefix_code("xxx".to_string(), 1, 100, 3).await;
         }
         "crawl_star_code" => {
             let c = Crawl::new();
