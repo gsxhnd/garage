@@ -791,12 +791,14 @@ dependencies = [
  "clap",
  "garage_ffmpeg",
  "garage_jav",
+ "log",
  "ruspider",
  "sea-orm",
  "sea-query",
  "serde",
  "tokio",
  "tracing",
+ "tracing-log",
  "tracing-subscriber",
 ]
 

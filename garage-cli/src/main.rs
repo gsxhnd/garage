@@ -3,12 +3,16 @@ mod jav;
 mod spider;
 mod tenhou;
 use clap::Command;
+use log;
 use tracing::info;
+use tracing_log::LogTracer;
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
-    tracing_subscriber::registry().with(fmt::layer()).init();
+    let _ = LogTracer::init();
+    log::warn!("test");
+    // tracing_subscriber::registry().with(fmt::layer()).init();
 
     let cmd = Command::new("garage")
         .bin_name("garage")
