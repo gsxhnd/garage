@@ -10,7 +10,12 @@ use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
 async fn main() {
-    let _ = LogTracer::init();
+    match LogTracer::init() {
+        Ok(_) => {}
+        Err(err) => {
+            println!("log init error: {}", err);
+        }
+    }
     log::warn!("test");
     // tracing_subscriber::registry().with(fmt::layer()).init();
 
@@ -29,8 +34,12 @@ async fn main() {
             let sub_cmd = sub_m.subcommand().unwrap();
             jav::parse_jav_cmd(sub_cmd.0, sub_cmd.1).await;
         }
-        Some(("spider", _sub_m)) => {}
-        Some(("tenhou", _sub_m)) => todo!(),
+        Some(("spider", _sub_m)) => {
+            println!("not work")
+        }
+        Some(("tenhou", _sub_m)) => {
+            println!("not work")
+        }
         Some(("ffmpeg-batch", sub_m)) => {
             info!("ffmpeg-batch starting...");
             let sub_cmd = sub_m.subcommand().unwrap();

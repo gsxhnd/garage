@@ -16,27 +16,25 @@ pub fn jav_cmd() -> Command {
                 .about("crawl jav movie info by directory movie ext"),
         )
         .subcommand(Command::new("crawl_star_code").about("crawl jav movie info by star code"))
-        .subcommand(sync_db_bf_cmd())
-}
-
-pub fn sync_db_bf_cmd() -> Command {
-    Command::new("sync_db_bf")
-        .about("jav info data sync to bf database")
-        .arg(
-            Arg::new("from_csv")
-                .long("from_csv")
-                .value_name("FILE")
-                .required(true)
-                .value_parser(value_parser!(PathBuf))
-                .help("info csv file path"),
-        )
-        .arg(
-            Arg::new("db_path")
-                .long("db_path")
-                .value_name("FILE")
-                .required(true)
-                .value_parser(value_parser!(PathBuf))
-                .help("billfish database path"),
+        .subcommand(
+            Command::new("sync_db_bf")
+                .about("jav info data sync to bf database")
+                .arg(
+                    Arg::new("from_csv")
+                        .long("from_csv")
+                        .value_name("FILE")
+                        .required(true)
+                        .value_parser(value_parser!(PathBuf))
+                        .help("info csv file path"),
+                )
+                .arg(
+                    Arg::new("db_path")
+                        .long("db_path")
+                        .value_name("FILE")
+                        .required(true)
+                        .value_parser(value_parser!(PathBuf))
+                        .help("billfish database path"),
+                ),
         )
 }
 
