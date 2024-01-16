@@ -30,4 +30,5 @@ serde = { workspace = true, features = ["derive"] }
 tokio = { workspace = true, features = ["full"] }
 tracing = { workspace = true }
 tracing-log = { workspace = true }
-tracing-subscriber = { workspace = true }
+tracing-appender = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["json", "env-filter"] }
