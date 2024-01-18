@@ -11,5 +11,5 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
       - name: Add Rust
-        uses: dtolnay/rust-toolchain@master
+        uses: dtolnay/rust-toolchain@stable
       - run: cargo version
