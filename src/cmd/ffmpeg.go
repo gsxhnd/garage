@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/gsxhnd/garage/src/batch"
+	"github.com/gsxhnd/garage/ffmpeg"
 	"github.com/gsxhnd/garage/src/utils"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
@@ -69,7 +69,8 @@ var (
 )
 
 var ffmpegBatchCmd = &cli.Command{
-	Name: "ffmpeg-batch",
+	Name:        "ffmpeg-batch",
+	Description: "ffmpeg视频批处理工具，支持视频格式转换、字幕添加和字体添加",
 	Subcommands: []*cli.Command{
 		ffmpegBatchConvertCmd,
 		ffmpegBatchAddSubCmd,
@@ -99,7 +100,8 @@ var ffmpegBatchConvertCmd = &cli.Command{
 			outputType = c.String("output-type")
 			advance    = c.String("advance")
 		)
-		vb, err := batch.NewVideoBatch(logger, inputPath, inputType, outputPath)
+
+		vb, err := ffmpeg.NewVideoBatch(logger, inputPath, inputType, outputPath)
 		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
@@ -159,7 +161,7 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 			inputFontsPath = c.String("input-fonts-path")
 			outputPath     = c.String("output-path")
 		)
-		vb, err := batch.NewVideoBatch(logger, inputPath, inputType, outputPath)
+		vb, err := ffmpeg.NewVideoBatch(logger, inputPath, inputType, outputPath)
 		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
@@ -217,7 +219,7 @@ var ffmpegBatchAddFontCmd = &cli.Command{
 			inputFontsPath = c.String("input-fonts-path")
 			outputPath     = c.String("output-path")
 		)
-		vb, err := batch.NewVideoBatch(logger, inputPath, inputType, outputPath)
+		vb, err := ffmpeg.NewVideoBatch(logger, inputPath, inputType, outputPath)
 		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err

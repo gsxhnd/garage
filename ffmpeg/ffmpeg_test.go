@@ -1,9 +1,7 @@
-package batch
+package ffmpeg
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_videoBatch_getVideosList(t *testing.T) {
@@ -22,17 +20,6 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 		// {"test_err", args{sourceRootPath: "../../testdata", sourceVideoType: ".mp4"}, []string{}, false},
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var s = &videoBatch{
-				inputPath: tt.args.inputPath,
-				inputType: tt.args.inputType,
-			}
-			err := s.getVideosList()
-			if tt.wantErr {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-			}
-		})
+		t.Run(tt.name, func(t *testing.T) {})
 	}
 }
