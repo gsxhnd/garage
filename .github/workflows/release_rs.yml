@@ -5,8 +5,8 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.platform.os_name }} with rust ${{ matrix.toolchain }}
-    runs-on: ${{ matrix.platform.os }}
+    name: cargo test
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
