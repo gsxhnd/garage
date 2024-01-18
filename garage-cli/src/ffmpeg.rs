@@ -70,33 +70,45 @@ pub fn ffmpeg_cmd() -> Command {
 
     Command::new("ffmpeg-batch")
         .about("ffmpeg batch")
-        .subcommand(Command::new("convert").about("").args([
-            args.input_path.clone(),
-            args.input_format.clone().default_value("mp4"),
-            args.output_path.clone(),
-            args.output_format.clone(),
-            args.advance.clone(),
-            args.exec.clone(),
-        ]))
-        .subcommand(Command::new("add_sub").about("").args([
-            args.input_path.clone(),
-            args.input_format.clone().default_value("mkv"),
-            args.sub_suffix.clone(),
-            args.sub_number.clone().default_value("0"),
-            args.output_path.clone(),
-            args.output_format.clone().default_value("mkv"),
-            args.advance.clone(),
-            args.exec.clone(),
-        ]))
-        .subcommand(Command::new("add_fonts").about("").args([
-            args.input_path.clone(),
-            args.input_format.clone().default_value("mkv"),
-            args.font_path.clone(),
-            args.output_path.clone(),
-            args.output_format.clone(),
-            args.advance.clone(),
-            args.exec.clone(),
-        ]))
+        .subcommand(
+            Command::new("convert")
+                .about("batch video convert other format")
+                .args([
+                    args.input_path.clone(),
+                    args.input_format.clone().default_value("mp4"),
+                    args.output_path.clone(),
+                    args.output_format.clone(),
+                    args.advance.clone(),
+                    args.exec.clone(),
+                ]),
+        )
+        .subcommand(
+            Command::new("add_sub")
+                .about("batch video add one suffix subtittle")
+                .args([
+                    args.input_path.clone(),
+                    args.input_format.clone().default_value("mkv"),
+                    args.sub_suffix.clone(),
+                    args.sub_number.clone().default_value("0"),
+                    args.output_path.clone(),
+                    args.output_format.clone().default_value("mkv"),
+                    args.advance.clone(),
+                    args.exec.clone(),
+                ]),
+        )
+        .subcommand(
+            Command::new("add_fonts")
+                .about("batch video add fonts from dir ")
+                .args([
+                    args.input_path.clone(),
+                    args.input_format.clone().default_value("mkv"),
+                    args.font_path.clone(),
+                    args.output_path.clone(),
+                    args.output_format.clone(),
+                    args.advance.clone(),
+                    args.exec.clone(),
+                ]),
+        )
 }
 
 pub fn parse_ffmpeg_cmd(sub_cmd: &str, args: &ArgMatches) {
