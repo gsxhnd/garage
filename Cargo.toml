@@ -1,12 +1,5 @@
 [workspace]
-members = [
-    "garage-jav",
-    "garage-ffmpeg",
-    "garage-tenhou",
-    "garage-cli",
-    "garage-spider",
-    "ruspider",
-]
+members = ["garage-tenhou", "garage-cli", "garage-spider", "ruspider"]
 
 [workspace.package]
 name = "garage"
@@ -23,8 +16,6 @@ exclude = [".gitignore", ".cargo/config"]
 rust-version = "1.72"
 
 [path]
-garage_jav = { path = "garage-jav" }
-garage_ffmpeg = { path = "garage-ffmpeg" }
 garage_cli = { path = "garage-cli" }
 garage_spider = { path = "garage-spider" }
 garage_tenhou = { path = "garage-tenhou" }

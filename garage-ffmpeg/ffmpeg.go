@@ -55,10 +55,7 @@ func NewVideoBatch(l *zap.Logger, opt *VideoBatchOption) (VideoBatcher, error) {
 		fontsList:   make([]string, 0),
 		fontsParams: "",
 		cmdBatch:    make([]string, 0),
-	}h      = c.String("input-path")
-	// inputType      = c.String("input-type")
-	// inputFontsPath = c.String("input-fonts-path")
-	// outputPath     = c.String("output-path")
+	}
 
 	if err := client.createDestDir(); err != nil {
 		return nil, err

@@ -17,15 +17,15 @@ async fn main() {
         .version("v1")
         .about("about")
         .subcommand_required(true)
-        .subcommand(jav::jav_cmd())
+        // .subcommand(jav::jav_cmd())
+        // .subcommand(ffmpeg::ffmpeg_cmd())
         .subcommand(spider::spider_cmd())
-        .subcommand(tenhou::tenhou_cmd())
-        .subcommand(ffmpeg::ffmpeg_cmd());
+        .subcommand(tenhou::tenhou_cmd());
 
     match cmd.get_matches().subcommand() {
         Some(("jav", sub_m)) => {
             let sub_cmd = sub_m.subcommand().unwrap();
-            jav::parse_jav_cmd(sub_cmd.0, sub_cmd.1).await;
+            // jav::parse_jav_cmd(sub_cmd.0, sub_cmd.1).await;
         }
         Some(("spider", _sub_m)) => {
             info!("todo");
@@ -36,7 +36,7 @@ async fn main() {
         Some(("ffmpeg-batch", sub_m)) => {
             info!("ffmpeg-batch starting...");
             let sub_cmd = sub_m.subcommand().unwrap();
-            ffmpeg::parse_ffmpeg_cmd(sub_cmd.0, sub_cmd.1)
+            // ffmpeg::parse_ffmpeg_cmd(sub_cmd.0, sub_cmd.1)
         }
         _ => {}
     }

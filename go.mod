@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/antchfx/htmlquery v1.2.3
+	github.com/glebarez/go-sqlite v1.22.0 // indirect
 	github.com/go-gota/gota v0.12.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/google/wire v0.5.0

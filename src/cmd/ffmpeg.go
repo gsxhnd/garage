@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/gsxhnd/garage/ffmpeg"
+	"github.com/gsxhnd/garage/garage-ffmpeg"
 	"github.com/gsxhnd/garage/src/utils"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
