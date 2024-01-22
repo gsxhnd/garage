@@ -3,10 +3,12 @@ package ffmpeg
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -33,10 +35,11 @@ type VideoBatcher interface {
 	StartAddSubtittleBatch() error         // 添加字幕
 	StartAddFontsBatch() error             // 添加字体
 	StartConvertBatch() error              // 转换视频
+	executeBatch() error
 }
 
 type videoBatch struct {
-	option      VideoBatchOption
+	option      *VideoBatchOption
 	videosList  []string
 	fontsList   []string
 	fontsParams string
@@ -44,7 +47,7 @@ type videoBatch struct {
 	logger      *zap.Logger
 }
 
-func NewVideoBatch(l *zap.Logger, opt VideoBatchOption) (VideoBatcher, error) {
+func NewVideoBatch(l *zap.Logger, opt *VideoBatchOption) (VideoBatcher, error) {
 	client := &videoBatch{
 		logger:      l,
 		option:      opt,
@@ -52,7 +55,10 @@ func NewVideoBatch(l *zap.Logger, opt VideoBatchOption) (VideoBatcher, error) {
 		fontsList:   make([]string, 0),
 		fontsParams: "",
 		cmdBatch:    make([]string, 0),
-	}
+	}h      = c.String("input-path")
+	// inputType      = c.String("input-type")
+	// inputFontsPath = c.String("input-fonts-path")
+	// outputPath     = c.String("output-path")
 
 	if err := client.createDestDir(); err != nil {
 		return nil, err
@@ -112,6 +118,7 @@ func (vb *videoBatch) StartAddSubtittleBatch() error {
 			vb.fontsParams, destVideo)
 		vb.cmdBatch = append(vb.cmdBatch, s)
 	}
+	vb.logger.Info("Get all videos, starting convert")
 
 	if vb.option.Exec {
 		return nil
@@ -247,6 +254,26 @@ func (vb *videoBatch) getFontsParams(fontsPath string) error {
 	}
 	for i, v := range fontsList {
 		vb.fontsParams += fmt.Sprintf(fontParamsTemplate, filepath.Join(fontsPath, v), i) + " "
+	}
+	return nil
+}
+
+func (vb *videoBatch) executeBatch() error {
+	for _, cmd := range vb.cmdBatch {
+		if vb.option.Exec {
+			vb.logger.Sugar().Infof("cmd: %v", cmd)
+		} else {
+			startTime := time.Now()
+			vb.logger.Sugar().Infof("Start convert video cmd: %v", cmd)
+			cmd := exec.Command("powershell", cmd)
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			err := cmd.Run()
+			if err != nil {
+				vb.logger.Sugar().Errorf("cmd errror: %v", err)
+			}
+			vb.logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
+		}
 	}
 	return nil
 }

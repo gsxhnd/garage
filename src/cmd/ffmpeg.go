@@ -1,10 +1,6 @@
 package cmd
 
 import (
-	"os"
-	"os/exec"
-	"time"
-
 	"github.com/gsxhnd/garage/ffmpeg"
 	"github.com/gsxhnd/garage/src/utils"
 	"github.com/urfave/cli/v2"
@@ -93,43 +89,20 @@ var ffmpegBatchConvertCmd = &cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 		var (
-			logger     = utils.GetLogger()
-			inputPath  = c.String("input-path")
-			inputType  = c.String("input-type")
-			outputPath = c.String("output-path")
-			outputType = c.String("output-type")
-			advance    = c.String("advance")
+			logger = utils.GetLogger()
+			// inputPath  = c.String("input-path")
+			// inputType  = c.String("input-type")
+			// outputPath = c.String("output-path")
+			// outputType = c.String("output-type")
+			// advance    = c.String("advance")
 		)
 
-		vb, err := ffmpeg.NewVideoBatch(logger, inputPath, inputType, outputPath)
+		vb, err := ffmpeg.NewVideoBatch(logger, nil)
 		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
 		}
-
-		batch, err := vb.GetConvertBatch(advance, outputType)
-		if err != nil {
-			logger.Panic("Get convert cmd batch error", zap.Error(err))
-		}
-
-		logger.Info("Get all videos, starting convert")
-		for _, cmd := range batch {
-			if !c.Bool("exec") {
-				logger.Sugar().Infof("cmd: %v", cmd)
-			} else {
-				startTime := time.Now()
-				logger.Sugar().Infof("Start convert video cmd: %v", cmd)
-				cmd := exec.Command("powershell", cmd)
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
-				err := cmd.Run()
-				if err != nil {
-					logger.Sugar().Errorf("cmd errror: %v", err)
-				}
-				logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
-			}
-		}
-		return nil
+		return vb.StartConvertBatch()
 	},
 }
 
@@ -151,51 +124,44 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 		var (
-			logger         = utils.GetLogger()
-			inputPath      = c.String("input-path")
-			inputType      = c.String("input-type")
-			inputSubNo     = c.Int("input-sub-no")
-			inputSubSuffix = c.String("input-sub-suffix")
-			inputSubLang   = c.String("input-sub-lang")
-			inputSubTitle  = c.String("input-sub-title")
-			inputFontsPath = c.String("input-fonts-path")
-			outputPath     = c.String("output-path")
+			logger = utils.GetLogger()
+			// inputPath      = c.String("input-path")
+			// inputType      = c.String("input-type")
+			// inputSubNo     = c.Int("input-sub-no")
+			// inputSubSuffix = c.String("input-sub-suffix")
+			// inputSubLang   = c.String("input-sub-lang")
+			// inputSubTitle  = c.String("input-sub-title")
+			// inputFontsPath = c.String("input-fonts-path")
+			// outputPath     = c.String("output-path")
 		)
-		vb, err := ffmpeg.NewVideoBatch(logger, inputPath, inputType, outputPath)
+		vb, err := ffmpeg.NewVideoBatch(logger, nil)
 		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
 		}
 
-		batch, err := vb.GetAddSubtitleBatch(
-			inputSubNo,
-			inputSubSuffix,
-			inputSubLang,
-			inputSubTitle,
-			inputFontsPath,
-		)
-		if err != nil {
-			logger.Panic("Get add subtitle batch error", zap.Error(err))
-		}
-		logger.Info("Get all videos, starting add subtitle")
-		for _, cmd := range batch {
-			if !c.Bool("exec") {
-				logger.Sugar().Infof("cmd: %v", cmd)
-			} else {
-				startTime := time.Now()
-				logger.Sugar().Infof("Start add subtitle into video, cmd: %v", cmd)
-				cmd := exec.Command("powershell", cmd)
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
-				err := cmd.Run()
-				if err != nil {
-					logger.Sugar().Errorf("cmd errror: %v", err)
-				}
-				logger.Sugar().Infof("Finished  add subtitle into video")
-				logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
-			}
-		}
-		return nil
+		return vb.StartAddSubtittleBatch()
+		// if err != nil {
+		// 	logger.Panic("Get add subtitle batch error", zap.Error(err))
+		// }
+		// logger.Info("Get all videos, starting add subtitle")
+		// for _, cmd := range batch {
+		// 	if !c.Bool("exec") {
+		// 		logger.Sugar().Infof("cmd: %v", cmd)
+		// 	} else {
+		// 		startTime := time.Now()
+		// 		logger.Sugar().Infof("Start add subtitle into video, cmd: %v", cmd)
+		// 		cmd := exec.Command("powershell", cmd)
+		// 		cmd.Stdout = os.Stdout
+		// 		cmd.Stderr = os.Stderr
+		// 		err := cmd.Run()
+		// 		if err != nil {
+		// 			logger.Sugar().Errorf("cmd errror: %v", err)
+		// 		}
+		// 		logger.Sugar().Infof("Finished  add subtitle into video")
+		// 		logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
+		// 	}
+		// }
 	},
 }
 
@@ -213,40 +179,39 @@ var ffmpegBatchAddFontCmd = &cli.Command{
 	},
 	Action: func(c *cli.Context) error {
 		var (
-			logger         = utils.GetLogger()
-			inputPath      = c.String("input-path")
-			inputType      = c.String("input-type")
-			inputFontsPath = c.String("input-fonts-path")
-			outputPath     = c.String("output-path")
+			logger = utils.GetLogger()
+			// inputPath      = c.String("input-path")
+			// inputType      = c.String("input-type")
+			// inputFontsPath = c.String("input-fonts-path")
+			// outputPath     = c.String("output-path")
 		)
-		vb, err := ffmpeg.NewVideoBatch(logger, inputPath, inputType, outputPath)
+		vb, err := ffmpeg.NewVideoBatch(logger, nil)
 		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
 		}
 
-		batch, err := vb.GetAddFontsBatch(inputFontsPath)
-		if err != nil {
-			logger.Panic("Get add subtitle batch error", zap.Error(err))
-		}
-		logger.Info("Get all videos, starting add fonts")
-		for _, cmd := range batch {
-			if !c.Bool("exec") {
-				logger.Sugar().Infof("cmd: %v", cmd)
-			} else {
-				startTime := time.Now()
-				logger.Sugar().Infof("Start add subtitle into video, cmd: %v", cmd)
-				cmd := exec.Command("powershell", cmd)
-				cmd.Stdout = os.Stdout
-				cmd.Stderr = os.Stderr
-				err := cmd.Run()
-				if err != nil {
-					logger.Sugar().Errorf("cmd errror: %v", err)
-				}
-				logger.Sugar().Infof("Finished  add subtitle into video")
-				logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
-			}
-		}
-		return nil
+		return vb.StartAddFontsBatch()
+		// if err != nil {
+		// 	logger.Panic("Get add subtitle batch error", zap.Error(err))
+		// }
+		// logger.Info("Get all videos, starting add fonts")
+		// for _, cmd := range batch {
+		// 	if !c.Bool("exec") {
+		// 		logger.Sugar().Infof("cmd: %v", cmd)
+		// 	} else {
+		// 		startTime := time.Now()
+		// 		logger.Sugar().Infof("Start add subtitle into video, cmd: %v", cmd)
+		// 		cmd := exec.Command("powershell", cmd)
+		// 		cmd.Stdout = os.Stdout
+		// 		cmd.Stderr = os.Stderr
+		// 		err := cmd.Run()
+		// 		if err != nil {
+		// 			logger.Sugar().Errorf("cmd errror: %v", err)
+		// 		}
+		// 		logger.Sugar().Infof("Finished  add subtitle into video")
+		// 		logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
+		// 	}
+		// }
 	},
 }
