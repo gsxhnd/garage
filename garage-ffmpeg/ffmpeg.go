@@ -28,13 +28,13 @@ type VideoBatchOption struct {
 }
 
 type VideoBatcher interface {
-	createDestDir() error                  // 创建输出后的文件夹
-	getVideosList() error                  // 获取视频列表
-	getFontsList() error                   // 获取字体列表
-	getFontsParams(fontsPath string) error // 获取字体
-	StartAddSubtittleBatch() error         // 添加字幕
-	StartAddFontsBatch() error             // 添加字体
-	StartConvertBatch() error              // 转换视频
+	createDestDir() error            // 创建输出后的文件夹
+	getVideosList() error            // 获取视频列表
+	getFontsList() error             // 获取字体列表
+	getFontsParams() (string, error) // 获取字体列表
+	StartAddSubtittleBatch() error   // 添加字幕
+	StartAddFontsBatch() error       // 添加字体
+	StartConvertBatch() error        // 转换视频
 	executeBatch() error
 }
 
@@ -46,6 +46,11 @@ type videoBatch struct {
 	cmdBatch    []string
 	logger      *zap.Logger
 }
+
+const CONVERT_TEMPLATE = `ffmpeg.exe -i "%v" %v "%v"`
+const ADD_SUB_TEMPLATE = `ffmpeg.exe -i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s "%v"`
+const ADD_FONT_TEMPLATE = `ffmpeg.exe -i "%s" -c copy %s "%v"`
+const FONT_TEMPLATE = `-attach "%s" -metadata:s:t:%v mimetype=application/x-truetype-font `
 
 func NewVideoBatch(l *zap.Logger, opt *VideoBatchOption) (VideoBatcher, error) {
 	client := &videoBatch{
@@ -64,7 +69,6 @@ func NewVideoBatch(l *zap.Logger, opt *VideoBatchOption) (VideoBatcher, error) {
 }
 
 func (vb *videoBatch) StartConvertBatch() error {
-	template := `ffmpeg.exe -i "%v" %v "%v"`
 	if err := vb.getVideosList(); err != nil {
 		return err
 	}
@@ -72,14 +76,11 @@ func (vb *videoBatch) StartConvertBatch() error {
 	for _, v := range vb.videosList {
 		inputVideo := filepath.Join(vb.option.InputPath, v+vb.option.InputFormat)
 		outputVideo := filepath.Join(vb.option.OutputPath, v+vb.option.OutputFormat)
-		s := fmt.Sprintf(template, inputVideo, vb.option.Advance, outputVideo)
+		s := fmt.Sprintf(CONVERT_TEMPLATE, inputVideo, vb.option.Advance, outputVideo)
 		vb.cmdBatch = append(vb.cmdBatch, s)
 	}
 
-	if vb.option.Exec {
-		return nil
-	}
-	return nil
+	return vb.executeBatch()
 }
 
 func (vb *videoBatch) StartAddSubtittleBatch() error {
@@ -87,14 +88,14 @@ func (vb *videoBatch) StartAddSubtittleBatch() error {
 		return err
 	}
 
-	vb.logger.Info("Source videos directory: " + vb.option.InputPath)
-	vb.logger.Info("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
-	vb.logger.Info("Target video's subtitle stream number: " + strconv.Itoa(vb.option.InputSubNo))
-	vb.logger.Info("Target video's subtitle language: " + vb.option.InputSubLang)
-	vb.logger.Info("Target video's subtitle title: " + vb.option.InputSubTitle)
+	vb.logger.Debug("Source videos directory: " + vb.option.InputPath)
+	vb.logger.Debug("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
+	vb.logger.Debug("Target video's subtitle stream number: " + strconv.Itoa(vb.option.InputSubNo))
+	vb.logger.Debug("Target video's subtitle language: " + vb.option.InputSubLang)
+	vb.logger.Debug("Target video's subtitle title: " + vb.option.InputSubTitle)
 
 	if vb.option.FontsPath != "" {
-		if err := vb.getFontsParams(vb.option.FontsPath); err != nil {
+		if err := vb.getFontsList(); err != nil {
 			return err
 		}
 		vb.logger.Info("Target video's font paths: " + vb.option.FontsPath)
@@ -128,7 +129,7 @@ func (vb *videoBatch) StartAddFontsBatch() error {
 		return err
 	}
 
-	if err := vb.getFontsParams(vb.option.FontsPath); err != nil {
+	if err := vb.getFontsList(); err != nil {
 		return err
 	}
 
@@ -218,59 +219,37 @@ func (vb *videoBatch) getFontsList() error {
 	return err
 }
 
-func (vb *videoBatch) getFontsParams(fontsPath string) error {
-	if fontsPath == "" {
-		return nil
+func (vb *videoBatch) getFontsParams() (string, error) {
+	if err := vb.getFontsList(); err != nil {
+		return "", nil
 	}
+	var fontsParams = ""
 
-	var fontsList = make([]string, 0)
-	fontExts := []string{".ttf", ".otf", ".ttc"}
-	fontParamsTemplate := `-attach "%s" -metadata:s:t:%v mimetype=application/x-truetype-font`
-
-	if err := filepath.Walk(fontsPath, func(path string, fi os.FileInfo, err error) error {
-		if fi == nil {
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-		if fi.IsDir() {
-			return nil
-		}
-		filename := fi.Name()
-		fileExt := filepath.Ext(filename)
-
-		for _, b := range fontExts {
-			if fileExt == b {
-				fontsList = append(fontsList, filename)
-			}
-		}
-		return nil
-	}); err != nil {
-		return err
+	for i, v := range vb.fontsList {
+		fontPath := filepath.Join(vb.option.FontsPath, v)
+		fontsParams += fmt.Sprintf(FONT_TEMPLATE, fontPath, i)
 	}
-	for i, v := range fontsList {
-		vb.fontsParams += fmt.Sprintf(fontParamsTemplate, filepath.Join(fontsPath, v), i) + " "
-	}
-	return nil
+	return fontsParams, nil
 }
 
 func (vb *videoBatch) executeBatch() error {
 	for _, cmd := range vb.cmdBatch {
 		if vb.option.Exec {
 			vb.logger.Sugar().Infof("cmd: %v", cmd)
-		} else {
-			startTime := time.Now()
-			vb.logger.Sugar().Infof("Start convert video cmd: %v", cmd)
-			cmd := exec.Command("powershell", cmd)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-			err := cmd.Run()
-			if err != nil {
-				vb.logger.Sugar().Errorf("cmd errror: %v", err)
-			}
-			vb.logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
+			return nil
 		}
+
+		startTime := time.Now()
+		vb.logger.Sugar().Infof("Start convert video cmd: %v", cmd)
+		cmd := exec.Command("powershell", cmd)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		if err != nil {
+			vb.logger.Sugar().Errorf("cmd error: %v", err)
+			return err
+		}
+		vb.logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
 	}
 	return nil
 }
