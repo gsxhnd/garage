@@ -182,6 +182,7 @@ func (vb *videoBatch) getVideosList() error {
 			return nil
 		}
 		filename := fi.Name()
+		vb.logger.Debug("get video filename: " + filename)
 		fileExt := filepath.Ext(filename)
 		if fileExt == vb.option.InputFormat {
 			fileName := strings.TrimSuffix(filename, fileExt)
