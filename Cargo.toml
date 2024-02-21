@@ -1,5 +1,5 @@
 [workspace]
-members = ["garage-tenhou", "garage-cli", "garage-spider", "ruspider"]
+members = ["garage-tenhou", "garage-cli", "ruspider"]
 
 [workspace.package]
 name = "garage"
@@ -17,7 +17,6 @@ rust-version = "1.72"
 
 [path]
 garage_cli = { path = "garage-cli" }
-garage_spider = { path = "garage-spider" }
 garage_tenhou = { path = "garage-tenhou" }
 ruspider = { path = "ruspider" }
 

@@ -821,10 +821,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "garage_spider"
-version = "0.1.0"
-
-[[package]]
 name = "garage_tenhou"
 version = "0.1.0"
 dependencies = [
