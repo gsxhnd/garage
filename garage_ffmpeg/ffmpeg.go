@@ -35,6 +35,7 @@ type VideoBatcher interface {
 	StartAddSubtittleBatch() error   // 添加字幕
 	StartAddFontsBatch() error       // 添加字体
 	StartConvertBatch() error        // 转换视频
+	GetConvertBatch() error          // 转换视频
 	executeBatch() error
 }
 
@@ -68,7 +69,7 @@ func NewVideoBatch(l *zap.Logger, opt *VideoBatchOption) (VideoBatcher, error) {
 	return client, nil
 }
 
-func (vb *videoBatch) StartConvertBatch() error {
+func (vb *videoBatch) GetConvertBatch() error {
 	if err := vb.getVideosList(); err != nil {
 		return err
 	}
@@ -80,6 +81,11 @@ func (vb *videoBatch) StartConvertBatch() error {
 		vb.cmdBatch = append(vb.cmdBatch, s)
 	}
 
+	return nil
+}
+
+func (vb *videoBatch) StartConvertBatch() error {
+	vb.GetConvertBatch()
 	return vb.executeBatch()
 }
 

@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package di
+package garage_di
 
 import (
 	"github.com/gin-gonic/gin"
