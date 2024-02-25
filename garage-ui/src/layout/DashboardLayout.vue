@@ -10,28 +10,34 @@
           <v-img src="vite.svg"></v-img>
         </a>
       </template>
-
-      <v-app-bar-title>Application Bar</v-app-bar-title>
     </v-app-bar>
     <v-navigation-drawer
       model-value
       class="pt-4"
-      color="grey-lighten-3"
       expand-on-hover
       :rail="layoutStore.app_bar.rail"
     >
-      <!-- <v-avatar
-        v-for="n in 6"
-        :key="n"
-        :color="`grey-${n === 1 ? 'darken' : 'lighten'}-1`"
-        :size="n === 1 ? 36 : 20"
-        class="d-block text-center mx-auto mb-9"
-      ></v-avatar> -->
+      <v-list density="compact" nav>
+        <v-list-item
+          prepend-icon="mdi-folder"
+          title="My Files"
+          value="myfiles"
+        ></v-list-item>
+        <v-list-item
+          prepend-icon="mdi-account-multiple"
+          title="Shared with me"
+          value="shared"
+        ></v-list-item>
+        <v-list-item
+          prepend-icon="mdi-star"
+          title="Starred"
+          value="starred"
+        ></v-list-item>
+      </v-list>
     </v-navigation-drawer>
 
     <v-main>
-      <!--  -->
-      <router-view> </router-view>
+      <router-view></router-view>
     </v-main>
   </v-app>
 </template>
@@ -41,4 +47,8 @@ import { useLayoutStore } from "@/stores/layout";
 const layoutStore = useLayoutStore();
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.v-app-bar {
+  background-color: #e9ebf2;
+}
+</style>

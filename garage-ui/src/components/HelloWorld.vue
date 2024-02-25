@@ -13,6 +13,18 @@ const count = ref(0);
       Edit
       <code>components/HelloWorld.vue</code> to test HMR
     </p>
+
+    <v-select
+      :items="[
+        'California',
+        'Colorado',
+        'Florida',
+        'Georgia',
+        'Texas',
+        'Wyoming',
+      ]"
+      variant="outlined"
+    ></v-select>
   </div>
 </template>
 
