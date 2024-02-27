@@ -1,16 +1,12 @@
 package garage_ffmpeg
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
-	"strconv"
-	"strings"
-	"time"
-
-	"go.uber.org/zap"
 )
 
 type VideoBatchOption struct {
@@ -45,7 +41,6 @@ type videoBatch struct {
 	fontsList   []string
 	fontsParams string
 	cmdBatch    []string
-	logger      *zap.Logger
 }
 
 const CONVERT_TEMPLATE = `ffmpeg.exe -i "%v" %v "%v"`
@@ -53,9 +48,8 @@ const ADD_SUB_TEMPLATE = `ffmpeg.exe -i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -
 const ADD_FONT_TEMPLATE = `ffmpeg.exe -i "%s" -c copy %s "%v"`
 const FONT_TEMPLATE = `-attach "%s" -metadata:s:t:%v mimetype=application/x-truetype-font `
 
-func NewVideoBatch(l *zap.Logger, opt *VideoBatchOption) (VideoBatcher, error) {
+func NewVideoBatch(opt *VideoBatchOption) (VideoBatcher, error) {
 	client := &videoBatch{
-		logger:      l,
 		option:      opt,
 		videosList:  make([]string, 0),
 		fontsList:   make([]string, 0),
@@ -94,22 +88,22 @@ func (vb *videoBatch) StartAddSubtittleBatch() error {
 		return err
 	}
 
-	vb.logger.Debug("Source videos directory: " + vb.option.InputPath)
-	vb.logger.Debug("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
-	vb.logger.Debug("Target video's subtitle stream number: " + strconv.Itoa(vb.option.InputSubNo))
-	vb.logger.Debug("Target video's subtitle language: " + vb.option.InputSubLang)
-	vb.logger.Debug("Target video's subtitle title: " + vb.option.InputSubTitle)
+	// vb.logger.Debug("Source videos directory: " + vb.option.InputPath)
+	// vb.logger.Debug("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
+	// vb.logger.Debug("Target video's subtitle stream number: " + strconv.Itoa(vb.option.InputSubNo))
+	// vb.logger.Debug("Target video's subtitle language: " + vb.option.InputSubLang)
+	// vb.logger.Debug("Target video's subtitle title: " + vb.option.InputSubTitle)
 
 	if vb.option.FontsPath != "" {
 		if err := vb.getFontsList(); err != nil {
 			return err
 		}
-		vb.logger.Info("Target video's font paths: " + vb.option.FontsPath)
-		vb.logger.Info(fmt.Sprintf("Attach fonts parameters: %v", vb.fontsParams))
+		// vb.logger.Info("Target video's font paths: " + vb.option.FontsPath)
+		// vb.logger.Info(fmt.Sprintf("Attach fonts parameters: %v", vb.fontsParams))
 	} else {
-		vb.logger.Info("Target video's font paths not set, skip.")
+		// vb.logger.Info("Target video's font paths not set, skip.")
 	}
-	vb.logger.Info("Dest video directory: " + vb.option.OutputPath)
+	// vb.logger.Info("Dest video directory: " + vb.option.OutputPath)
 
 	template := `ffmpeg.exe -i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s "%v"`
 	for _, v := range vb.videosList {
@@ -122,7 +116,7 @@ func (vb *videoBatch) StartAddSubtittleBatch() error {
 			vb.fontsParams, destVideo)
 		vb.cmdBatch = append(vb.cmdBatch, s)
 	}
-	vb.logger.Info("Get all videos, starting convert")
+	// vb.logger.Info("Get all videos, starting convert")
 
 	if vb.option.Exec {
 		return nil
@@ -139,11 +133,11 @@ func (vb *videoBatch) StartAddFontsBatch() error {
 		return err
 	}
 
-	vb.logger.Info("Source videos directory: " + vb.option.InputPath)
-	vb.logger.Info("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
-	vb.logger.Info("Target video's font paths: " + vb.option.FontsPath)
-	vb.logger.Info(fmt.Sprintf("Attach fonts parameters: %v", vb.fontsParams))
-	vb.logger.Info("Dest video directory: " + vb.option.OutputPath)
+	// vb.logger.Info("Source videos directory: " + vb.option.InputPath)
+	// vb.logger.Info("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
+	// vb.logger.Info("Target video's font paths: " + vb.option.FontsPath)
+	// vb.logger.Info(fmt.Sprintf("Attach fonts parameters: %v", vb.fontsParams))
+	// vb.logger.Info("Dest video directory: " + vb.option.OutputPath)
 	template := `ffmpeg.exe -i "%s" -c copy %s "%v"`
 	for _, v := range vb.videosList {
 		sourceVideo := filepath.Join(vb.option.InputPath, v+vb.option.InputFormat)
@@ -160,7 +154,7 @@ func (vb *videoBatch) StartAddFontsBatch() error {
 
 func (vb *videoBatch) createDestDir() error {
 	destDir := path.Join(vb.option.OutputPath)
-	vb.logger.Info("Start creating destination directory: " + destDir)
+	// vb.logger.Info("Start creating destination directory: " + destDir)
 	if fi, err := os.Stat(destDir); err != nil {
 		if os.IsNotExist(err) {
 			os.MkdirAll(destDir, os.ModePerm)
@@ -169,10 +163,11 @@ func (vb *videoBatch) createDestDir() error {
 		}
 	} else {
 		if fi.IsDir() {
-			vb.logger.Info("Destination directory already exists")
+			return errors.New("destination directory already exists")
+			// vb.logger.Info("Destination directory already exists")
 		}
 	}
-	vb.logger.Info("Destination directory created")
+	// vb.logger.Info("Destination directory created")
 	return nil
 }
 
@@ -187,12 +182,12 @@ func (vb *videoBatch) getVideosList() error {
 		if fi.IsDir() {
 			return nil
 		}
+
 		filename := fi.Name()
-		vb.logger.Debug("get video filename: " + filename)
+		// vb.logger.Debug("get video filename: " + filename)
 		fileExt := filepath.Ext(filename)
-		if fileExt == vb.option.InputFormat {
-			fileName := strings.TrimSuffix(filename, fileExt)
-			vb.videosList = append(vb.videosList, fileName)
+		if fileExt == "."+vb.option.InputFormat {
+			vb.videosList = append(vb.videosList, path)
 			return nil
 		}
 		return nil
@@ -242,21 +237,21 @@ func (vb *videoBatch) getFontsParams() (string, error) {
 func (vb *videoBatch) executeBatch() error {
 	for _, cmd := range vb.cmdBatch {
 		if vb.option.Exec {
-			vb.logger.Sugar().Infof("cmd: %v", cmd)
+			// vb.logger.Sugar().Infof("cmd: %v", cmd)
 			return nil
 		}
 
-		startTime := time.Now()
-		vb.logger.Sugar().Infof("Start convert video cmd: %v", cmd)
+		// startTime := time.Now()
+		// vb.logger.Sugar().Infof("Start convert video cmd: %v", cmd)
 		cmd := exec.Command("powershell", cmd)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
 		if err != nil {
-			vb.logger.Sugar().Errorf("cmd error: %v", err)
+			// vb.logger.Sugar().Errorf("cmd error: %v", err)
 			return err
 		}
-		vb.logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
+		// vb.logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
 	}
 	return nil
 }

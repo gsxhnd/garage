@@ -97,7 +97,7 @@ var ffmpegBatchConvertCmd = &cli.Command{
 			// advance    = c.String("advance")
 		)
 
-		vb, err := garage_ffmpeg.NewVideoBatch(logger, nil)
+		vb, err := garage_ffmpeg.NewVideoBatch(nil)
 		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
@@ -134,7 +134,7 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 			// inputFontsPath = c.String("input-fonts-path")
 			// outputPath     = c.String("output-path")
 		)
-		vb, err := garage_ffmpeg.NewVideoBatch(logger, nil)
+		vb, err := garage_ffmpeg.NewVideoBatch(nil)
 		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err
@@ -185,7 +185,8 @@ var ffmpegBatchAddFontCmd = &cli.Command{
 			// inputFontsPath = c.String("input-fonts-path")
 			// outputPath     = c.String("output-path")
 		)
-		vb, err := garage_ffmpeg.NewVideoBatch(logger, nil)
+
+		vb, err := garage_ffmpeg.NewVideoBatch(nil)
 		if err != nil {
 			logger.Panic("Create dest path error", zap.Error(err))
 			return err

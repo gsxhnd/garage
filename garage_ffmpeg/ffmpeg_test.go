@@ -1,41 +1,60 @@
 package garage_ffmpeg
 
 import (
+	"strconv"
 	"testing"
 
-	"github.com/gsxhnd/garage/utils"
 	"github.com/stretchr/testify/assert"
 )
 
-var logger = utils.GetLogger()
+func createCorrectVideos(inputPath, formart string) []string {
+	var a = make([]string, 0)
+	for i := 1; i < 5; i++ {
+		for j := 1; j < 6; j++ {
+			a = append(a, inputPath+"/"+strconv.Itoa(i)+"/"+strconv.Itoa(j)+"."+formart)
+		}
+	}
+	return a
+}
 
 func Test_videoBatch_getVideosList(t *testing.T) {
 	type args struct {
 		inputPath   string
 		InputFormat string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
 		want    []string
 		wantErr bool
 	}{
-		{"test_mkv", args{inputPath: "../testdata", InputFormat: ".mkv"}, []string{"1", "2", "3", "4", "5"}, false},
-		{"test_mp4", args{inputPath: "../testdata", InputFormat: ".mp4"}, []string{"1", "2", "3", "4", "5"}, false},
+		{"test_mkv", args{inputPath: "../testdata", InputFormat: "mkv"}, []string{}, false},
+		{"test_mp4", args{inputPath: "../testdata", InputFormat: "mp4"}, []string{"1", "2", "3", "4", "5"}, false},
 		// {"test_err", args{sourceRootPath: "../../testdata", sourceVideoType: ".mp4"}, []string{}, false},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			vb := &videoBatch{
-				logger: logger,
 				option: &VideoBatchOption{
 					InputPath:   tt.args.inputPath,
 					InputFormat: tt.args.InputFormat,
 				},
 			}
+
 			err := vb.getVideosList()
 			t.Log(vb.videosList)
+
+			if tt.wantErr {
+				assert.Error(t, err)
+			}
+
+			var cList = createCorrectVideos(tt.args.inputPath, tt.args.InputFormat)
+			t.Log(cList)
+
 			assert.Nil(t, err)
+			assert.Equal(t, vb.videosList, cList)
 		})
 	}
 }
@@ -52,13 +71,13 @@ func Test_videoBatch_getFontsParams(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			vb := &videoBatch{
 				option: tt.fields.option,
-
-				logger: logger,
 			}
+
 			got, err := vb.getFontsParams()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("videoBatch.getFontsParams() error = %v, wantErr %v", err, tt.wantErr)
