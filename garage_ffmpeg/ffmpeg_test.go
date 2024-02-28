@@ -30,8 +30,8 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 		wantErr bool
 	}{
 		{"test_mkv", args{inputPath: "../testdata", InputFormat: "mkv"}, []string{}, false},
-		{"test_mp4", args{inputPath: "../testdata", InputFormat: "mp4"}, []string{"1", "2", "3", "4", "5"}, false},
-		// {"test_err", args{sourceRootPath: "../../testdata", sourceVideoType: ".mp4"}, []string{}, false},
+		{"test_mp4", args{inputPath: "../testdata", InputFormat: "mp4"}, []string{}, false},
+		{"test_err", args{inputPath: "../111", InputFormat: "mp4"}, []string{}, true},
 	}
 
 	for _, tt := range tests {
@@ -47,14 +47,14 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 			t.Log(vb.videosList)
 
 			if tt.wantErr {
-				assert.Error(t, err)
+				assert.NotNil(t, err)
+			} else {
+				var cList = createCorrectVideos(tt.args.inputPath, tt.args.InputFormat)
+				t.Log(cList)
+
+				assert.Nil(t, err)
+				assert.Equal(t, vb.videosList, cList)
 			}
-
-			var cList = createCorrectVideos(tt.args.inputPath, tt.args.InputFormat)
-			t.Log(cList)
-
-			assert.Nil(t, err)
-			assert.Equal(t, vb.videosList, cList)
 		})
 	}
 }
