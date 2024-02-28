@@ -43,6 +43,8 @@ type videoBatch struct {
 	cmdBatch    []string
 }
 
+var FONT_EXT = []string{".ttf", ".otf", ".ttc"}
+
 const CONVERT_TEMPLATE = `ffmpeg.exe -i "%v" %v "%v"`
 const ADD_SUB_TEMPLATE = `ffmpeg.exe -i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s "%v"`
 const ADD_FONT_TEMPLATE = `ffmpeg.exe -i "%s" -c copy %s "%v"`
@@ -172,53 +174,47 @@ func (vb *videoBatch) createDestDir() error {
 }
 
 func (vb *videoBatch) getVideosList() error {
-	err := filepath.Walk(vb.option.InputPath, func(path string, fi os.FileInfo, err error) error {
-		if fi == nil {
-			if err != nil {
-				return err
-			}
-			return nil
+	return filepath.Walk(vb.option.InputPath, func(path string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
 		}
+
 		if fi.IsDir() {
 			return nil
 		}
 
 		filename := fi.Name()
-		// vb.logger.Debug("get video filename: " + filename)
 		fileExt := filepath.Ext(filename)
+		// vb.logger.Debug("get video filename: " + filename)
+
 		if fileExt == "."+vb.option.InputFormat {
 			vb.videosList = append(vb.videosList, path)
 			return nil
 		}
 		return nil
 	})
-	return err
 }
 
 func (vb *videoBatch) getFontsList() error {
-	fontExts := []string{".ttf", ".otf", ".ttc"}
-
-	err := filepath.Walk(vb.option.FontsPath, func(path string, fi os.FileInfo, err error) error {
-		if fi == nil {
-			if err != nil {
-				return err
-			}
-			return nil
+	return filepath.Walk(vb.option.FontsPath, func(path string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return err
 		}
+
 		if fi.IsDir() {
 			return nil
 		}
+
 		filename := fi.Name()
 		fileExt := filepath.Ext(filename)
 
-		for _, b := range fontExts {
+		for _, b := range FONT_EXT {
 			if fileExt == b {
 				vb.fontsList = append(vb.fontsList, filename)
 			}
 		}
 		return nil
 	})
-	return err
 }
 
 func (vb *videoBatch) getFontsParams() (string, error) {

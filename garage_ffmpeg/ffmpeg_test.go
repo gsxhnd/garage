@@ -32,6 +32,7 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 		{"test_mkv", args{inputPath: "../testdata", InputFormat: "mkv"}, []string{}, false},
 		{"test_mp4", args{inputPath: "../testdata", InputFormat: "mp4"}, []string{}, false},
 		{"test_err", args{inputPath: "../111", InputFormat: "mp4"}, []string{}, true},
+		{"test_err", args{inputPath: "../111", InputFormat: "mp4"}, []string{}, true},
 	}
 
 	for _, tt := range tests {
