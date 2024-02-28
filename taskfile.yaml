@@ -7,7 +7,7 @@ tasks:
       - rm -rvf testdata/
       - mkdir -p testdata/{1,2,3,4}
       - touch ./testdata/{1,2,3,4}/{1,2,3,4,5}.{mkv,mp4,ass,ttf}
-      - mkdir ./garage-ui/dist'
+      - mkdir ./garage-ui/dist
       - touch ./garage-ui/dist/index.html
       - ls -al ./testdata
   clean:
