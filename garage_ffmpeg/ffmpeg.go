@@ -24,14 +24,15 @@ type VideoBatchOption struct {
 }
 
 type VideoBatcher interface {
-	createDestDir() error            // 创建输出后的文件夹
-	getVideosList() error            // 获取视频列表
-	getFontsList() error             // 获取字体列表
-	getFontsParams() (string, error) // 获取字体列表
-	StartAddSubtittleBatch() error   // 添加字幕
-	StartAddFontsBatch() error       // 添加字体
-	StartConvertBatch() error        // 转换视频
-	GetConvertBatch() error          // 转换视频
+	createDestDir() error             // 创建输出后的文件夹
+	GetVideosList() ([]string, error) // 获取视频列表s
+	getVideosList() error             // 获取视频列表
+	getFontsList() error              // 获取字体列表
+	getFontsParams() (string, error)  // 获取字体列表
+	StartAddSubtittleBatch() error    // 添加字幕
+	StartAddFontsBatch() error        // 添加字体
+	StartConvertBatch() error         // 转换视频
+	GetConvertBatch() error           // 转换视频
 	executeBatch() error
 }
 
@@ -51,18 +52,16 @@ const ADD_FONT_TEMPLATE = `ffmpeg.exe -i "%s" -c copy %s "%v"`
 const FONT_TEMPLATE = `-attach "%s" -metadata:s:t:%v mimetype=application/x-truetype-font `
 
 func NewVideoBatch(opt *VideoBatchOption) (VideoBatcher, error) {
-	client := &videoBatch{
+	// if err := client.createDestDir(); err != nil {
+	// 	return nil, err
+	// }
+	return &videoBatch{
 		option:      opt,
 		videosList:  make([]string, 0),
 		fontsList:   make([]string, 0),
 		fontsParams: "",
 		cmdBatch:    make([]string, 0),
-	}
-
-	if err := client.createDestDir(); err != nil {
-		return nil, err
-	}
-	return client, nil
+	}, nil
 }
 
 func (vb *videoBatch) GetConvertBatch() error {
@@ -171,6 +170,14 @@ func (vb *videoBatch) createDestDir() error {
 	}
 	// vb.logger.Info("Destination directory created")
 	return nil
+}
+
+func (vb *videoBatch) GetVideosList() ([]string, error) {
+	err := vb.getVideosList()
+	if err != nil {
+		return nil, err
+	}
+	return vb.videosList, nil
 }
 
 func (vb *videoBatch) getVideosList() error {
