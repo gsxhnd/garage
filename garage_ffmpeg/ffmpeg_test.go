@@ -44,8 +44,8 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 				},
 			}
 
-			err := vb.getVideosList()
-			t.Log(vb.videosList)
+			videosList, err := vb.GetVideosList()
+			t.Log(videosList)
 
 			if tt.wantErr {
 				assert.NotNil(t, err)
@@ -54,7 +54,7 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 				t.Log(cList)
 
 				assert.Nil(t, err)
-				assert.Equal(t, vb.videosList, cList)
+				assert.Equal(t, videosList, cList)
 			}
 		})
 	}
@@ -79,7 +79,7 @@ func Test_videoBatch_getFontsParams(t *testing.T) {
 				option: tt.fields.option,
 			}
 
-			got, err := vb.getFontsParams()
+			got, err := vb.GetFontsParams()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("videoBatch.getFontsParams() error = %v, wantErr %v", err, tt.wantErr)
 				return
