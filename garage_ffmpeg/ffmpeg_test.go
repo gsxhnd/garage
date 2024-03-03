@@ -19,7 +19,7 @@ func createCorrectVideos(inputPath, formart string) []string {
 
 func Test_videoBatch_getVideosList(t *testing.T) {
 	type args struct {
-		inputPath   string
+		InputPath   string
 		InputFormat string
 	}
 
@@ -29,17 +29,17 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 		want    []string
 		wantErr bool
 	}{
-		{"test_mkv", args{inputPath: "../testdata", InputFormat: "mkv"}, []string{}, false},
-		{"test_mp4", args{inputPath: "../testdata", InputFormat: "mp4"}, []string{}, false},
-		{"test_err", args{inputPath: "../111", InputFormat: "mp4"}, []string{}, true},
-		{"test_err", args{inputPath: "../111", InputFormat: "mp4"}, []string{}, true},
+		{"test_mkv", args{InputPath: "../testdata", InputFormat: "mkv"}, []string{}, false},
+		{"test_mp4", args{InputPath: "../testdata", InputFormat: "mp4"}, []string{}, false},
+		{"test_err", args{InputPath: "../111", InputFormat: "mp4"}, []string{}, true},
+		{"test_err", args{InputPath: "../111", InputFormat: "mp4"}, []string{}, true},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			vb := &videoBatch{
 				option: &VideoBatchOption{
-					InputPath:   tt.args.inputPath,
+					InputPath:   tt.args.InputPath,
 					InputFormat: tt.args.InputFormat,
 				},
 			}
@@ -50,7 +50,7 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 			if tt.wantErr {
 				assert.NotNil(t, err)
 			} else {
-				var cList = createCorrectVideos(tt.args.inputPath, tt.args.InputFormat)
+				var cList = createCorrectVideos(tt.args.InputPath, tt.args.InputFormat)
 				t.Log(cList)
 
 				assert.Nil(t, err)
