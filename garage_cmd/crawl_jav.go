@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/gsxhnd/garage/garage_jav"
-	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -35,9 +34,6 @@ var javCodeCmd = &cli.Command{
 		javOutputFlag,
 	},
 	Action: func(ctx *cli.Context) error {
-		var (
-			logger = utils.GetLogger()
-		)
 		opt := &garage_jav.JavCrawlConfig{
 			Code:           ctx.Args().Get(0),
 			DownloadMagent: ctx.Bool("magnet"),
@@ -47,12 +43,12 @@ var javCodeCmd = &cli.Command{
 
 		c, err := garage_jav.NewJavbusCrawl(logger, opt)
 		if err != nil {
-			logger.Panic("client init error: " + err.Error())
+			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
 
 		if err := c.StartCrawlJavbusMovie(); err != nil {
-			logger.Panic("crawl error: " + err.Error())
+			logger.Panicw("crawl error: " + err.Error())
 			return err
 		}
 
@@ -75,7 +71,6 @@ var javPrefixCmd = &cli.Command{
 		&cli.IntFlag{Name: "prefix-max", Value: 5, Usage: "番号结束编号"},
 	},
 	Action: func(ctx *cli.Context) error {
-		var logger = utils.GetLogger()
 
 		opt := &garage_jav.JavCrawlConfig{
 			Proxy:          ctx.String("proxy"),
@@ -88,12 +83,12 @@ var javPrefixCmd = &cli.Command{
 
 		c, err := garage_jav.NewJavbusCrawl(logger, opt)
 		if err != nil {
-			logger.Panic("client init error: " + err.Error())
+			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
 
 		if err := c.StartCrawlJavbusMovieByPrefix(); err != nil {
-			logger.Panic("crawl error: " + err.Error())
+			logger.Panicw("crawl error: " + err.Error())
 			return err
 		}
 		return nil
@@ -111,9 +106,6 @@ var javStarCodeCmd = &cli.Command{
 		&cli.StringFlag{Name: "star-code", Value: "vfn", Usage: "演员番号"},
 	},
 	Action: func(ctx *cli.Context) error {
-		var (
-			logger = utils.GetLogger()
-		)
 
 		opt := &garage_jav.JavCrawlConfig{
 			DownloadMagent: ctx.Bool("magnet"),
@@ -124,12 +116,12 @@ var javStarCodeCmd = &cli.Command{
 
 		c, err := garage_jav.NewJavbusCrawl(logger, opt)
 		if err != nil {
-			logger.Panic("client init error: " + err.Error())
+			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
 
 		if err := c.StartCrawlJavbusMovieByStar(); err != nil {
-			logger.Panic("crawl error: " + err.Error())
+			logger.Panicw("crawl error: " + err.Error())
 			return err
 		}
 		return nil
@@ -146,8 +138,6 @@ var javStarCodeFromDirCmd = &cli.Command{
 		&cli.StringFlag{Name: "input", Required: true},
 	},
 	Action: func(ctx *cli.Context) error {
-		var logger = utils.GetLogger()
-
 		opt := &garage_jav.JavCrawlConfig{
 			DownloadMagent: ctx.Bool("magnet"),
 			Proxy:          ctx.String("proxy"),
@@ -156,12 +146,12 @@ var javStarCodeFromDirCmd = &cli.Command{
 
 		c, err := garage_jav.NewJavbusCrawl(logger, opt)
 		if err != nil {
-			logger.Panic("client init error: " + err.Error())
+			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
 
 		if err := c.StartCrawlJavbusMovieByFilepath(ctx.String("input")); err != nil {
-			logger.Panic("crawl error: " + err.Error())
+			logger.Panicw("crawl error: " + err.Error())
 			return err
 		}
 		return nil

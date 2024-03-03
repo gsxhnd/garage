@@ -6,6 +6,7 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 type Logger interface {
@@ -17,6 +18,8 @@ type Logger interface {
 	Warnw(template string, keysAndValues ...interface{})
 	Errorf(template string, args ...interface{})
 	Errorw(template string, keysAndValues ...interface{})
+	Panicf(template string, args ...interface{})
+	Panicw(template string, keysAndValues ...interface{})
 }
 
 type logger struct {
@@ -56,30 +59,33 @@ var (
 )
 
 func NewLogger(cfg *Config) Logger {
-	var encode zapcore.Encoder
-	var level zapcore.Level
-
-	if cfg.Dev {
-		encode = devEncoder
-	} else {
-		encode = prodEncoder
-	}
-	if cfg.LogLevel == "debug" {
-		level = zap.DebugLevel
-	} else if cfg.LogLevel == "info" {
-		level = zap.InfoLevel
-	} else {
-		level = zap.WarnLevel
-	}
-
-	var core = zapcore.NewTee(
-		zapcore.NewCore(encode, os.Stdout, level),
+	var (
+		level zapcore.Level
+		core  zapcore.Core
 	)
-	zapLogger := zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+
+	if cfg.Log.Level == "info" {
+		level = zap.InfoLevel
+	} else if cfg.Log.Level == "warn" {
+		level = zap.WarnLevel
+	} else {
+		level = zap.DebugLevel
+	}
+
+	if !cfg.Dev {
+		core = zapcore.NewCore(prodEncoder, zapcore.AddSync(&lumberjack.Logger{
+			Filename:   cfg.Log.Filename,
+			MaxSize:    cfg.Log.MaxSize,
+			MaxBackups: cfg.Log.MaxBackups,
+			MaxAge:     cfg.Log.MaxAge,
+		},
+		), level)
+	} else {
+		core = zapcore.NewCore(devEncoder, os.Stdout, level)
+	}
 
 	return &logger{
-		// Logger: zapLogger,
-		Suger: zapLogger.Sugar(),
+		Suger: zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Sugar(),
 	}
 }
 
@@ -119,22 +125,11 @@ func (l *logger) Errorw(template string, keysAndValues ...interface{}) {
 	l.Suger.Errorw(template, keysAndValues...)
 }
 
-func GetLogger() *zap.Logger {
-	debugEncoder := zapcore.NewConsoleEncoder(zapcore.EncoderConfig{
-		MessageKey:  "msg",
-		LevelKey:    "level",
-		TimeKey:     "ts",
-		EncodeLevel: zapcore.CapitalColorLevelEncoder,
-		EncodeTime: func(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendString(t.UTC().Format("2006-01-02T15:04:05.000000-07:00"))
-		},
-		EncodeCaller: zapcore.ShortCallerEncoder,
-		EncodeDuration: func(d time.Duration, enc zapcore.PrimitiveArrayEncoder) {
-			enc.AppendInt64(int64(d) / 1000000)
-		},
-	})
-	var core = zapcore.NewTee(
-		zapcore.NewCore(debugEncoder, os.Stdout, zap.DebugLevel),
-	)
-	return zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
+func (l *logger) Panicf(template string, args ...interface{}) {
+	defer l.Suger.Sync()
+	l.Suger.Panicf(template, args...)
+}
+func (l *logger) Panicw(template string, keysAndValues ...interface{}) {
+	defer l.Suger.Sync()
+	l.Suger.Panicw(template, keysAndValues...)
 }

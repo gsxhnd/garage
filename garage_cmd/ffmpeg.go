@@ -4,12 +4,9 @@ import (
 	"context"
 
 	"github.com/gsxhnd/garage/garage_ffmpeg"
-	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 )
-
-var ()
 
 type garage_ffmpeg_option string
 
@@ -73,12 +70,11 @@ var ffmpegBatchConvertCmd = &cli.Command{
 	UsageText: "",
 	Action: func(c *cli.Context) error {
 		var (
-			logger = utils.GetLogger()
-			opt    = c.Context.Value(garage_ffmpeg_option("opt")).(garage_ffmpeg.VideoBatchOption)
+			opt = c.Context.Value(garage_ffmpeg_option("opt")).(garage_ffmpeg.VideoBatchOption)
 		)
 		vb, err := garage_ffmpeg.NewVideoBatch(&opt)
 		if err != nil {
-			logger.Panic("Create dest path error", zap.Error(err))
+			logger.Panicf("Create dest path error", zap.Error(err))
 			return err
 		}
 		return vb.StartConvertBatch()
@@ -117,14 +113,11 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		var (
-			logger = utils.GetLogger()
-			opt    = ctx.Context.Value(garage_ffmpeg_option("opt")).(garage_ffmpeg.VideoBatchOption)
-		)
+		var opt = ctx.Context.Value(garage_ffmpeg_option("opt")).(garage_ffmpeg.VideoBatchOption)
 		opt.FontsPath = ctx.String("input_fonts_path")
 		vb, err := garage_ffmpeg.NewVideoBatch(&opt)
 		if err != nil {
-			logger.Panic("Create dest path error", zap.Error(err))
+			logger.Panicf("Create dest path error", zap.Error(err))
 			return err
 		}
 
@@ -145,15 +138,12 @@ var ffmpegBatchAddFontCmd = &cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		var (
-			logger = utils.GetLogger()
-			opt    = ctx.Context.Value(garage_ffmpeg_option("opt")).(garage_ffmpeg.VideoBatchOption)
-		)
+		var opt = ctx.Context.Value(garage_ffmpeg_option("opt")).(garage_ffmpeg.VideoBatchOption)
 		opt.FontsPath = ctx.String("input_fonts_path")
 		vb, err := garage_ffmpeg.NewVideoBatch(&opt)
 
 		if err != nil {
-			logger.Panic("Create dest path error", zap.Error(err))
+			logger.Panicf("Create dest path error", zap.Error(err))
 			return err
 		}
 
