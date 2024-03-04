@@ -6,12 +6,20 @@ import (
 	"log"
 	"os"
 
+	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
 
 	_ "github.com/glebarez/go-sqlite"
 )
 
-var RootCmd = cli.NewApp()
+var (
+	RootCmd = cli.NewApp()
+	logger  = utils.NewLogger(&utils.Config{
+		Log: utils.LogConfig{
+			Level: "debug",
+		},
+	})
+)
 
 func init() {
 	RootCmd.HideVersion = true

@@ -28,6 +28,7 @@ type JavMovie struct {
 	PublishCompany string `json:"publish_company"`
 	Series         string `json:"series"`
 	Stars          string `json:"stars"`
+	Magnets        []JavMovieMagnet
 }
 
 type JavMovieMagnet struct {

@@ -1,33 +1,39 @@
-import axios from "axios";
-import { InternalAxiosRequestConfig, AxiosResponse } from "axios";
+import ky from "ky";
 
-const http = axios.create({
-  baseURL: "",
+const httpv2 = ky.create({
+  prefixUrl: "https://example.com/api",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
   },
+  retry: 1,
+  hooks: {
+    beforeRequest: [
+      (options) => {
+        console.log("before request", options);
+      },
+    ],
+    beforeRetry: [
+      async ({ error }) => {
+        console.log("before retry", error);
+      },
+    ],
+    beforeError: [
+      (error) => {
+        console.log("before error:", error);
+
+        return error;
+      },
+    ],
+    afterResponse: [
+      (request, _options, response) => {
+        console.log("after reponse:", response.status);
+        console.log("after reponse:", request.headers);
+        return new Response("A different response", { status: 200 });
+      },
+    ],
+  },
+  throwHttpErrors: false,
 });
 
-http.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    console.log(config.baseURL);
-    return config;
-  },
-  (error: any) => {
-    console.error(error);
-    return Promise.reject(error);
-  }
-);
-
-http.interceptors.response.use(
-  (resp: AxiosResponse) => {
-    return resp;
-  },
-  (error: any) => {
-    console.error("resp error: ", error);
-    return Promise.reject(error);
-  }
-);
-
-export default http;
+export { httpv2 };

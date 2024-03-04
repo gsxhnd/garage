@@ -1,5 +1,9 @@
-import http from "@/utils/http";
-import { AxiosResponse } from "axios";
+import { httpv2 } from "@/utils/http";
 
-export const userLogin = (): Promise<AxiosResponse<any, any>> =>
-  http.get("/user/logion");
+const userLogin = () => httpv2.get("user/logion");
+
+const testApi = () => {
+  return httpv2.get("api");
+};
+
+export { userLogin, testApi };
