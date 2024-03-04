@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-gota/gota v0.12.0
+	github.com/go-resty/resty/v2 v2.11.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/google/wire v0.6.0
 	github.com/inhies/go-bytesize v0.0.0-20220417184213-4913239db9cf
