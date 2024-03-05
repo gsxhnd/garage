@@ -41,11 +41,16 @@ var javCodeCmd = &cli.Command{
 			DestPath:       ctx.String("output"),
 		}
 
-		_, err := garage_jav.NewJavbusCrawl(logger, opt)
+		c, err := garage_jav.NewJavbusCrawl(logger, opt)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
+		_, err = c.GetJavbusMovie()
+		if err != nil {
+			return err
+		}
+		return c.SaveLocal()
 
 		// if err := c.StartCrawlJavbusMovie(); err != nil {
 		// 	logger.Panicw("crawl error: " + err.Error())
@@ -54,7 +59,6 @@ var javCodeCmd = &cli.Command{
 
 		// s := crawl.NewJavSave(logger, ctx.String("output"), nil)
 		// s.Save(false, false)
-		return nil
 	},
 }
 
