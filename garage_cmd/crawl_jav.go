@@ -34,23 +34,23 @@ var javCodeCmd = &cli.Command{
 		javOutputFlag,
 	},
 	Action: func(ctx *cli.Context) error {
-		opt := &garage_jav.JavCrawlConfig{
+		opt := &garage_jav.JavbusCrawlConfig{
 			Code:           ctx.Args().Get(0),
 			DownloadMagent: ctx.Bool("magnet"),
 			Proxy:          ctx.String("proxy"),
 			DestPath:       ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavbusCrawl(logger, opt)
+		_, err := garage_jav.NewJavbusCrawl(logger, opt)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
 
-		if err := c.StartCrawlJavbusMovie(); err != nil {
-			logger.Panicw("crawl error: " + err.Error())
-			return err
-		}
+		// if err := c.StartCrawlJavbusMovie(); err != nil {
+		// 	logger.Panicw("crawl error: " + err.Error())
+		// 	return err
+		// }
 
 		// s := crawl.NewJavSave(logger, ctx.String("output"), nil)
 		// s.Save(false, false)
@@ -72,25 +72,25 @@ var javPrefixCmd = &cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 
-		opt := &garage_jav.JavCrawlConfig{
+		opt := &garage_jav.JavbusCrawlConfig{
 			Proxy:          ctx.String("proxy"),
 			DestPath:       ctx.String("output"),
 			DownloadMagent: ctx.Bool("magnet"),
 			PrefixCode:     ctx.String("prefix-code"),
-			PrefixMinNo:    ctx.Uint("prefix-min"),
-			PrefixMaxNo:    ctx.Uint("prefix-max"),
+			PrefixMinNo:    ctx.Uint64("prefix-min"),
+			PrefixMaxNo:    ctx.Uint64("prefix-max"),
 		}
 
-		c, err := garage_jav.NewJavbusCrawl(logger, opt)
+		_, err := garage_jav.NewJavbusCrawl(logger, opt)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
 
-		if err := c.StartCrawlJavbusMovieByPrefix(); err != nil {
-			logger.Panicw("crawl error: " + err.Error())
-			return err
-		}
+		// if err := c.StartCrawlJavbusMovieByPrefix(); err != nil {
+		// 	logger.Panicw("crawl error: " + err.Error())
+		// 	return err
+		// }
 		return nil
 	},
 }
@@ -107,23 +107,23 @@ var javStarCodeCmd = &cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 
-		opt := &garage_jav.JavCrawlConfig{
+		opt := &garage_jav.JavbusCrawlConfig{
 			DownloadMagent: ctx.Bool("magnet"),
 			Proxy:          ctx.String("proxy"),
 			DestPath:       ctx.String("output"),
 			StarCode:       ctx.String("star-code"),
 		}
 
-		c, err := garage_jav.NewJavbusCrawl(logger, opt)
+		_, err := garage_jav.NewJavbusCrawl(logger, opt)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
 
-		if err := c.StartCrawlJavbusMovieByStar(); err != nil {
-			logger.Panicw("crawl error: " + err.Error())
-			return err
-		}
+		// if err := c.StartCrawlJavbusMovieByStar(); err != nil {
+		// 	logger.Panicw("crawl error: " + err.Error())
+		// 	return err
+		// }
 		return nil
 	},
 }
@@ -138,22 +138,22 @@ var javStarCodeFromDirCmd = &cli.Command{
 		&cli.StringFlag{Name: "input", Required: true},
 	},
 	Action: func(ctx *cli.Context) error {
-		opt := &garage_jav.JavCrawlConfig{
+		opt := &garage_jav.JavbusCrawlConfig{
 			DownloadMagent: ctx.Bool("magnet"),
 			Proxy:          ctx.String("proxy"),
 			DestPath:       ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavbusCrawl(logger, opt)
+		_, err := garage_jav.NewJavbusCrawl(logger, opt)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
 
-		if err := c.StartCrawlJavbusMovieByFilepath(ctx.String("input")); err != nil {
-			logger.Panicw("crawl error: " + err.Error())
-			return err
-		}
+		// if err := c.StartCrawlJavbusMovieByFilepath(ctx.String("input")); err != nil {
+		// 	logger.Panicw("crawl error: " + err.Error())
+		// 	return err
+		// }
 		return nil
 	},
 }

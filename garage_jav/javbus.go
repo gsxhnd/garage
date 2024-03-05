@@ -24,24 +24,16 @@ import (
 )
 
 type JavbusCrawl interface {
-	StartCrawlJavbusMovie() error                           // 通过番号爬取对应的电影信息
-	GetJavbusMovie(code string) (*JavMovie, error)          // 通过番号爬取对应的电影信息
-	StartCrawlJavbusMovieByPrefix() error                   // 通过番号前缀爬取对应的电影信息
-	StartCrawlJavbusMovieByStar() error                     // 通过演员ID爬取对应的电影信息
-	StartCrawlJavbusMovieByFilepath(inputPath string) error // 访问文件夹下的视频列表爬取电影信息
-	mkAllDir() error                                        // 创建输出目录
-	savejavInfos() error                                    // 保存CSV格式的电影信息
-	saveCovers(coverPath, name string) error                // 下载电影封面
-	saveMagents() error                                     // 下载磁力列表
-	Save() error
-	getJavMovieInfowByJavbus(element *colly.HTMLElement)
-	getJavMovieMagnetByJavbus(e *colly.HTMLElement)
-	getJavStarMovieByJavbus(e *colly.HTMLElement)
+	GetJavbusMovie() (*JavMovie, error)            // 通过番号爬取对应的电影信息
+	GetJavbusMovieByHomePage() ([]JavMovie, error) // 通过首页爬取对应的电影信息
+	GetJavbusMovieByPrefix() ([]JavMovie, error)   // 通过番号前缀爬取对应的电影信息
+	GetJavbusMovieByStar() ([]JavMovie, error)     // 通过演员ID爬取对应的电影信息
+	SaveLocal() error
 }
 
 type javbusCrawl struct {
 	logger         utils.Logger
-	option         *JavCrawlConfig
+	option         *JavbusCrawlConfig
 	collector      *colly.Collector
 	collectorQueue *queue.Queue
 	pageCollector  *colly.Collector
@@ -53,17 +45,7 @@ type javbusCrawl struct {
 	javMagnets     []string
 }
 
-type CrawlOptions struct {
-	DestPath       string
-	Proxy          string
-	DownloadMagent bool
-	StarCode       string
-	PrefixCode     string
-	PrefixMinNo    int
-	PrefixMaxNo    int
-}
-
-func NewJavbusCrawl(logger utils.Logger, option *JavCrawlConfig) (JavbusCrawl, error) {
+func NewJavbusCrawl(logger utils.Logger, option *JavbusCrawlConfig) (JavbusCrawl, error) {
 	collector := colly.NewCollector()
 	collector.ParseHTTPErrorResponse = true
 	collector.SetRedirectHandler(func(req *http.Request, via []*http.Request) error {
@@ -110,6 +92,35 @@ func NewJavbusCrawl(logger utils.Logger, option *JavCrawlConfig) (JavbusCrawl, e
 	}, nil
 }
 
+func (cc *javbusCrawl) GetJavbusMovieByHomePage() ([]JavMovie, error) {
+	return nil, nil
+}
+
+func (cc *javbusCrawl) GetJavbusMovie() (*JavMovie, error) {
+	if cc.option.DownloadMagent {
+		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
+	}
+	cc.collector.OnHTML(".container", cc.getJavMovieInfowByJavbus)
+
+	err := cc.collector.Visit(cc.javbusUrl + "/" + cc.option.Code)
+	if err != nil {
+		return nil, err
+	} else {
+		return nil, nil
+	}
+}
+
+func (cc *javbusCrawl) GetJavbusMovieByPrefix() ([]JavMovie, error) {
+	codes := cc.getCodeByPrefix()
+	fmt.Println(codes)
+
+	return nil, nil
+}
+
+func (cc *javbusCrawl) GetJavbusMovieByStar() ([]JavMovie, error) {
+	return nil, nil
+}
+
 func (cc *javbusCrawl) StartCrawlJavbusMovie() error {
 	cc.logger.Infow("Download Infow: " + cc.option.Code)
 
@@ -140,11 +151,7 @@ func (cc *javbusCrawl) StartCrawlJavbusMovie() error {
 	return nil
 }
 
-func (cc *javbusCrawl) GetJavbusMovie(code string) (*JavMovie, error) {
-	return nil, nil
-}
-
-func (cc *javbusCrawl) Save() error {
+func (cc *javbusCrawl) SaveLocal() error {
 	return nil
 }
 
@@ -477,4 +484,21 @@ func (cc *javbusCrawl) saveCovers(coverPath, code string) error {
 		return err
 	}
 	return nil
+}
+
+func (cc *javbusCrawl) getCodeByPrefix() []string {
+	var codes []string = make([]string, 0)
+	for i := cc.option.PrefixMinNo; i < cc.option.PrefixMaxNo; i++ {
+		strNum := strconv.FormatUint(i, 10)
+		if len(strNum) >= int(cc.option.PrefixZero) {
+			codes = append(codes, cc.option.PrefixCode+strNum)
+		} else {
+			zerosStr := make([]byte, int(cc.option.PrefixZero)-len(strNum))
+			for i := range zerosStr {
+				zerosStr[i] = '0'
+			}
+			codes = append(codes, cc.option.PrefixCode+string(append(zerosStr, []byte(strNum)...)))
+		}
+	}
+	return codes
 }
