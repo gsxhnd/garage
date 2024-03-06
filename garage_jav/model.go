@@ -13,6 +13,7 @@ type JavbusCrawlConfig struct {
 	PrefixMinNo    uint64        `json:"prefix_min_no"`
 	PrefixMaxNo    uint64        `json:"prefix_max_no"`
 	PrefixZero     uint64        `json:"prefix_zero"`
+	VideosPath     string        `json:"videos_path"`
 	PageStartNo    uint          `json:"page_start_no"`
 	RandomDelay    time.Duration `json:"random_delay"`
 	Parallelism    int           `json:"parallelism"`

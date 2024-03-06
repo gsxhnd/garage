@@ -28,6 +28,7 @@ type JavbusCrawl interface {
 	GetJavbusMovieByHomePage() ([]JavMovie, error) // 通过首页爬取对应的电影信息
 	GetJavbusMovieByPrefix() ([]JavMovie, error)   // 通过番号前缀爬取对应的电影信息
 	GetJavbusMovieByStar() ([]JavMovie, error)     // 通过演员ID爬取对应的电影信息
+	GetJavbusMovieByFilepath() ([]JavMovie, error) // 访问文件夹下的视频列表爬取电影信息
 	SaveLocal() error
 }
 
@@ -116,11 +117,54 @@ func (cc *javbusCrawl) GetJavbusMovie() ([]JavMovie, error) {
 func (cc *javbusCrawl) GetJavbusMovieByPrefix() ([]JavMovie, error) {
 	codes := cc.getCodeByPrefix()
 	fmt.Println(codes)
+	for _, v := range codes {
+		cc.collectorQueue.AddURL(cc.javbusUrl + "/" + v)
+	}
+
+	if cc.option.DownloadMagent {
+		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
+	}
+	cc.collector.OnHTML(".container", cc.getJavMovieInfowByJavbus)
+
+	cc.collectorQueue.Run(cc.collector)
+	cc.collector.Wait()
 
 	return cc.javInfos, nil
 }
 
 func (cc *javbusCrawl) GetJavbusMovieByStar() ([]JavMovie, error) {
+	return cc.javInfos, nil
+}
+
+func (cc *javbusCrawl) GetJavbusMovieByFilepath() ([]JavMovie, error) {
+	var videoExt = []string{".avi", ".mp4", ".mkv"}
+	if err := filepath.Walk(cc.option.VideosPath, func(path string, fi os.FileInfo, err error) error {
+		if fi == nil {
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+		if fi.IsDir() {
+			return nil
+		}
+		filename := fi.Name()
+		fileExt := filepath.Ext(filename)
+		for _, b := range videoExt {
+			if fileExt == b {
+				filePrefix := strings.Replace(filename, b, "", -1)
+				cc.collectorQueue.AddURL((cc.javbusUrl + "/" + filePrefix))
+			}
+		}
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+	cc.collector.OnHTML(".container", cc.getJavMovieInfowByJavbus)
+	if err := cc.collectorQueue.Run(cc.collector); err != nil {
+		return nil, err
+	}
+
 	return cc.javInfos, nil
 }
 
@@ -133,9 +177,6 @@ func (cc *javbusCrawl) SaveLocal() error {
 	}
 	defer f.Close()
 	return df.WriteCSV(f)
-	// for _, info := range cc.javInfos {
-	// }
-	// return nil
 }
 
 func (cc *javbusCrawl) getJavMovieInfowByJavbus(e *colly.HTMLElement) {
@@ -279,34 +320,6 @@ func (cc *javbusCrawl) getJavStarMovieByJavbus(e *colly.HTMLElement) {
 	})
 }
 
-func (cc *javbusCrawl) StartCrawlJavbusMovieByPrefix() error {
-	q, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
-
-	for i := cc.option.PrefixMinNo; i <= cc.option.PrefixMaxNo; i++ {
-		code := fmt.Sprintf("%s-%03d", cc.option.PrefixCode, i)
-		q.AddURL(cc.javbusUrl + "/" + code)
-	}
-
-	if cc.option.DownloadMagent {
-		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
-	}
-
-	cc.collector.OnHTML(".container", cc.getJavMovieInfowByJavbus)
-
-	q.Run(cc.collector)
-	cc.collector.Wait()
-
-	cc.savejavInfos()
-	cc.saveMagents()
-	for _, v := range cc.javInfos {
-		err := cc.saveCovers(v.Cover, v.Code)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (cc *javbusCrawl) StartCrawlJavbusMovieByStar() error {
 	starCode := cc.option.StarCode
 	cc.logger.Debugw("Getting star code: " + starCode)
@@ -334,48 +347,6 @@ func (cc *javbusCrawl) StartCrawlJavbusMovieByStar() error {
 
 	cc.collector.Wait()
 
-	return nil
-}
-
-func (cc *javbusCrawl) StartCrawlJavbusMovieByFilepath(inputPath string) error {
-	q, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
-	var videoExt = []string{".avi", ".mp4", ".mkv"}
-	if err := filepath.Walk(inputPath, func(path string, fi os.FileInfo, err error) error {
-		if fi == nil {
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-		if fi.IsDir() {
-			return nil
-		}
-		filename := fi.Name()
-		fileExt := filepath.Ext(filename)
-		for _, b := range videoExt {
-			if fileExt == b {
-				filePrefix := strings.Replace(filename, b, "", -1)
-				q.AddURL(cc.javbusUrl + "/" + filePrefix)
-			}
-		}
-		return nil
-	}); err != nil {
-		return err
-	}
-
-	cc.collector.OnHTML(".container", cc.getJavMovieInfowByJavbus)
-
-	q.Run(cc.collector)
-	cc.collector.Wait()
-
-	cc.savejavInfos()
-	for _, v := range cc.javInfos {
-		err := cc.saveCovers(v.Cover, v.Code)
-		if err != nil {
-			return err
-		}
-	}
-	cc.saveMagents()
 	return nil
 }
 
