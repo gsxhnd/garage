@@ -1,10 +1,7 @@
 package garage_jav
 
 import (
-	"bytes"
-	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -24,29 +21,27 @@ import (
 )
 
 type JavbusCrawl interface {
-	GetJavbusMovie() ([]JavMovie, error)           // 通过番号爬取对应的电影信息
-	GetJavbusMovieByHomePage() ([]JavMovie, error) // 通过首页爬取对应的电影信息
-	GetJavbusMovieByPrefix() ([]JavMovie, error)   // 通过番号前缀爬取对应的电影信息
-	GetJavbusMovieByStar() ([]JavMovie, error)     // 通过演员ID爬取对应的电影信息
-	GetJavbusMovieByFilepath() ([]JavMovie, error) // 访问文件夹下的视频列表爬取电影信息
-	SaveLocal() error
+	GetJavbusMovie(opt *JavbusOption) ([]JavMovie, error)           // 通过番号爬取对应的电影信息
+	GetJavbusMovieByHomePage(opt *JavbusOption) ([]JavMovie, error) // 通过首页爬取对应的电影信息
+	GetJavbusMovieByPrefix(opt *JavbusOption) ([]JavMovie, error)   // 通过番号前缀爬取对应的电影信息
+	GetJavbusMovieByStar(opt *JavbusOption) ([]JavMovie, error)     // 通过演员ID爬取对应的电影信息
+	GetJavbusMovieByFilepath(opt *JavbusOption) ([]JavMovie, error) // 访问文件夹下的视频列表爬取电影信息
+	SaveLocal(destPath string) error
 }
 
 type javbusCrawl struct {
-	logger         utils.Logger
-	option         *JavbusCrawlConfig
-	collector      *colly.Collector
-	collectorQueue *queue.Queue
-	pageCollector  *colly.Collector
-	httpClient     *http.Client
-	requestClient  *resty.Client
-	maxDepth       int
-	javbusUrl      string
-	javInfos       []JavMovie
-	javMagnets     []string
+	logger        utils.Logger
+	collector     *colly.Collector
+	pageCollector *colly.Collector
+	httpClient    *http.Client
+	requestClient *resty.Client
+	maxDepth      int
+	javbusUrl     string
+	javInfos      []JavMovie
+	javMagnets    []string
 }
 
-func NewJavbusCrawl(logger utils.Logger, option *JavbusCrawlConfig) (JavbusCrawl, error) {
+func NewJavbusCrawl(logger utils.Logger, config *CrawlConfig) (JavbusCrawl, error) {
 	collector := colly.NewCollector()
 	collector.ParseHTTPErrorResponse = true
 	collector.SetRedirectHandler(func(req *http.Request, via []*http.Request) error {
@@ -60,14 +55,13 @@ func NewJavbusCrawl(logger utils.Logger, option *JavbusCrawlConfig) (JavbusCrawl
 		logger.Infow("Visiting: " + r.URL.String())
 	})
 
-	q, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
 	httpClient := &http.Client{}
 
-	if option.Proxy != "" {
-		if err := collector.SetProxy(option.Proxy); err != nil {
+	if config.Proxy != "" {
+		if err := collector.SetProxy(config.Proxy); err != nil {
 			return nil, err
 		}
-		uri, err := url.Parse(option.Proxy)
+		uri, err := url.Parse(config.Proxy)
 		if err != nil {
 			return nil, err
 		}
@@ -77,36 +71,40 @@ func NewJavbusCrawl(logger utils.Logger, option *JavbusCrawlConfig) (JavbusCrawl
 			},
 		}
 	}
-	if err := utils.MakeDir(filepath.Join(option.DestPath, "cover")); err != nil {
+	if err := utils.MakeDir(filepath.Join(config.DestPath, "cover")); err != nil {
 		return nil, err
 	}
 
 	return &javbusCrawl{
-		logger:         logger,
-		option:         option,
-		collector:      collector,
-		collectorQueue: q,
-		pageCollector:  nil,
-		httpClient:     httpClient,
-		requestClient:  resty.New(),
-		maxDepth:       100,
-		javbusUrl:      "https://www.javbus.com",
-		javInfos:       make([]JavMovie, 0),
-		javMagnets:     make([]string, 0),
+		logger:        logger,
+		collector:     collector,
+		httpClient:    httpClient,
+		requestClient: resty.New(),
+		maxDepth:      100,
+		javbusUrl:     "https://www.javbus.com",
+		javInfos:      make([]JavMovie, 0),
+		javMagnets:    make([]string, 0),
 	}, nil
 }
 
-func (cc *javbusCrawl) GetJavbusMovieByHomePage() ([]JavMovie, error) {
+func (cc *javbusCrawl) GetJavbusMovieByHomePage(opt *JavbusOption) ([]JavMovie, error) {
 	return cc.javInfos, nil
 }
 
-func (cc *javbusCrawl) GetJavbusMovie() ([]JavMovie, error) {
-	if cc.option.DownloadMagent {
-		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
-	}
-	cc.collector.OnHTML(".container", cc.getJavMovieInfowByJavbus)
+func (cc *javbusCrawl) GetJavbusMovie(opt *JavbusOption) ([]JavMovie, error) {
+	collector := cc.collector.Clone()
+	queue, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
 
-	err := cc.collector.Visit(cc.javbusUrl + "/" + cc.option.Code)
+	if opt.DownloadMagent {
+		collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
+	}
+	collector.OnHTML(".container", cc.getJavMovieInfowByJavbus)
+
+	for _, v := range opt.Code {
+		queue.AddURL(cc.javbusUrl + "/" + v)
+	}
+
+	err := queue.Run(cc.collector)
 	if err != nil {
 		return nil, err
 	} else {
@@ -114,31 +112,32 @@ func (cc *javbusCrawl) GetJavbusMovie() ([]JavMovie, error) {
 	}
 }
 
-func (cc *javbusCrawl) GetJavbusMovieByPrefix() ([]JavMovie, error) {
-	codes := cc.getCodeByPrefix()
-	fmt.Println(codes)
+func (cc *javbusCrawl) GetJavbusMovieByPrefix(opt *JavbusOption) ([]JavMovie, error) {
+	queue, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
+	collector := cc.collector.Clone()
+	codes := cc.getCodeByPrefix(opt)
+
 	for _, v := range codes {
-		cc.collectorQueue.AddURL(cc.javbusUrl + "/" + v)
+		queue.AddURL(cc.javbusUrl + "/" + v)
 	}
 
-	if cc.option.DownloadMagent {
-		cc.collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
+	if opt.DownloadMagent {
+		collector.OnHTML("body", cc.getJavMovieMagnetByJavbus)
 	}
-	cc.collector.OnHTML(".container", cc.getJavMovieInfowByJavbus)
+	collector.OnHTML(".container", cc.getJavMovieInfowByJavbus)
 
-	cc.collectorQueue.Run(cc.collector)
-	cc.collector.Wait()
+	queue.Run(cc.collector)
 
 	return cc.javInfos, nil
 }
 
-func (cc *javbusCrawl) GetJavbusMovieByStar() ([]JavMovie, error) {
+func (cc *javbusCrawl) GetJavbusMovieByStar(opt *JavbusOption) ([]JavMovie, error) {
 	return cc.javInfos, nil
 }
 
-func (cc *javbusCrawl) GetJavbusMovieByFilepath() ([]JavMovie, error) {
+func (cc *javbusCrawl) GetJavbusMovieByFilepath(opt *JavbusOption) ([]JavMovie, error) {
 	var videoExt = []string{".avi", ".mp4", ".mkv"}
-	if err := filepath.Walk(cc.option.VideosPath, func(path string, fi os.FileInfo, err error) error {
+	if err := filepath.Walk(opt.VideosPath, func(path string, fi os.FileInfo, err error) error {
 		if fi == nil {
 			if err != nil {
 				return err
@@ -168,9 +167,9 @@ func (cc *javbusCrawl) GetJavbusMovieByFilepath() ([]JavMovie, error) {
 	return cc.javInfos, nil
 }
 
-func (cc *javbusCrawl) SaveLocal() error {
+func (cc *javbusCrawl) SaveLocal(destPath string) error {
 	df := dataframe.LoadStructs(cc.javInfos)
-	f, err := os.OpenFile(path.Join(cc.option.DestPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_Infow.csv"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	f, err := os.OpenFile(path.Join(destPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_Infow.csv"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		cc.logger.Errorw("Save jav Infow file failed error: %s" + err.Error())
 		return err
@@ -309,8 +308,9 @@ func (cc *javbusCrawl) getJavMovieMagnetByJavbus(e *colly.HTMLElement) {
 }
 
 func (cc *javbusCrawl) getJavStarMovieByJavbus(e *colly.HTMLElement) {
+	queue, _ := queue.New(1, &queue.InMemoryQueueStorage{MaxSize: 10000})
 	e.ForEach("#waterfall > div", func(i int, element *colly.HTMLElement) {
-		cc.collectorQueue.AddURL(element.ChildAttr("a", "href"))
+		queue.AddURL(element.ChildAttr("a", "href"))
 	})
 	e.ForEach("div.text-center.hidden-xs > ul", func(i int, element *colly.HTMLElement) {
 		page := element.ChildAttr("a#next", "href")
@@ -350,80 +350,71 @@ func (cc *javbusCrawl) StartCrawlJavbusMovieByStar() error {
 	return nil
 }
 
-func (cc *javbusCrawl) savejavInfos() error {
-	df := dataframe.LoadStructs(cc.javInfos)
-	f, err := os.OpenFile(path.Join(cc.option.DestPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_Infow.csv"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
-	if err != nil {
-		cc.logger.Errorw("Save jav Infow file failed error: %s" + err.Error())
-		return err
-	}
-	defer f.Close()
-	return df.WriteCSV(f)
-}
-
 func (cc *javbusCrawl) saveMagents() error {
-	if len(cc.javMagnets) == 0 {
-		return nil
-	}
+	// if len(cc.javMagnets) == 0 {
+	// 	return nil
+	// }
 
-	f, err := os.OpenFile(path.Join(cc.option.DestPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_magnet.text"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
-	if err != nil {
-		cc.logger.Errorw("Save jav Infow file failed error: %s" + err.Error())
-		return err
-	}
-	defer f.Close()
+	// f, err := os.OpenFile(path.Join(cc.option.DestPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_magnet.text"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	// if err != nil {
+	// 	cc.logger.Errorw("Save jav Infow file failed error: %s" + err.Error())
+	// 	return err
+	// }
+	// defer f.Close()
 
-	for _, v := range cc.javMagnets {
-		f.WriteString(v + "\n")
-	}
+	// for _, v := range cc.javMagnets {
+	// 	f.WriteString(v + "\n")
+	// }
 	return nil
 }
 
 func (cc *javbusCrawl) saveCovers(coverPath, code string) error {
-	var urlImg = ""
-	u, err := url.ParseRequestURI(coverPath)
-	if err != nil {
-		cc.logger.Errorw("parse cover path failed error: %s" + err.Error())
-		return err
-	}
-	if u.Host == "" {
-		urlImg = cc.javbusUrl + coverPath
-	} else {
-		urlImg = coverPath
-	}
+	// var urlImg = ""
+	// u, err := url.ParseRequestURI(coverPath)
+	// if err != nil {
+	// 	cc.logger.Errorw("parse cover path failed error: %s" + err.Error())
+	// 	return err
+	// }
+	// if u.Host == "" {
+	// 	urlImg = cc.javbusUrl + coverPath
+	// } else {
+	// 	urlImg = coverPath
+	// }
 
-	cc.logger.Infow("downloading coverage url: " + urlImg)
-	ext := path.Ext(urlImg)
-	resp, err := cc.httpClient.Get(urlImg)
-	if err != nil {
-		cc.logger.Errorw("downloading coverage error: " + err.Error())
-		return err
-	}
-	body, _ := ioutil.ReadAll(resp.Body)
+	// cc.logger.Infow("downloading coverage url: " + urlImg)
+	// ext := path.Ext(urlImg)
+	// resp, err := cc.httpClient.Get(urlImg)
+	// if err != nil {
+	// 	cc.logger.Errorw("downloading coverage error: " + err.Error())
+	// 	return err
+	// }
+	// body, _ := ioutil.ReadAll(resp.Body)
 
-	f, err := os.OpenFile(path.Join(cc.option.DestPath, "cover", code+ext), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	if _, err := io.Copy(f, bytes.NewReader(body)); err != nil {
-		return err
-	}
+	// f, err := os.OpenFile(path.Join(cc.option.DestPath, "cover", code+ext), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	// if err != nil {
+	// 	return err
+	// }
+	// defer f.Close()
+	// if _, err := io.Copy(f, bytes.NewReader(body)); err != nil {
+	// 	return err
+	// }
 	return nil
 }
 
-func (cc *javbusCrawl) getCodeByPrefix() []string {
+func (cc *javbusCrawl) getCodeByPrefix(opt *JavbusOption) []string {
 	var codes []string = make([]string, 0)
-	for i := cc.option.PrefixMinNo; i < cc.option.PrefixMaxNo; i++ {
-		strNum := strconv.FormatUint(i, 10)
-		if len(strNum) >= int(cc.option.PrefixZero) {
-			codes = append(codes, cc.option.PrefixCode+strNum)
-		} else {
-			zerosStr := make([]byte, int(cc.option.PrefixZero)-len(strNum))
-			for i := range zerosStr {
-				zerosStr[i] = '0'
+	for _, code := range codes {
+		for i := opt.PrefixMinNo; i < opt.PrefixMaxNo; i++ {
+			strNum := strconv.FormatUint(i, 10)
+			if len(strNum) >= int(opt.PrefixZero) {
+				codes = append(codes, code+strNum)
+			} else {
+				zerosStr := make([]byte, int(opt.PrefixZero)-len(strNum))
+				for i := range zerosStr {
+					zerosStr[i] = '0'
+				}
+				codes = append(codes, code+string(append(zerosStr, []byte(strNum)...)))
 			}
-			codes = append(codes, cc.option.PrefixCode+string(append(zerosStr, []byte(strNum)...)))
 		}
 	}
 	return codes
