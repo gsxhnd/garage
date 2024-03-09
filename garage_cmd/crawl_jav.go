@@ -1,7 +1,10 @@
 package main
 
 import (
+	"path/filepath"
+
 	"github.com/gsxhnd/garage/garage_jav"
+	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
 )
 
@@ -16,6 +19,9 @@ var crawlJavbusCmd = &cli.Command{
 			Usage: "保存磁力链接,开启参数 --magnet",
 			Value: false,
 		},
+	},
+	Before: func(ctx *cli.Context) error {
+		return utils.MakeDir(filepath.Join(ctx.String("output"), "cover"))
 	},
 	Subcommands: []*cli.Command{
 		javbusCodeCmd,
@@ -40,7 +46,7 @@ var javbusCodeCmd = &cli.Command{
 			DownloadMagent: ctx.Bool("magnet"),
 		}
 
-		c, err := garage_jav.NewJavbusCrawl(logger, config)
+		c, err := garage_jav.NewJavCrawl(logger, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
@@ -49,7 +55,7 @@ var javbusCodeCmd = &cli.Command{
 		if err != nil {
 			return err
 		}
-		return c.SaveLocal(ctx.String("output"))
+		return c.SaveLocal(ctx.String("output"), nil)
 	},
 }
 
@@ -74,7 +80,7 @@ var javbusPrefixCmd = &cli.Command{
 			PrefixZero:     ctx.Uint64("prefix_zero"),
 		}
 
-		c, err := garage_jav.NewJavbusCrawl(logger, config)
+		c, err := garage_jav.NewJavCrawl(logger, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
@@ -82,7 +88,7 @@ var javbusPrefixCmd = &cli.Command{
 		if _, err := c.GetJavbusMovieByPrefix(opt); err != nil {
 			return err
 		}
-		return c.SaveLocal(ctx.String("output"))
+		return c.SaveLocal(ctx.String("output"), nil)
 	},
 }
 
@@ -101,7 +107,7 @@ var javbusStarCodeCmd = &cli.Command{
 			StarCode:       []string{ctx.String("star_code")},
 		}
 
-		c, err := garage_jav.NewJavbusCrawl(logger, config)
+		c, err := garage_jav.NewJavCrawl(logger, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
@@ -109,12 +115,12 @@ var javbusStarCodeCmd = &cli.Command{
 		if _, err := c.GetJavbusMovieByStar(opt); err != nil {
 			return err
 		}
-		return c.SaveLocal(ctx.String("output"))
+		return c.SaveLocal(ctx.String("output"), nil)
 	},
 }
 
 var javbusCodeFromDirCmd = &cli.Command{
-	Name:  "javbus_code_from_dir",
+	Name:  "code_from_dir",
 	Usage: "根据演员ID爬取数据",
 	Flags: []cli.Flag{
 		&cli.StringFlag{Name: "input_path", Required: true},
@@ -128,7 +134,7 @@ var javbusCodeFromDirCmd = &cli.Command{
 			VideosPath:     ctx.String("input_path"),
 		}
 
-		c, err := garage_jav.NewJavbusCrawl(logger, config)
+		c, err := garage_jav.NewJavCrawl(logger, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
@@ -138,6 +144,7 @@ var javbusCodeFromDirCmd = &cli.Command{
 			return err
 		}
 
-		return c.SaveLocal(ctx.String("output"))
+		return nil
+		// return c.SaveLocal(ctx.String("output"))
 	},
 }
