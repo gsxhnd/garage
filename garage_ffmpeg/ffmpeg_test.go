@@ -104,10 +104,8 @@ func Test_videoBatch_GetExecBatch(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			vb := &videoBatch{
-				option:   tt.fields.option,
-				cmdBatch: tt.fields.cmdBatch,
-			}
+			vb, err := NewVideoBatch(tt.fields.option)
+			assert.Nil(t, err)
 			vb.GetExecBatch()
 		})
 	}
