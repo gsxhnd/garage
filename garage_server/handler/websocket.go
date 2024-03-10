@@ -36,13 +36,15 @@ func (h *websocketHandler) Ws(ctx *gin.Context) {
 	}
 	defer conn.Close()
 
-	c, _ := garage_ffmpeg.NewVideoBatch(nil)
+	c, _ := garage_ffmpeg.NewVideoBatch(&garage_ffmpeg.VideoBatchOption{Exec: true})
 	ob := c.GetExecBatch()
+	go c.ExecuteBatch()
 
 	go func() {
 		fmt.Print("start listning...")
 		for i := range ob.Observe() {
-			conn.WriteMessage(1, []byte(i.V.(string)))
+			fmt.Println("get ob item...")
+			conn.WriteMessage(1, i.V.([]byte))
 		}
 	}()
 
