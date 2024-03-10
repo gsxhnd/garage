@@ -7,6 +7,9 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"time"
+
+	"github.com/reactivex/rxgo/v2"
 )
 
 type VideoBatchOption struct {
@@ -35,6 +38,7 @@ type VideoBatcher interface {
 	GetAddSubtittleBatch() ([]string, error) //
 	StartAddSubtittleBatch() error           // 添加字幕
 	executeBatch() error
+	GetExecBatch() rxgo.Observable
 }
 
 type videoBatch struct {
@@ -288,4 +292,44 @@ func (vb *videoBatch) executeBatch() error {
 		// vb.logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
 	}
 	return nil
+}
+
+func (vb *videoBatch) GetExecBatch() rxgo.Observable {
+	next := make(chan rxgo.Item)
+	// ob := rxgo.Defer([]rxgo.Producer{func(ctx context.Context, next chan<- rxgo.Item) {
+	// 	next <- rxgo.Of(1)
+	// 	next <- rxgo.Of(2)
+	// 	next <- rxgo.Of(3)
+	// }})
+	ob := rxgo.FromChannel(next)
+	// ob.Send(ch)
+	fmt.Println("start time: ", time.Now())
+
+	go func() {
+
+		next <- rxgo.Of(time.Now().String())
+		fmt.Println("start time: ", time.Now())
+		time.Sleep(1 * time.Second)
+		next <- rxgo.Of(time.Now().String())
+		fmt.Println("start time: ", time.Now())
+		time.Sleep(1 * time.Second)
+		next <- rxgo.Of(time.Now().String())
+		fmt.Println("start time: ", time.Now())
+		time.Sleep(1 * time.Second)
+		next <- rxgo.Of(time.Now().String())
+		fmt.Println("start time: ", time.Now())
+		time.Sleep(1 * time.Second)
+		next <- rxgo.Of(time.Now().String())
+		fmt.Println("start time: ", time.Now())
+		time.Sleep(1 * time.Second)
+		next <- rxgo.Of(time.Now().String())
+		fmt.Println("start time: ", time.Now())
+		time.Sleep(1 * time.Second)
+		next <- rxgo.Of(time.Now().String())
+		fmt.Println("start time: ", time.Now())
+		time.Sleep(1 * time.Second)
+	}()
+
+	fmt.Println("return ob time: ", time.Now())
+	return ob
 }

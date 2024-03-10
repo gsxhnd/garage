@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/gsxhnd/garage/garage_ffmpeg"
 	"github.com/gsxhnd/garage/utils"
 )
 
@@ -33,12 +34,25 @@ func (h *websocketHandler) Ws(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	defer conn.Close()
+
+	c, _ := garage_ffmpeg.NewVideoBatch(nil)
+	ob := c.GetExecBatch()
+
+	go func() {
+		fmt.Print("start listning...")
+		for i := range ob.Observe() {
+			conn.WriteMessage(1, []byte(i.V.(string)))
+		}
+	}()
+
 	for {
 		mt, message, err := conn.ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
 			break
 		}
+		fmt.Println("get exec batch")
 
 		log.Printf("recv: %s", message)
 		err = conn.WriteMessage(mt, message)
