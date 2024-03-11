@@ -20,6 +20,7 @@ type JavbusOption struct {
 	PrefixZero     uint64   `json:"prefix_zero"`
 	VideosPath     string   `json:"videos_path"`
 	PageStartNo    uint     `json:"page_start_no"`
+	OutPath        string   `json:"out_path"`
 }
 
 type JavMovie struct {

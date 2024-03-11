@@ -44,18 +44,19 @@ var javbusCodeCmd = &cli.Command{
 		opt := &garage_jav.JavbusOption{
 			Code:           []string{ctx.Args().Get(0)},
 			DownloadMagent: ctx.Bool("magnet"),
+			OutPath:        ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavCrawl(logger, config)
+		c, err := garage_jav.NewJavCrawl(logger, opt, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
-		_, err = c.GetJavbusMovie(opt)
+		_, err = c.GetJavbusMovie()
 		if err != nil {
 			return err
 		}
-		return c.SaveLocal(ctx.String("output"), nil)
+		return c.SaveLocal(nil)
 	},
 }
 
@@ -78,17 +79,18 @@ var javbusPrefixCmd = &cli.Command{
 			PrefixMinNo:    ctx.Uint64("prefix_min"),
 			PrefixMaxNo:    ctx.Uint64("prefix_max"),
 			PrefixZero:     ctx.Uint64("prefix_zero"),
+			OutPath:        ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavCrawl(logger, config)
+		c, err := garage_jav.NewJavCrawl(logger, opt, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
-		if _, err := c.GetJavbusMovieByPrefix(opt); err != nil {
+		if _, err := c.GetJavbusMovieByPrefix(); err != nil {
 			return err
 		}
-		return c.SaveLocal(ctx.String("output"), nil)
+		return c.SaveLocal(nil)
 	},
 }
 
@@ -105,17 +107,18 @@ var javbusStarCodeCmd = &cli.Command{
 		opt := &garage_jav.JavbusOption{
 			DownloadMagent: ctx.Bool("magnet"),
 			StarCode:       []string{ctx.String("star_code")},
+			OutPath:        ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavCrawl(logger, config)
+		c, err := garage_jav.NewJavCrawl(logger, opt, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
-		if _, err := c.GetJavbusMovieByStar(opt); err != nil {
+		if _, err := c.GetJavbusMovieByStar(); err != nil {
 			return err
 		}
-		return c.SaveLocal(ctx.String("output"), nil)
+		return c.SaveLocal(nil)
 	},
 }
 
@@ -132,19 +135,19 @@ var javbusCodeFromDirCmd = &cli.Command{
 		opt := &garage_jav.JavbusOption{
 			DownloadMagent: ctx.Bool("magnet"),
 			VideosPath:     ctx.String("input_path"),
+			OutPath:        ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavCrawl(logger, config)
+		c, err := garage_jav.NewJavCrawl(logger, opt, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
 		}
 
-		if _, err := c.GetJavbusMovieByFilepath(opt); err != nil {
+		if _, err := c.GetJavbusMovieByFilepath(); err != nil {
 			return err
 		}
 
 		return nil
-		// return c.SaveLocal(ctx.String("output"))
 	},
 }
