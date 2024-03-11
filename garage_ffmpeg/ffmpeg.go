@@ -43,7 +43,7 @@ type VideoBatcher interface {
 type videoBatch struct {
 	option   *VideoBatchOption
 	cmdBatch []string
-	Ob       *ObWriter
+	Ob       *Observable
 }
 
 var FONT_EXT = []string{".ttf", ".otf", ".ttc"}
@@ -270,6 +270,10 @@ func (vb *videoBatch) createDestDir() error {
 	return nil
 }
 
+func (vb *videoBatch) ExecuteBatchDirect() error {
+	return nil
+}
+
 func (vb *videoBatch) ExecuteBatch() error {
 	if len(vb.cmdBatch) == 0 {
 		vb.cmdBatch = append(vb.cmdBatch, "-al")
@@ -282,21 +286,16 @@ func (vb *videoBatch) ExecuteBatch() error {
 
 	for _, cmd := range vb.cmdBatch {
 		if !vb.option.Exec {
-			// vb.logger.Sugar().Infof("cmd: %v", cmd)
 			return nil
 		}
 
-		// startTime := time.Now()
-		// vb.logger.Sugar().Infof("Start convert video cmd: %v", cmd)
 		cmd := exec.Command("ls", cmd)
 		cmd.Stdout = vb.Ob
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
 		if err != nil {
-			// vb.logger.Sugar().Errorf("cmd error: %v", err)
 			return err
 		}
-		// vb.logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
 	}
 	return nil
 }
@@ -305,20 +304,20 @@ func (vb *videoBatch) GetExecBatch() rxgo.Observable {
 	return vb.Ob.ob
 }
 
-type ObWriter struct {
+type Observable struct {
 	ob rxgo.Observable
 	ch chan rxgo.Item
 }
 
-func ObWriterNew() *ObWriter {
+func ObWriterNew() *Observable {
 	ch := make(chan rxgo.Item)
-	return &ObWriter{
+	return &Observable{
 		ob: rxgo.FromChannel(ch),
 		ch: ch,
 	}
 }
 
-func (o *ObWriter) Write(p []byte) (int, error) {
+func (o *Observable) Write(p []byte) (int, error) {
 	o.ch <- rxgo.Of(p)
 	return len(p), nil
 }
