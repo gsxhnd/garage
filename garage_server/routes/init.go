@@ -8,10 +8,10 @@ import (
 )
 
 type Routes struct {
-	Engine      *gin.Engine
-	Middleware  middleware.Middlewarer
-	PingHandler handler.PingHandler
-	// DemoHandle handler.DemoHandler
+	Engine           *gin.Engine
+	Middleware       middleware.Middlewarer
+	PingHandler      handler.PingHandler
+	WebsocketHandler handler.WebsocketHandler
 }
 
 func (r *Routes) Init() {
@@ -19,19 +19,19 @@ func (r *Routes) Init() {
 
 	rootRoutes := r.Engine.Group("/")
 	rootRoutes.GET("/ping", r.PingHandler.Ping)
-	// r.newDemoRoute()
+	rootRoutes.GET("/ws", r.WebsocketHandler.Ws)
 }
 
 var RouteSet = wire.NewSet(
 	gin.New,
 	middleware.NewMiddleware,
 	handler.NewPingHandle,
-	// handler.NewDemoHandle,
+	handler.NewWebsocketHandler,
 
 	wire.Struct(new(Routes),
 		"Engine",
 		"Middleware",
 		"PingHandler",
-		// "DemoHandle",
+		"WebsocketHandler",
 	),
 )

@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+
+	"github.com/reactivex/rxgo/v2"
 )
 
 type VideoBatchOption struct {
@@ -34,12 +36,14 @@ type VideoBatcher interface {
 	StartAddFontsBatch() error               // 添加字体
 	GetAddSubtittleBatch() ([]string, error) //
 	StartAddSubtittleBatch() error           // 添加字幕
-	executeBatch() error
+	ExecuteBatch() error
+	GetExecBatch() rxgo.Observable
 }
 
 type videoBatch struct {
 	option   *VideoBatchOption
 	cmdBatch []string
+	Ob       *Observable
 }
 
 var FONT_EXT = []string{".ttf", ".otf", ".ttc"}
@@ -50,12 +54,10 @@ const ADD_FONT_TEMPLATE = `ffmpeg.exe -i "%s" -c copy %s "%v"`
 const FONT_TEMPLATE = `-attach "%s" -metadata:s:t:%v mimetype=application/x-truetype-font `
 
 func NewVideoBatch(opt *VideoBatchOption) (VideoBatcher, error) {
-	// if err := client.createDestDir(); err != nil {
-	// 	return nil, err
-	// }
 	return &videoBatch{
 		option:   opt,
 		cmdBatch: make([]string, 0),
+		Ob:       ObWriterNew(),
 	}, nil
 }
 
@@ -149,7 +151,7 @@ func (vb *videoBatch) StartConvertBatch() error {
 	if err != nil {
 		return err
 	}
-	return vb.executeBatch()
+	return vb.ExecuteBatch()
 }
 
 func (vb *videoBatch) GetAddFontsBatch() ([]string, error) {
@@ -191,7 +193,7 @@ func (vb *videoBatch) StartAddFontsBatch() error {
 		if err != nil {
 			return err
 		}
-		return vb.executeBatch()
+		return vb.ExecuteBatch()
 	}
 }
 
@@ -245,7 +247,7 @@ func (vb *videoBatch) StartAddSubtittleBatch() error {
 		if err != nil {
 			return err
 		}
-		return vb.executeBatch()
+		return vb.ExecuteBatch()
 	}
 }
 
@@ -268,24 +270,54 @@ func (vb *videoBatch) createDestDir() error {
 	return nil
 }
 
-func (vb *videoBatch) executeBatch() error {
+func (vb *videoBatch) ExecuteBatchDirect() error {
+	return nil
+}
+
+func (vb *videoBatch) ExecuteBatch() error {
+	if len(vb.cmdBatch) == 0 {
+		vb.cmdBatch = append(vb.cmdBatch, "-al")
+		vb.cmdBatch = append(vb.cmdBatch, "-al")
+		vb.cmdBatch = append(vb.cmdBatch, "-al")
+		vb.cmdBatch = append(vb.cmdBatch, "-al")
+	}
+
+	fmt.Println(vb.cmdBatch, vb.option.Exec)
+
 	for _, cmd := range vb.cmdBatch {
-		if vb.option.Exec {
-			// vb.logger.Sugar().Infof("cmd: %v", cmd)
+		if !vb.option.Exec {
 			return nil
 		}
 
-		// startTime := time.Now()
-		// vb.logger.Sugar().Infof("Start convert video cmd: %v", cmd)
-		cmd := exec.Command("powershell", cmd)
-		cmd.Stdout = os.Stdout
+		cmd := exec.Command("ls", cmd)
+		cmd.Stdout = vb.Ob
 		cmd.Stderr = os.Stderr
 		err := cmd.Run()
 		if err != nil {
-			// vb.logger.Sugar().Errorf("cmd error: %v", err)
 			return err
 		}
-		// vb.logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
 	}
 	return nil
+}
+
+func (vb *videoBatch) GetExecBatch() rxgo.Observable {
+	return vb.Ob.ob
+}
+
+type Observable struct {
+	ob rxgo.Observable
+	ch chan rxgo.Item
+}
+
+func ObWriterNew() *Observable {
+	ch := make(chan rxgo.Item)
+	return &Observable{
+		ob: rxgo.FromChannel(ch),
+		ch: ch,
+	}
+}
+
+func (o *Observable) Write(p []byte) (int, error) {
+	o.ch <- rxgo.Of(p)
+	return len(p), nil
 }

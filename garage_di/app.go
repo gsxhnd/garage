@@ -61,7 +61,7 @@ func (a *Application) Run() error {
 		return a.router.Engine.Run("0.0.0.0:8080")
 	})
 
-	Open("http://localhost:8081")
+	// Open("http://localhost:8081")
 
 	if err := g.Wait(); err != nil {
 		return err

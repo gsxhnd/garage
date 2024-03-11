@@ -90,3 +90,23 @@ func Test_videoBatch_getFontsParams(t *testing.T) {
 		})
 	}
 }
+
+func Test_videoBatch_GetExecBatch(t *testing.T) {
+	type fields struct {
+		option   *VideoBatchOption
+		cmdBatch []string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+	}{
+		{"", fields{nil, nil}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vb, err := NewVideoBatch(tt.fields.option)
+			assert.Nil(t, err)
+			vb.GetExecBatch()
+		})
+	}
+}

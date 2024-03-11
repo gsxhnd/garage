@@ -5,7 +5,6 @@ import (
 )
 
 func MakeDir(fullPath string) error {
-	// fullPath := filepath.Join(cc.destPath, "cover")
 	_, err := os.Stat(fullPath)
 	if err != nil {
 		if os.IsNotExist(err) {
