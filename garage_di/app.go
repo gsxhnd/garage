@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"net"
 	"net/http"
 	"os/exec"
 	"runtime"
@@ -12,6 +13,7 @@ import (
 	garage_ui "github.com/gsxhnd/garage/garage-ui"
 	"github.com/gsxhnd/garage/garage_server/routes"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/grpc"
 )
 
 type Application struct {
@@ -59,6 +61,18 @@ func (a *Application) Run() error {
 
 	g.Go(func() error {
 		return a.router.Engine.Run("0.0.0.0:8080")
+	})
+
+	g.Go(func() error {
+		listen, err := net.Listen("tcp", "localhost:8082")
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+		var opts []grpc.ServerOption
+
+		grpcServer := grpc.NewServer(opts...)
+
+		return grpcServer.Serve(listen)
 	})
 
 	// Open("http://localhost:8081")
