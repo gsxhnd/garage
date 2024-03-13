@@ -8,15 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 	garage_ui "github.com/gsxhnd/garage/garage-ui"
 	"github.com/gsxhnd/garage/garage_server/routes"
+	"github.com/gsxhnd/garage/utils"
 	"golang.org/x/sync/errgroup"
 )
 
 type Application struct {
-	router *routes.Routes
+	router *routes.Routers
 }
 
-func NewApplication(r *routes.Routes) *Application {
-	r.Init()
+func NewApplication(cfg *utils.Config, r *routes.Routers) *Application {
 	return &Application{
 		router: r,
 	}

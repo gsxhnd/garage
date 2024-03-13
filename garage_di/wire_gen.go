@@ -18,22 +18,21 @@ import (
 // Injectors from wire.go:
 
 func InitApp() (*Application, error) {
-	engine := gin.New()
 	config, err := utils.NewConfig()
 	if err != nil {
 		return nil, err
 	}
+	engine := gin.New()
 	logger := utils.NewLogger(config)
-	middlewarer := middleware.NewMiddleware(logger)
 	testService := service.NewTestService(logger)
 	pingHandler := handler.NewPingHandle(logger, testService)
 	websocketHandler := handler.NewWebsocketHandler(logger)
-	routesRoutes := &routes.Routes{
-		Engine:           engine,
-		Middleware:       middlewarer,
+	handlerHandler := handler.Handler{
 		PingHandler:      pingHandler,
 		WebsocketHandler: websocketHandler,
 	}
-	application := NewApplication(routesRoutes)
+	middlewarer := middleware.NewMiddleware(logger)
+	routers := routes.NewRouter(config, engine, handlerHandler, middlewarer)
+	application := NewApplication(config, routers)
 	return application, nil
 }

@@ -1,10 +1,14 @@
 package utils
 
 type Config struct {
-	Dev      bool      `env:"DEV" envDefault:"true"`
-	Debug    bool      `env:"DEBUG" envDefault:"true"`
-	Log      LogConfig `json:"log,omitempty"`
-	LogLevel string    `env:"LOG_LEVEL" envDefault:"info"`
+	Dev   bool `env:"DEV" envDefault:"true"`
+	Debug bool `env:"DEBUG" envDefault:"true"`
+
+	Log LogConfig `json:"log,omitempty"`
+}
+
+type WebConfig struct {
+	Enable bool
 }
 
 type LogConfig struct {
