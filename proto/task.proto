@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+
+option go_package = "github.com/gsxhnd/garage/proto";
+
+service TaskManager {
+    rpc GetTaskList(Empty) returns (TaskList){}
+}
+
+message Empty {}
+
+message TaskList {
+    string name = 1;
+}
