@@ -12,7 +12,7 @@ import (
 var (
 	RootCmd = cli.NewApp()
 	logger  = utils.NewLogger(&utils.Config{
-		Log: utils.LogConfig{
+		LogConfig: utils.LogConfig{
 			Level: "debug",
 		},
 	})

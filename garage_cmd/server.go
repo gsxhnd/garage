@@ -8,8 +8,13 @@ import (
 var serverCmd = &cli.Command{
 	Name:  "server",
 	Usage: "",
-	Action: func(context *cli.Context) error {
-		app, _ := garage_di.InitApp()
+	Flags: []cli.Flag{
+		&cli.PathFlag{
+			Name: "config",
+		},
+	},
+	Action: func(ctx *cli.Context) error {
+		app, _ := garage_di.InitApp(ctx.Path("config"))
 		return app.Run()
 	},
 }

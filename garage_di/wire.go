@@ -14,7 +14,7 @@ import (
 	"github.com/gsxhnd/garage/utils"
 )
 
-func InitApp() (*Application, error) {
+func InitApp(path string) (*Application, error) {
 	wire.Build(
 		gin.New,
 		NewApplication,
