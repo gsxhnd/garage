@@ -1,1 +1,9 @@
 dev: true
+debug: false
+
+log:
+  level: "info"
+  filename: ""
+
+web:
+  enable: true

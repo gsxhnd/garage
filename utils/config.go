@@ -8,8 +8,6 @@ import (
 
 type Config struct {
 	Dev       bool      `yaml:"dev"`
-	Debug     bool      `yaml:"debug"`
-	Test      string    `yaml:"test"`
 	LogConfig LogConfig `yaml:"log,omitempty"`
 	WebConfig WebConfig `yaml:"web"`
 }
@@ -27,8 +25,6 @@ type LogConfig struct {
 	TraceEnable bool   `env:"TRACE_ENABLE" envDefault:"false"`
 	TraceUrl    string `env:"TRACE_URL"`
 }
-
-// type EnvConfig struct{}
 
 func NewConfig(path string) (*Config, error) {
 	var cfg = Config{}

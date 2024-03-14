@@ -8,6 +8,7 @@ package garage_di
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gsxhnd/garage/garage_server/dao"
 	"github.com/gsxhnd/garage/garage_server/handler"
 	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/garage_server/routes"
@@ -24,7 +25,12 @@ func InitApp(path string) (*Application, error) {
 	}
 	engine := gin.New()
 	logger := utils.NewLogger(config)
-	testService := service.NewTestService(logger)
+	database, err := dao.NewDatabase(config, logger)
+	if err != nil {
+		return nil, err
+	}
+	testDao := dao.NewTestDao(database)
+	testService := service.NewTestService(logger, testDao)
 	pingHandler := handler.NewPingHandle(logger, testService)
 	websocketHandler := handler.NewWebsocketHandler(logger)
 	handlerHandler := handler.Handler{

@@ -9,21 +9,19 @@ import (
 	"github.com/gsxhnd/garage/utils"
 )
 
-type Database interface{}
-
-type database struct {
+type Database struct {
 	sqliteDB *sql.DB
 }
 
-func NewDatabase(cfg utils.Config, l utils.Logger) (Database, error) {
+func NewDatabase(cfg *utils.Config, l utils.Logger) (*Database, error) {
 	sqliteDB, err := sql.Open("sqlite", "./data/billfish.db")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return &database{
+	return &Database{
 		sqliteDB: sqliteDB,
 	}, nil
 }
 
-var DaoSet = wire.NewSet(NewDatabase)
+var DaoSet = wire.NewSet(NewDatabase, NewTestDao)

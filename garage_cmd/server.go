@@ -14,7 +14,10 @@ var serverCmd = &cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		app, _ := garage_di.InitApp(ctx.Path("config"))
-		return app.Run()
+		if app, err := garage_di.InitApp(ctx.Path("config")); err != nil {
+			return err
+		} else {
+			return app.Run()
+		}
 	},
 }
