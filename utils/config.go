@@ -1,14 +1,21 @@
 package utils
 
-type Config struct {
-	Dev   bool `env:"DEV" envDefault:"true"`
-	Debug bool `env:"DEBUG" envDefault:"true"`
+import (
+	"os"
 
-	Log LogConfig `json:"log,omitempty"`
+	"gopkg.in/yaml.v3"
+)
+
+type Config struct {
+	Dev       bool      `yaml:"dev"`
+	Debug     bool      `yaml:"debug"`
+	Test      string    `yaml:"test"`
+	LogConfig LogConfig `yaml:"log,omitempty"`
+	WebConfig WebConfig `yaml:"web"`
 }
 
 type WebConfig struct {
-	Enable bool
+	Enable bool `yaml:"enable"`
 }
 
 type LogConfig struct {
@@ -23,10 +30,14 @@ type LogConfig struct {
 
 // type EnvConfig struct{}
 
-func NewConfig() (*Config, error) {
-	cfg := Config{}
-	// if err := env.Parse(&cfg); err != nil {
-	// 	return nil, err
-	// }
+func NewConfig(path string) (*Config, error) {
+	var cfg = Config{}
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	if err := yaml.Unmarshal(file, &cfg); err != nil {
+		return nil, err
+	}
 	return &cfg, nil
 }
