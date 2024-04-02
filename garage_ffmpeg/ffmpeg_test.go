@@ -17,6 +17,19 @@ func createCorrectVideos(inputPath, formart string) []string {
 	return a
 }
 
+var correctMp4Videos = []string{
+	"../testdata/1/1.mp4",
+	"../testdata/1/2.mp4",
+	"../testdata/2/1.mp4",
+	"../testdata/2/2.mp4",
+}
+var correctMkvVideos = []string{
+	"../testdata/1/1.mkv",
+	"../testdata/1/2.mkv",
+	"../testdata/2/1.mkv",
+	"../testdata/2/2.mkv",
+}
+
 var correctConvertBatch = []string{
 	`ffmpeg.exe -i "../testdata/1/1.mp4"  "../output/1.mkv"`,
 	`ffmpeg.exe -i "../testdata/1/2.mp4"  "../output/2.mkv"`,
@@ -36,8 +49,8 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 		want    []string
 		wantErr bool
 	}{
-		{"test_mkv", args{InputPath: "../testdata", InputFormat: "mkv"}, []string{}, false},
-		{"test_mp4", args{InputPath: "../testdata", InputFormat: "mp4"}, []string{}, false},
+		{"test_mkv", args{InputPath: "../testdata", InputFormat: "mkv"}, correctMkvVideos, false},
+		{"test_mp4", args{InputPath: "../testdata", InputFormat: "mp4"}, correctMp4Videos, false},
 		{"test_err", args{InputPath: "../111", InputFormat: "mp4"}, []string{}, true},
 		{"test_err", args{InputPath: "../111", InputFormat: "mp4"}, []string{}, true},
 	}
@@ -57,11 +70,8 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 			if tt.wantErr {
 				assert.NotNil(t, err)
 			} else {
-				var cList = createCorrectVideos(tt.args.InputPath, tt.args.InputFormat)
-				t.Log(cList)
-
 				assert.Nil(t, err)
-				assert.Equal(t, videosList, cList)
+				assert.Equal(t, videosList, tt.want)
 			}
 		})
 	}
