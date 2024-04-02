@@ -120,7 +120,7 @@ func (vb *videoBatch) GetFontsParams() (string, error) {
 	var fontsParams = ""
 	fontsList, err := vb.GetFontsList()
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	for i, v := range fontsList {

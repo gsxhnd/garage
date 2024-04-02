@@ -33,6 +33,8 @@ var correctConvertBatch = []string{
 	`ffmpeg.exe -i "../testdata/2/2.mp4"  "../testdata/output/2.mkv"`,
 }
 
+var correctFontsParams = `-attach "../testdata/1/1.ttf" -metadata:s:t:0 mimetype=application/x-truetype-font -attach "../testdata/1/2.ttf" -metadata:s:t:1 mimetype=application/x-truetype-font -attach "../testdata/2/1.ttf" -metadata:s:t:2 mimetype=application/x-truetype-font -attach "../testdata/2/2.ttf" -metadata:s:t:3 mimetype=application/x-truetype-font `
+
 func Test_videoBatch_GetVideosList(t *testing.T) {
 	type args struct {
 		InputPath   string
@@ -83,7 +85,7 @@ func Test_videoBatch_GetFontsList(t *testing.T) {
 		want    []string
 		wantErr bool
 	}{
-		{"test_succ", args{"../testdata"}, correctFonts, false},
+		{"test_succ", args{FontsPath: "../testdata"}, correctFonts, false},
 		{"test_err", args{FontsPath: "../111"}, nil, true},
 	}
 
@@ -101,6 +103,37 @@ func Test_videoBatch_GetFontsList(t *testing.T) {
 				return
 			}
 			assert.Nil(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_videoBatch_GetFontsParams(t *testing.T) {
+	type args struct {
+		FontsPath string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{"test_succ", args{FontsPath: "../testdata"}, correctFontsParams, false},
+		{"test_err", args{FontsPath: "../111"}, "", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vb := &videoBatch{
+				option: &VideoBatchOption{
+					FontsPath: tt.args.FontsPath,
+				},
+			}
+
+			got, err := vb.GetFontsParams()
+			if tt.wantErr {
+				assert.NotNil(t, err)
+				return
+			}
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -139,7 +172,7 @@ func Test_videoBatch_GetConvertBatch(t *testing.T) {
 				assert.NotNil(t, err)
 			}
 
-			assert.Equal(t, correctConvertBatch, got)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
