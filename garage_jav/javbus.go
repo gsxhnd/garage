@@ -39,7 +39,7 @@ type javbusCrawl struct {
 	httpClient *resty.Client
 }
 
-func NewJavCrawl(logger utils.Logger, opt *JavbusOption, config *CrawlConfig) (JavbusCrawl, error) {
+func NewJavbusCrawl(logger utils.Logger, opt *JavbusOption, config *CrawlConfig) (JavbusCrawl, error) {
 	collector := colly.NewCollector()
 	collector.ParseHTTPErrorResponse = true
 	collector.SetRedirectHandler(func(req *http.Request, via []*http.Request) error {

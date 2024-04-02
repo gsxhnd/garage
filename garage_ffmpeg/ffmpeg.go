@@ -3,10 +3,12 @@ package garage_ffmpeg
 import (
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
+	"runtime"
 
 	"github.com/reactivex/rxgo/v2"
 )
@@ -31,12 +33,9 @@ type VideoBatcher interface {
 	GetFontsList() ([]string, error)         // 获取字体列表
 	GetFontsParams() (string, error)         // 获取字体列表
 	GetConvertBatch() ([]string, error)      // 获取转换视频命令
-	StartConvertBatch() error                // 转换视频
 	GetAddFontsBatch() ([]string, error)     // 获取添加字体命令
-	StartAddFontsBatch() error               // 添加字体
-	GetAddSubtittleBatch() ([]string, error) //
-	StartAddSubtittleBatch() error           // 添加字幕
-	ExecuteBatch() error
+	GetAddSubtittleBatch() ([]string, error) // 获取添加字幕命令
+	ExecuteBatch(wOut, wError io.Writer, batchCmd []string) error
 	GetExecBatch() rxgo.Observable
 }
 
@@ -146,14 +145,6 @@ func (vb *videoBatch) GetConvertBatch() ([]string, error) {
 	return vb.cmdBatch, nil
 }
 
-func (vb *videoBatch) StartConvertBatch() error {
-	_, err := vb.GetConvertBatch()
-	if err != nil {
-		return err
-	}
-	return vb.ExecuteBatch()
-}
-
 func (vb *videoBatch) GetAddFontsBatch() ([]string, error) {
 	videosList, err := vb.GetVideosList()
 	if err != nil {
@@ -173,28 +164,6 @@ func (vb *videoBatch) GetAddFontsBatch() ([]string, error) {
 	}
 
 	return vb.cmdBatch, nil
-}
-
-func (vb *videoBatch) StartAddFontsBatch() error {
-	// if fontsList, err := vb.GetFontsList(); err != nil {
-	// 	return err
-	// }
-
-	// vb.logger.Info("Source videos directory: " + vb.option.InputPath)
-	// vb.logger.Info("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
-	// vb.logger.Info("Target video's font paths: " + vb.option.FontsPath)
-	// vb.logger.Info(fmt.Sprintf("Attach fonts parameters: %v", vb.fontsParams))
-	// vb.logger.Info("Dest video directory: " + vb.option.OutputPath)
-
-	if !vb.option.Exec {
-		return nil
-	} else {
-		_, err := vb.GetConvertBatch()
-		if err != nil {
-			return err
-		}
-		return vb.ExecuteBatch()
-	}
 }
 
 func (vb *videoBatch) GetAddSubtittleBatch() ([]string, error) {
@@ -225,32 +194,6 @@ func (vb *videoBatch) GetAddSubtittleBatch() ([]string, error) {
 	return vb.cmdBatch, nil
 }
 
-func (vb *videoBatch) StartAddSubtittleBatch() error {
-
-	// vb.logger.Debug("Source videos directory: " + vb.option.InputPath)
-	// vb.logger.Debug("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
-	// vb.logger.Debug("Target video's subtitle stream number: " + strconv.Itoa(vb.option.InputSubNo))
-	// vb.logger.Debug("Target video's subtitle language: " + vb.option.InputSubLang)
-	// vb.logger.Debug("Target video's subtitle title: " + vb.option.InputSubTitle)
-
-	// vb.logger.Info("Target video's font paths: " + vb.option.FontsPath)
-	// vb.logger.Info(fmt.Sprintf("Attach fonts parameters: %v", vb.fontsParams))
-	// vb.logger.Info("Target video's font paths not set, skip.")
-	// vb.logger.Info("Dest video directory: " + vb.option.OutputPath)
-
-	// vb.logger.Info("Get all videos, starting convert")
-
-	if !vb.option.Exec {
-		return nil
-	} else {
-		_, err := vb.GetAddSubtittleBatch()
-		if err != nil {
-			return err
-		}
-		return vb.ExecuteBatch()
-	}
-}
-
 func (vb *videoBatch) createDestDir() error {
 	destDir := path.Join(vb.option.OutputPath)
 	// vb.logger.Info("Start creating destination directory: " + destDir)
@@ -270,34 +213,34 @@ func (vb *videoBatch) createDestDir() error {
 	return nil
 }
 
-func (vb *videoBatch) ExecuteBatchDirect() error {
-	return nil
-}
-
-func (vb *videoBatch) ExecuteBatch() error {
-	if len(vb.cmdBatch) == 0 {
-		vb.cmdBatch = append(vb.cmdBatch, "-al")
-		vb.cmdBatch = append(vb.cmdBatch, "-al")
-		vb.cmdBatch = append(vb.cmdBatch, "-al")
-		vb.cmdBatch = append(vb.cmdBatch, "-al")
+func (vb *videoBatch) ExecuteBatch(wOut, wError io.Writer, cmdBatch []string) error {
+	var name string
+	switch runtime.GOOS {
+	case "darwin":
+		name = "/bin/sh"
+	case "windows":
+		name = "powershell"
+	case "linux":
+		name = "/bin/bash"
+	default:
+		name = ""
 	}
 
-	fmt.Println(vb.cmdBatch, vb.option.Exec)
-
-	for _, cmd := range vb.cmdBatch {
+	for _, cmd := range cmdBatch {
 		if !vb.option.Exec {
 			return nil
 		}
 
-		cmd := exec.Command("ls", cmd)
-		cmd.Stdout = vb.Ob
-		cmd.Stderr = os.Stderr
+		cmd := exec.Command(name, cmd)
+		cmd.Stdout = wOut
+		cmd.Stderr = wError
 		err := cmd.Run()
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+
 }
 
 func (vb *videoBatch) GetExecBatch() rxgo.Observable {

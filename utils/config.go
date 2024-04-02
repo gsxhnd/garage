@@ -13,7 +13,9 @@ type Config struct {
 }
 
 type WebConfig struct {
-	Enable bool `yaml:"enable"`
+	Enable  bool   `yaml:"enable"`
+	UiPort  string `yaml:ui_port"`
+	ApiPort string `yaml:"api_port"`
 }
 
 type LogConfig struct {

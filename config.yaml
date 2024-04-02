@@ -5,5 +5,9 @@ log:
   level: "info"
   filename: ""
 
+api:
+  port: 8080
+
 web:
   enable: true
+  port: 8081
