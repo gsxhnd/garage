@@ -1,16 +1,15 @@
 package garage_ffmpeg
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
 
+	"github.com/gsxhnd/garage/utils"
 	"github.com/reactivex/rxgo/v2"
 )
 
@@ -29,7 +28,6 @@ type VideoBatchOption struct {
 }
 
 type VideoBatcher interface {
-	createDestDir() error                    // 创建输出后的文件夹
 	GetVideosList() ([]string, error)        // 获取视频列表s
 	GetFontsList() ([]string, error)         // 获取字体列表
 	GetFontsParams() (string, error)         // 获取字体列表
@@ -54,6 +52,10 @@ const ADD_FONT_TEMPLATE = `ffmpeg.exe -i "%s" -c copy %s "%v"`
 const FONT_TEMPLATE = `-attach "%s" -metadata:s:t:%v mimetype=application/x-truetype-font `
 
 func NewVideoBatch(opt *VideoBatchOption) (VideoBatcher, error) {
+	if err := utils.MakeDir(opt.OutputPath); err != nil {
+		return nil, err
+	}
+
 	return &videoBatch{
 		option:   opt,
 		cmdBatch: make([]string, 0),
@@ -103,7 +105,7 @@ func (vb *videoBatch) GetFontsList() ([]string, error) {
 
 		for _, b := range FONT_EXT {
 			if fileExt == b {
-				fontsList = append(fontsList, filename)
+				fontsList = append(fontsList, path)
 			}
 		}
 		return nil
@@ -193,25 +195,6 @@ func (vb *videoBatch) GetAddSubtittleBatch() ([]string, error) {
 	}
 
 	return vb.cmdBatch, nil
-}
-
-func (vb *videoBatch) createDestDir() error {
-	destDir := path.Join(vb.option.OutputPath)
-	// vb.logger.Info("Start creating destination directory: " + destDir)
-	if fi, err := os.Stat(destDir); err != nil {
-		if os.IsNotExist(err) {
-			os.MkdirAll(destDir, os.ModePerm)
-		} else {
-			return err
-		}
-	} else {
-		if fi.IsDir() {
-			return errors.New("destination directory already exists")
-			// vb.logger.Info("Destination directory already exists")
-		}
-	}
-	// vb.logger.Info("Destination directory created")
-	return nil
 }
 
 func (vb *videoBatch) ExecuteBatch(wOut, wError io.Writer, cmdBatch []string) error {

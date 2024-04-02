@@ -1,21 +1,10 @@
 package garage_ffmpeg
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
-
-func createCorrectVideos(inputPath, formart string) []string {
-	var a = make([]string, 0)
-	for i := 1; i < 5; i++ {
-		for j := 1; j < 6; j++ {
-			a = append(a, inputPath+"/"+strconv.Itoa(i)+"/"+strconv.Itoa(j)+"."+formart)
-		}
-	}
-	return a
-}
 
 var correctMp4Videos = []string{
 	"../testdata/1/1.mp4",
@@ -30,14 +19,21 @@ var correctMkvVideos = []string{
 	"../testdata/2/2.mkv",
 }
 
-var correctConvertBatch = []string{
-	`ffmpeg.exe -i "../testdata/1/1.mp4"  "../output/1.mkv"`,
-	`ffmpeg.exe -i "../testdata/1/2.mp4"  "../output/2.mkv"`,
-	`ffmpeg.exe -i "../testdata/2/1.mp4"  "../output/1.mkv"`,
-	`ffmpeg.exe -i "../testdata/2/2.mp4"  "../output/2.mkv"`,
+var correctFonts = []string{
+	"../testdata/1/1.ttf",
+	"../testdata/1/2.ttf",
+	"../testdata/2/1.ttf",
+	"../testdata/2/2.ttf",
 }
 
-func Test_videoBatch_getVideosList(t *testing.T) {
+var correctConvertBatch = []string{
+	`ffmpeg.exe -i "../testdata/1/1.mp4"  "../testdata/output/1.mkv"`,
+	`ffmpeg.exe -i "../testdata/1/2.mp4"  "../testdata/output/2.mkv"`,
+	`ffmpeg.exe -i "../testdata/2/1.mp4"  "../testdata/output/1.mkv"`,
+	`ffmpeg.exe -i "../testdata/2/2.mp4"  "../testdata/output/2.mkv"`,
+}
+
+func Test_videoBatch_GetVideosList(t *testing.T) {
 	type args struct {
 		InputPath   string
 		InputFormat string
@@ -77,53 +73,33 @@ func Test_videoBatch_getVideosList(t *testing.T) {
 	}
 }
 
-func Test_videoBatch_getFontsParams(t *testing.T) {
-	type fields struct {
-		option *VideoBatchOption
+func Test_videoBatch_GetFontsList(t *testing.T) {
+	type args struct {
+		FontsPath string
 	}
 	tests := []struct {
 		name    string
-		fields  fields
-		want    string
+		args    args
+		want    []string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{"", args{"../testdata"}, correctFonts, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			vb := &videoBatch{
-				option: tt.fields.option,
+				option: &VideoBatchOption{
+					FontsPath: tt.args.FontsPath,
+				},
 			}
 
-			got, err := vb.GetFontsParams()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("videoBatch.getFontsParams() error = %v, wantErr %v", err, tt.wantErr)
-				return
+			got, err := vb.GetFontsList()
+			if tt.wantErr {
+				assert.NotNil(t, err)
 			}
-			if got != tt.want {
-				t.Errorf("videoBatch.getFontsParams() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_videoBatch_GetExecBatch(t *testing.T) {
-	type fields struct {
-		option   *VideoBatchOption
-		cmdBatch []string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-	}{
-		{"", fields{nil, nil}},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			vb, err := NewVideoBatch(tt.fields.option)
 			assert.Nil(t, err)
-			vb.GetExecBatch()
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -141,7 +117,7 @@ func Test_videoBatch_GetConvertBatch(t *testing.T) {
 		want    []string
 		wantErr bool
 	}{
-		{"", args{InputPath: "../testdata", InputFormat: "mp4", OutputPath: "../output", OutputFormat: "mkv"}, correctConvertBatch, false},
+		{"", args{InputPath: "../testdata", InputFormat: "mp4", OutputPath: "../testdata/output", OutputFormat: "mkv"}, correctConvertBatch, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
