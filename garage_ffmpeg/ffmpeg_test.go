@@ -83,7 +83,8 @@ func Test_videoBatch_GetFontsList(t *testing.T) {
 		want    []string
 		wantErr bool
 	}{
-		{"", args{"../testdata"}, correctFonts, false},
+		{"test_succ", args{"../testdata"}, correctFonts, false},
+		{"test_err", args{FontsPath: "../111"}, nil, true},
 	}
 
 	for _, tt := range tests {
@@ -97,6 +98,7 @@ func Test_videoBatch_GetFontsList(t *testing.T) {
 			got, err := vb.GetFontsList()
 			if tt.wantErr {
 				assert.NotNil(t, err)
+				return
 			}
 			assert.Nil(t, err)
 			assert.Equal(t, tt.want, got)
