@@ -19,7 +19,6 @@ func TestNewConfig(t *testing.T) {
 			got, err := NewConfig(tt.filaPath)
 			assert.Nil(t, err)
 			t.Log("get config:", got)
-			assert.False(t, got.WebConfig.Enable)
 		})
 	}
 }

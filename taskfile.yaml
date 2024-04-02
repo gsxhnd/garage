@@ -4,9 +4,9 @@ version: '3'
 tasks:
   gen_test:
     cmds:
-      - rm -rvf testdata/
-      - mkdir -p testdata/{1,2,3,4}
-      - touch ./testdata/{1,2,3,4}/{1,2,3,4,5}.{mkv,mp4,ass,ttf}
+      - rm -rvf testdata/ garage-ui/dist
+      - mkdir -p testdata/{1,2}
+      - touch ./testdata/{1,2}/{1,2}.{mkv,mp4,ass,ttf}
       - mkdir ./garage-ui/dist
       - touch ./garage-ui/dist/index.html
       - ls -al ./testdata

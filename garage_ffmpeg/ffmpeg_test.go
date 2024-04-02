@@ -17,6 +17,13 @@ func createCorrectVideos(inputPath, formart string) []string {
 	return a
 }
 
+var correctConvertBatch = []string{
+	`ffmpeg.exe -i "../testdata/1/1.mp4"  "../output/1.mkv"`,
+	`ffmpeg.exe -i "../testdata/1/2.mp4"  "../output/2.mkv"`,
+	`ffmpeg.exe -i "../testdata/2/1.mp4"  "../output/1.mkv"`,
+	`ffmpeg.exe -i "../testdata/2/2.mp4"  "../output/2.mkv"`,
+}
+
 func Test_videoBatch_getVideosList(t *testing.T) {
 	type args struct {
 		InputPath   string
@@ -107,6 +114,44 @@ func Test_videoBatch_GetExecBatch(t *testing.T) {
 			vb, err := NewVideoBatch(tt.fields.option)
 			assert.Nil(t, err)
 			vb.GetExecBatch()
+		})
+	}
+}
+
+func Test_videoBatch_GetConvertBatch(t *testing.T) {
+	type args struct {
+		InputPath    string
+		InputFormat  string
+		OutputPath   string
+		OutputFormat string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []string
+		wantErr bool
+	}{
+		{"", args{InputPath: "../testdata", InputFormat: "mp4", OutputPath: "../output", OutputFormat: "mkv"}, correctConvertBatch, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vb := &videoBatch{
+				option: &VideoBatchOption{
+					InputPath:    tt.args.InputPath,
+					InputFormat:  tt.args.InputFormat,
+					OutputPath:   tt.args.OutputPath,
+					OutputFormat: tt.args.OutputFormat,
+				},
+			}
+
+			got, err := vb.GetConvertBatch()
+			t.Log(got)
+
+			if tt.wantErr {
+				assert.NotNil(t, err)
+			}
+
+			assert.Equal(t, correctConvertBatch, got)
 		})
 	}
 }

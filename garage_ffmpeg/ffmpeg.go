@@ -9,6 +9,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/reactivex/rxgo/v2"
 )
@@ -73,7 +74,6 @@ func (vb *videoBatch) GetVideosList() ([]string, error) {
 
 		filename := fi.Name()
 		fileExt := filepath.Ext(filename)
-		// vb.logger.Debug("get video filename: " + filename)
 
 		if fileExt == "."+vb.option.InputFormat {
 			videosList = append(videosList, path)
@@ -136,8 +136,9 @@ func (vb *videoBatch) GetConvertBatch() ([]string, error) {
 	}
 
 	for _, v := range videosList {
-		inputVideo := filepath.Join(vb.option.InputPath, v+vb.option.InputFormat)
-		outputVideo := filepath.Join(vb.option.OutputPath, v+vb.option.OutputFormat)
+		filename, _ := strings.CutSuffix(filepath.Base(v), filepath.Ext(v))
+		inputVideo := filepath.Join(vb.option.InputPath, v)
+		outputVideo := filepath.Join(vb.option.OutputPath, filename+"."+vb.option.OutputFormat)
 		s := fmt.Sprintf(CONVERT_TEMPLATE, inputVideo, vb.option.Advance, outputVideo)
 		vb.cmdBatch = append(vb.cmdBatch, s)
 	}
