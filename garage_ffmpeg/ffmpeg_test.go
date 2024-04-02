@@ -35,6 +35,30 @@ var correctConvertBatch = []string{
 
 var correctFontsParams = `-attach "../testdata/1/1.ttf" -metadata:s:t:0 mimetype=application/x-truetype-font -attach "../testdata/1/2.ttf" -metadata:s:t:1 mimetype=application/x-truetype-font -attach "../testdata/2/1.ttf" -metadata:s:t:2 mimetype=application/x-truetype-font -attach "../testdata/2/2.ttf" -metadata:s:t:3 mimetype=application/x-truetype-font `
 
+func TestNewVideoBatch(t *testing.T) {
+	tests := []struct {
+		name    string
+		opt     *VideoBatchOption
+		wantErr bool
+	}{
+		{"test_succ", &VideoBatchOption{
+			OutputPath: "../testdata",
+		}, false},
+		{"test_fail", &VideoBatchOption{}, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewVideoBatch(tt.opt)
+			if tt.wantErr {
+				assert.NotNil(t, err)
+				return
+			}
+			assert.Nil(t, err)
+			assert.NotNil(t, got)
+		})
+	}
+}
+
 func Test_videoBatch_GetVideosList(t *testing.T) {
 	type args struct {
 		InputPath   string
@@ -152,7 +176,8 @@ func Test_videoBatch_GetConvertBatch(t *testing.T) {
 		want    []string
 		wantErr bool
 	}{
-		{"", args{InputPath: "../testdata", InputFormat: "mp4", OutputPath: "../testdata/output", OutputFormat: "mkv"}, correctConvertBatch, false},
+		{"test_succ", args{InputPath: "../testdata", InputFormat: "mp4", OutputPath: "../testdata/output", OutputFormat: "mkv"}, correctConvertBatch, false},
+		{"test_fail", args{InputPath: "../111", InputFormat: "mp4", OutputPath: "../testdata/output", OutputFormat: "mkv"}, nil, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -170,6 +195,7 @@ func Test_videoBatch_GetConvertBatch(t *testing.T) {
 
 			if tt.wantErr {
 				assert.NotNil(t, err)
+				return
 			}
 
 			assert.Equal(t, tt.want, got)
