@@ -5,19 +5,26 @@
 package garage_di
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
+	"github.com/gsxhnd/garage/garage_server/dao"
+	"github.com/gsxhnd/garage/garage_server/handler"
+	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/garage_server/routes"
 	"github.com/gsxhnd/garage/garage_server/service"
 	"github.com/gsxhnd/garage/utils"
 )
 
-func InitApp() (*Application, error) {
+func InitApp(path string) (*Application, error) {
 	wire.Build(
-		NewApplication,
-		routes.RouteSet,
+		gin.New,
 		utils.UtilsSet,
+		NewApplication,
+		routes.NewRouter,
+		middleware.NewMiddleware,
+		handler.HandlerSet,
 		service.ServiceSet,
-		// dao.DaoSet,
+		dao.DaoSet,
 	)
 	return &Application{}, nil
 }

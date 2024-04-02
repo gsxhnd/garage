@@ -47,7 +47,7 @@ var javbusCodeCmd = &cli.Command{
 			OutPath:        ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavCrawl(logger, opt, config)
+		c, err := garage_jav.NewJavbusCrawl(logger, opt, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
@@ -82,7 +82,7 @@ var javbusPrefixCmd = &cli.Command{
 			OutPath:        ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavCrawl(logger, opt, config)
+		c, err := garage_jav.NewJavbusCrawl(logger, opt, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
@@ -110,7 +110,7 @@ var javbusStarCodeCmd = &cli.Command{
 			OutPath:        ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavCrawl(logger, opt, config)
+		c, err := garage_jav.NewJavbusCrawl(logger, opt, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err
@@ -138,7 +138,7 @@ var javbusCodeFromDirCmd = &cli.Command{
 			OutPath:        ctx.String("output"),
 		}
 
-		c, err := garage_jav.NewJavCrawl(logger, opt, config)
+		c, err := garage_jav.NewJavbusCrawl(logger, opt, config)
 		if err != nil {
 			logger.Panicw("client init error: " + err.Error())
 			return err

@@ -1,44 +1,22 @@
 package garage_di
 
 import (
-	"fmt"
 	"io/fs"
 	"log"
-	"net"
 	"net/http"
-	"os/exec"
-	"runtime"
 
 	"github.com/gin-gonic/gin"
 	garage_ui "github.com/gsxhnd/garage/garage-ui"
 	"github.com/gsxhnd/garage/garage_server/routes"
+	"github.com/gsxhnd/garage/utils"
 	"golang.org/x/sync/errgroup"
-	"google.golang.org/grpc"
 )
 
 type Application struct {
-	router *routes.Routes
+	router *routes.Routers
 }
 
-// Open calls the OS default program for uri
-func Open(uri string) error {
-	var commands = map[string]string{
-		"windows": "cmd /c start",
-		"darwin":  "open",
-		"linux":   "xdg-open",
-	}
-
-	run, ok := commands[runtime.GOOS]
-	if !ok {
-		return fmt.Errorf("don't know how to open things on %s platform", runtime.GOOS)
-	}
-
-	cmd := exec.Command(run, uri)
-	return cmd.Start()
-}
-
-func NewApplication(r *routes.Routes) *Application {
-	r.Init()
+func NewApplication(cfg *utils.Config, r *routes.Routers) *Application {
 	return &Application{
 		router: r,
 	}
@@ -62,20 +40,6 @@ func (a *Application) Run() error {
 	g.Go(func() error {
 		return a.router.Engine.Run("0.0.0.0:8080")
 	})
-
-	g.Go(func() error {
-		listen, err := net.Listen("tcp", "localhost:8082")
-		if err != nil {
-			log.Fatalf("failed to listen: %v", err)
-		}
-		var opts []grpc.ServerOption
-
-		grpcServer := grpc.NewServer(opts...)
-
-		return grpcServer.Serve(listen)
-	})
-
-	// Open("http://localhost:8081")
 
 	if err := g.Wait(); err != nil {
 		return err

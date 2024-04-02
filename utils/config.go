@@ -1,10 +1,21 @@
 package utils
 
+import (
+	"os"
+
+	"gopkg.in/yaml.v3"
+)
+
 type Config struct {
-	Dev      bool      `env:"DEV" envDefault:"true"`
-	Debug    bool      `env:"DEBUG" envDefault:"true"`
-	Log      LogConfig `json:"log,omitempty"`
-	LogLevel string    `env:"LOG_LEVEL" envDefault:"info"`
+	Dev       bool      `yaml:"dev"`
+	LogConfig LogConfig `yaml:"log,omitempty"`
+	WebConfig WebConfig `yaml:"web"`
+}
+
+type WebConfig struct {
+	Enable  bool   `yaml:"enable"`
+	UiPort  string `yaml:ui_port"`
+	ApiPort string `yaml:"api_port"`
 }
 
 type LogConfig struct {
@@ -17,12 +28,14 @@ type LogConfig struct {
 	TraceUrl    string `env:"TRACE_URL"`
 }
 
-// type EnvConfig struct{}
-
-func NewConfig() (*Config, error) {
-	cfg := Config{}
-	// if err := env.Parse(&cfg); err != nil {
-	// 	return nil, err
-	// }
+func NewConfig(path string) (*Config, error) {
+	var cfg = Config{}
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	if err := yaml.Unmarshal(file, &cfg); err != nil {
+		return nil, err
+	}
 	return &cfg, nil
 }

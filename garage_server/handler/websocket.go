@@ -38,7 +38,7 @@ func (h *websocketHandler) Ws(ctx *gin.Context) {
 
 	c, _ := garage_ffmpeg.NewVideoBatch(&garage_ffmpeg.VideoBatchOption{Exec: true})
 	ob := c.GetExecBatch()
-	go c.ExecuteBatch()
+	// go c.ExecuteBatch()
 
 	go func() {
 		fmt.Print("start listning...")

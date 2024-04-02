@@ -64,9 +64,9 @@ func NewLogger(cfg *Config) Logger {
 		core  zapcore.Core
 	)
 
-	if cfg.Log.Level == "info" {
+	if cfg.LogConfig.Level == "info" {
 		level = zap.InfoLevel
-	} else if cfg.Log.Level == "warn" {
+	} else if cfg.LogConfig.Level == "warn" {
 		level = zap.WarnLevel
 	} else {
 		level = zap.DebugLevel
@@ -74,10 +74,10 @@ func NewLogger(cfg *Config) Logger {
 
 	if !cfg.Dev {
 		core = zapcore.NewCore(prodEncoder, zapcore.AddSync(&lumberjack.Logger{
-			Filename:   cfg.Log.Filename,
-			MaxSize:    cfg.Log.MaxSize,
-			MaxBackups: cfg.Log.MaxBackups,
-			MaxAge:     cfg.Log.MaxAge,
+			Filename:   cfg.LogConfig.Filename,
+			MaxSize:    cfg.LogConfig.MaxSize,
+			MaxBackups: cfg.LogConfig.MaxBackups,
+			MaxAge:     cfg.LogConfig.MaxAge,
 		},
 		), level)
 	} else {

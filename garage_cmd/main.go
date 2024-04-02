@@ -1,9 +1,6 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
 	"os"
 
 	"github.com/gsxhnd/garage/utils"
@@ -15,7 +12,8 @@ import (
 var (
 	RootCmd = cli.NewApp()
 	logger  = utils.NewLogger(&utils.Config{
-		Log: utils.LogConfig{
+		Dev: true,
+		LogConfig: utils.LogConfig{
 			Level: "debug",
 		},
 	})
@@ -37,17 +35,6 @@ func init() {
 }
 
 func main() {
-	if db, err := sql.Open("sqlite", "./testdb/billfish.db"); err != nil {
-		log.Fatal(err)
-	} else {
-		fmt.Println("db open successfully")
-		row := db.QueryRow("select name from bf_file limit 1")
-		fmt.Println(row.Err())
-		var data interface{}
-		fmt.Println(row.Scan(&data))
-		fmt.Println(data)
-	}
-
 	err := RootCmd.Run(os.Args)
 	if err != nil {
 		panic(err)

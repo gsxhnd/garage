@@ -1,55 +1,82 @@
 package main
 
 import (
-	"context"
+	"os"
 
 	"github.com/gsxhnd/garage/garage_ffmpeg"
 	"github.com/urfave/cli/v2"
 	"go.uber.org/zap"
 )
 
-type garage_ffmpeg_option string
+var (
+	inputPath = &cli.StringFlag{
+		Name:  "input_path",
+		Value: "./",
+		Usage: "源视频路径",
+	}
+
+	inputFormat = &cli.StringFlag{
+		Name:  "input_format",
+		Value: "mkv",
+		Usage: "源视频后缀",
+	}
+
+	outputPath = &cli.StringFlag{
+		Name:  "output_path",
+		Value: "./result/",
+		Usage: "转换后文件存储位置",
+	}
+
+	outputFormat = &cli.StringFlag{
+		Name:  "output_format",
+		Value: "mkv",
+		Usage: "转换后的视频后缀",
+	}
+
+	advance = &cli.StringFlag{
+		Name:  "advance",
+		Value: "",
+		Usage: "高级自定义参数",
+	}
+
+	exec = &cli.BoolFlag{
+		Name:  "exec",
+		Value: false,
+		Usage: "是否执行批处理命令False时仅打印命令",
+	}
+
+	inputFontsPath = &cli.StringFlag{
+		Name:     "input_fonts_path",
+		Usage:    "添加的字体文件夹",
+		Required: false,
+	}
+)
 
 var ffmpegBatchCmd = &cli.Command{
 	Name:        "ffmpeg_batch",
 	Description: "ffmpeg视频批处理工具，支持视频格式转换、字幕添加和字体添加",
-	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:  "input_path",
-			Value: "./",
-			Usage: "源视频路径",
-		}, &cli.StringFlag{
-			Name:  "input_format",
-			Value: ".mkv",
-			Usage: "源视频后缀",
-		},
-		&cli.StringFlag{
-			Name:  "output_path",
-			Value: "./result/",
-			Usage: "转换后文件存储位置",
-		},
-		&cli.StringFlag{
-			Name:  "output_format",
-			Value: ".mkv",
-			Usage: "转换后的视频后缀",
-		},
-		&cli.StringFlag{
-			Name:  "advance",
-			Value: "",
-			Usage: "高级自定义参数",
-		},
-		&cli.BoolFlag{
-			Name:  "exec",
-			Value: false,
-			Usage: "是否执行批处理命令False时仅打印命令",
-		},
-	},
+	Flags:       []cli.Flag{},
 	Subcommands: []*cli.Command{
 		ffmpegBatchConvertCmd,
 		ffmpegBatchAddSubCmd,
 		ffmpegBatchAddFontCmd,
 	},
-	Before: func(ctx *cli.Context) error {
+}
+
+var ffmpegBatchConvertCmd = &cli.Command{
+	Name:    "convert",
+	Aliases: nil,
+	Flags: []cli.Flag{
+		inputPath,
+		inputFormat,
+		outputPath,
+		outputFormat,
+		advance,
+		exec,
+	},
+	Usage:     "视频转换批处理",
+	UsageText: "",
+	Action: func(ctx *cli.Context) error {
 		var opt = garage_ffmpeg.VideoBatchOption{
 			InputPath:    ctx.String("input_path"),
 			InputFormat:  ctx.String("input_format"),
@@ -58,26 +85,33 @@ var ffmpegBatchCmd = &cli.Command{
 			Advance:      ctx.String("advance"),
 			Exec:         ctx.Bool("exec"),
 		}
-		ctx.Context = context.WithValue(ctx.Context, garage_ffmpeg_option("opt"), opt)
-		return nil
-	},
-}
+		logger.Infof("Source videos directory: " + opt.InputPath)
+		logger.Infof("Source videos format: " + opt.InputFormat)
+		logger.Infof("Target video's font paths: " + opt.FontsPath)
+		logger.Infof("Dest video directory: " + opt.OutputPath)
+		logger.Infof("Dest video format: " + opt.OutputFormat)
 
-var ffmpegBatchConvertCmd = &cli.Command{
-	Name:      "convert",
-	Aliases:   nil,
-	Usage:     "视频转换批处理",
-	UsageText: "",
-	Action: func(c *cli.Context) error {
-		var (
-			opt = c.Context.Value(garage_ffmpeg_option("opt")).(garage_ffmpeg.VideoBatchOption)
-		)
 		vb, err := garage_ffmpeg.NewVideoBatch(&opt)
 		if err != nil {
 			logger.Panicf("Create dest path error", zap.Error(err))
 			return err
 		}
-		return vb.StartConvertBatch()
+		logger.Debugf("video batcher init")
+
+		cmds, err := vb.GetConvertBatch()
+		if err != nil {
+			logger.Panicf("Get Convert Batch error", zap.Error(err))
+			return err
+		}
+
+		if !opt.Exec {
+			for _, cmd := range cmds {
+				logger.Infof("Cmd batch not execute,cmd: " + cmd)
+			}
+			return nil
+		}
+
+		return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
 	},
 }
 
@@ -87,6 +121,13 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 	Usage:     "视频添加字幕批处理",
 	UsageText: "",
 	Flags: []cli.Flag{
+		inputPath,
+		inputFormat,
+		outputPath,
+		outputFormat,
+		advance,
+		inputFontsPath,
+		exec,
 		&cli.StringFlag{
 			Name:  "input_fonts_path",
 			Usage: "添加的字体文件夹",
@@ -113,61 +154,87 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		var opt = ctx.Context.Value(garage_ffmpeg_option("opt")).(garage_ffmpeg.VideoBatchOption)
-		opt.FontsPath = ctx.String("input_fonts_path")
+		var opt = garage_ffmpeg.VideoBatchOption{
+			InputPath:    ctx.String("input_path"),
+			InputFormat:  ctx.String("input_format"),
+			OutputPath:   ctx.String("output_path"),
+			OutputFormat: ctx.String("output_format"),
+			Advance:      ctx.String("advance"),
+			Exec:         ctx.Bool("exec"),
+			FontsPath:    ctx.String("input_fonts_path"),
+		}
+
 		vb, err := garage_ffmpeg.NewVideoBatch(&opt)
 		if err != nil {
 			logger.Panicf("Create dest path error", zap.Error(err))
 			return err
 		}
 
-		return vb.StartAddSubtittleBatch()
+		// vb.logger.Debug("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
+		// vb.logger.Debug("Target video's subtitle stream number: " + strconv.Itoa(vb.option.InputSubNo))
+		// vb.logger.Debug("Target video's subtitle language: " + vb.option.InputSubLang)
+		// vb.logger.Debug("Target video's subtitle title: " + vb.option.InputSubTitle)
+		// vb.logger.Info("Target video's font paths not set, skip.")
+		logger.Infof("Target video's font paths: " + opt.FontsPath)
+
+		cmds, err := vb.GetAddSubtittleBatch()
+		if err != nil {
+			return err
+		}
+
+		if !opt.Exec {
+			for _, cmd := range cmds {
+				logger.Infof(cmd)
+			}
+			return nil
+		}
+
+		return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
 	},
 }
 
 var ffmpegBatchAddFontCmd = &cli.Command{
-	Name:      "add_fonts",
-	Aliases:   nil,
-	Usage:     "视频添加字体批处理",
-	UsageText: "",
+	Name:    "add_fonts",
+	Aliases: nil,
+	Usage:   "视频添加字体批处理",
 	Flags: []cli.Flag{
-		&cli.StringFlag{
-			Name:     "input_fonts_path",
-			Usage:    "添加的字体文件夹",
-			Required: true,
-		},
+		inputPath,
+		inputFormat,
+		outputPath,
+		outputFormat,
+		advance,
+		exec,
+		inputFontsPath,
 	},
+	UsageText: "",
 	Action: func(ctx *cli.Context) error {
-		var opt = ctx.Context.Value(garage_ffmpeg_option("opt")).(garage_ffmpeg.VideoBatchOption)
-		opt.FontsPath = ctx.String("input_fonts_path")
-		vb, err := garage_ffmpeg.NewVideoBatch(&opt)
+		var opt = garage_ffmpeg.VideoBatchOption{
+			InputPath:    ctx.String("input_path"),
+			InputFormat:  ctx.String("input_format"),
+			OutputPath:   ctx.String("output_path"),
+			OutputFormat: ctx.String("output_format"),
+			Advance:      ctx.String("advance"),
+			Exec:         ctx.Bool("exec"),
+			FontsPath:    ctx.String("input_fonts_path"),
+		}
 
+		vb, err := garage_ffmpeg.NewVideoBatch(&opt)
 		if err != nil {
 			logger.Panicf("Create dest path error", zap.Error(err))
 			return err
 		}
+		cmds, err := vb.GetAddFontsBatch()
+		if err != nil {
+			return err
+		}
 
-		return vb.StartAddFontsBatch()
-		// if err != nil {
-		// 	logger.Panic("Get add subtitle batch error", zap.Error(err))
-		// }
-		// logger.Info("Get all videos, starting add fonts")
-		// for _, cmd := range batch {
-		// 	if !c.Bool("exec") {
-		// 		logger.Sugar().Infof("cmd: %v", cmd)
-		// 	} else {
-		// 		startTime := time.Now()
-		// 		logger.Sugar().Infof("Start add subtitle into video, cmd: %v", cmd)
-		// 		cmd := exec.Command("powershell", cmd)
-		// 		cmd.Stdout = os.Stdout
-		// 		cmd.Stderr = os.Stderr
-		// 		err := cmd.Run()
-		// 		if err != nil {
-		// 			logger.Sugar().Errorf("cmd errror: %v", err)
-		// 		}
-		// 		logger.Sugar().Infof("Finished  add subtitle into video")
-		// 		logger.Sugar().Infof("Finished convert video, spent time: %v sec", time.Since(startTime).Seconds())
-		// 	}
-		// }
+		if !opt.Exec {
+			for _, cmd := range cmds {
+				logger.Infof(cmd)
+			}
+			return nil
+		}
+
+		return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
 	},
 }
