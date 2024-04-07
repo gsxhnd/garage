@@ -21,6 +21,7 @@ func InitApp(path string) (*Application, error) {
 		utils.UtilsSet,
 		NewApplication,
 		routes.NewRouter,
+		routes.NewServer,
 		middleware.NewMiddleware,
 		handler.HandlerSet,
 		service.ServiceSet,

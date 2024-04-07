@@ -39,6 +39,7 @@ func InitApp(path string) (*Application, error) {
 	}
 	middlewarer := middleware.NewMiddleware(logger)
 	routers := routes.NewRouter(config, engine, handlerHandler, middlewarer)
-	application := NewApplication(config, routers)
+	app := routes.NewServer(config, handlerHandler)
+	application := NewApplication(config, routers, app)
 	return application, nil
 }

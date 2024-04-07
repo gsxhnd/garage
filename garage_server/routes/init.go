@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gsxhnd/garage/garage_server/handler"
 	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/utils"
@@ -18,8 +19,8 @@ func NewRouter(cfg *utils.Config, g *gin.Engine, h handler.Handler, m middleware
 	rootGroup.GET("/ws", h.WebsocketHandler.Ws)
 
 	ffmpegGroup := g.Group("/ffmpeg")
-	ffmpegGroup.GET("/videos")  //Get all video list
-	ffmpegGroup.POST("/task") //Get all video list
+	ffmpegGroup.GET("/videos") //Get all video list
+	ffmpegGroup.POST("/task")  //Get all video list
 
 	taskGroup := g.Group("/task")
 	taskGroup.GET("/")
@@ -28,4 +29,13 @@ func NewRouter(cfg *utils.Config, g *gin.Engine, h handler.Handler, m middleware
 	return &Routers{
 		Engine: g,
 	}
+}
+
+func NewServer(cfg *utils.Config, h handler.Handler) *fiber.App {
+	app := fiber.New()
+	rootGroup := app.Group("/")
+	rootGroup.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+	return app
 }
