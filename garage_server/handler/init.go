@@ -6,7 +6,7 @@ import (
 )
 
 type Handler struct {
-	PingHandler      PingHandler
+	RootHandler      RootHandler
 	WebsocketHandler WebsocketHandler
 }
 
