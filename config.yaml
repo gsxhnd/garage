@@ -1,4 +1,4 @@
-dev: false
+dev: true
 port: :8080
 web_enable: true
 
