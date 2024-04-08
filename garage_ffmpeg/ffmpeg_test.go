@@ -33,6 +33,13 @@ var correctConvertBatch = []string{
 	`ffmpeg.exe -i "../testdata/2/2.mp4"  "../testdata/output/2.mkv"`,
 }
 
+var correctAddFontsBatch = []string{
+	`ffmpeg.exe -i "../testdata/1/1.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/1.mkv"`,
+	`ffmpeg.exe -i "../testdata/1/2.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/2.mkv"`,
+	`ffmpeg.exe -i "../testdata/2/1.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/1.mkv"`,
+	`ffmpeg.exe -i "../testdata/2/2.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/2.mkv"`,
+}
+
 var correctFontsParams = `-attach "../testdata/1/1.ttf" -metadata:s:t:0 mimetype=application/x-truetype-font -attach "../testdata/1/2.ttf" -metadata:s:t:1 mimetype=application/x-truetype-font -attach "../testdata/2/1.ttf" -metadata:s:t:2 mimetype=application/x-truetype-font -attach "../testdata/2/2.ttf" -metadata:s:t:3 mimetype=application/x-truetype-font `
 
 func TestNewVideoBatch(t *testing.T) {
@@ -199,6 +206,45 @@ func Test_videoBatch_GetConvertBatch(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_videoBatch_GetAddFontsBatch(t *testing.T) {
+	type args struct {
+		InputPath    string
+		InputFormat  string
+		OutputPath   string
+		OutputFormat string
+		FontsPath    string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    []string
+		wantErr bool
+	}{
+		{"test_succ", args{InputPath: "../testdata", InputFormat: "mkv", FontsPath: "../testdata", OutputPath: "../testdata/output"}, correctAddFontsBatch, false},
+		{"test_fail", args{InputPath: "../111", InputFormat: "mkv", OutputPath: "../testdata/output", OutputFormat: "mkv"}, nil, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vb := &videoBatch{
+				option: &VideoBatchOption{
+					InputPath:   tt.args.InputPath,
+					InputFormat: tt.args.InputFormat,
+					OutputPath:  tt.args.OutputPath,
+					FontsPath:   tt.args.FontsPath,
+				},
+			}
+
+			got, err := vb.GetAddFontsBatch()
+			if tt.wantErr {
+				assert.NotNil(t, err)
+			} else {
+				assert.Nil(t, err)
+				assert.Equal(t, tt.want, got)
+			}
 		})
 	}
 }

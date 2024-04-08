@@ -160,9 +160,8 @@ func (vb *videoBatch) GetAddFontsBatch() ([]string, error) {
 	}
 
 	for _, v := range videosList {
-		sourceVideo := filepath.Join(vb.option.InputPath, v+vb.option.InputFormat)
-		destVideo := filepath.Join(vb.option.OutputPath, v+vb.option.InputFormat)
-		s := fmt.Sprintf(ADD_FONT_TEMPLATE, sourceVideo, fontsParams, destVideo)
+		outputVideo := filepath.Join(vb.option.OutputPath, filepath.Base(v))
+		s := fmt.Sprintf(ADD_FONT_TEMPLATE, v, fontsParams, outputVideo)
 		vb.cmdBatch = append(vb.cmdBatch, s)
 	}
 
@@ -174,9 +173,6 @@ func (vb *videoBatch) GetAddSubtittleBatch() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// if vb.option.FontsPath != "" {
-	// }
 
 	fontsParams, err := vb.GetFontsParams()
 	if err != nil {
