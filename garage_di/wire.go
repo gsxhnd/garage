@@ -18,7 +18,7 @@ func InitApp(path string) (*Application, error) {
 	wire.Build(
 		utils.UtilsSet,
 		NewApplication,
-		routes.NewServer,
+		routes.NewRouter,
 		middleware.NewMiddleware,
 		handler.HandlerSet,
 		service.ServiceSet,

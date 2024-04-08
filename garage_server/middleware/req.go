@@ -1,18 +1,17 @@
 package middleware
 
-// func (m *middleware) RequestLog() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		// savedCtx := c.Request.Context()
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
-// 		var key = []interface{}{
-// 			"http_method", c.Request.Method,
-// 			"path", c.Request.RequestURI,
-// 			"client_ip", c.ClientIP(),
-// 			"status", c.Writer.Status(),
-// 		}
+func (m *middleware) RequestLog(ctx *fiber.Ctx) error {
+	ctx.Next()
+	m.logger.Infow("", []interface{}{
+		"method", ctx.Method(),
+		"path", ctx.Path(),
+		"client_id", ctx.IP(),
+		"status", ctx.Response().StatusCode(),
+	}...)
 
-// 		c.Next()
-// 		m.logger.Infow("", key...)
-// 	}
-
-// }
+	return nil
+}

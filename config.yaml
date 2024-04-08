@@ -1,13 +1,7 @@
-dev: true
-debug: false
+dev: false
+port: :8080
+web_enable: true
 
 log:
   level: "info"
-  filename: ""
-
-api:
-  port: 8080
-
-web:
-  enable: true
-  port: 8081
+  filename: "./log/garage.log"

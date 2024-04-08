@@ -6,7 +6,7 @@ import (
 )
 
 type Middlewarer interface {
-	// RequestLog() gin.HandlerFunc
+	RequestLog(ctxc *fiber.Ctx) error
 	Websocket(ctxc *fiber.Ctx) error
 }
 type middleware struct {
