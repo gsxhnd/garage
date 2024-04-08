@@ -1,22 +1,24 @@
 package utils
 
 import (
+	"errors"
 	"os"
 )
 
 func MakeDir(fullPath string) error {
-	_, err := os.Stat(fullPath)
+	fs, err := os.Stat(fullPath)
+
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(fullPath, os.ModePerm)
+		return err
+	}
+
+	if !fs.IsDir() {
+		return errors.New("file name exist, but not dir")
+	}
+
 	if err != nil {
-		if os.IsNotExist(err) {
-			err = os.MkdirAll(fullPath, os.ModePerm)
-			if err != nil {
-				return err
-			}
-		} else if os.IsExist(err) {
-			return nil
-		} else {
-			return err
-		}
+		return err
 	}
 	return nil
 }
