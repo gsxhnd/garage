@@ -9,6 +9,7 @@ import (
 type RootHandler interface {
 	Ping(ctx *fiber.Ctx) error
 }
+
 type rootHandle struct {
 	logger utils.Logger
 	svc    service.TestService

@@ -31,9 +31,11 @@ func InitApp(path string) (*Application, error) {
 	testService := service.NewTestService(logger, testDao)
 	rootHandler := handler.NewPingHandle(logger, testService)
 	websocketHandler := handler.NewWebsocketHandler(logger)
+	javHandler := handler.NewJavHandler(logger)
 	handlerHandler := handler.Handler{
 		RootHandler:      rootHandler,
 		WebsocketHandler: websocketHandler,
+		JavHandler:       javHandler,
 	}
 	middlewarer := middleware.NewMiddleware(logger)
 	router, err := routes.NewRouter(config, handlerHandler, middlewarer)
