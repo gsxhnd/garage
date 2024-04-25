@@ -11,6 +11,7 @@ import (
 	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/garage_server/routes"
 	"github.com/gsxhnd/garage/garage_server/service"
+	"github.com/gsxhnd/garage/garage_server/task"
 	"github.com/gsxhnd/garage/utils"
 )
 
@@ -23,6 +24,7 @@ func InitApp(path string) (*Application, error) {
 		handler.HandlerSet,
 		service.ServiceSet,
 		dao.DaoSet,
+		task.TaskSet,
 	)
 	return &Application{}, nil
 }

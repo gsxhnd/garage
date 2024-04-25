@@ -1,19 +1,10 @@
 package task
 
-type Task interface{}
+import "github.com/google/wire"
 
-type TaskMgr interface {
-	GetTaskList()
+type Task interface {
+	GetId() string
+	Run(cmd string)
 }
 
-type taskManager struct {
-	tasks map[string]Task
-}
-
-func NewTaskMgr() TaskMgr {
-	return &taskManager{
-		tasks: make(map[string]Task, 0),
-	}
-}
-
-func (m *taskManager) GetTaskList() {}
+var TaskSet = wire.NewSet(NewTaskMgr)

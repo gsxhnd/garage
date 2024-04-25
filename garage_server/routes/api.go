@@ -6,7 +6,7 @@ func (r *router) ApiInit() {
 	api.Get("/ping", r.h.RootHandler.Ping)
 
 	ffmpegGroup := api.Group("/ffmpeg")
-	ffmpegGroup.Get("/videos", r.h.RootHandler.Ping)
+	ffmpegGroup.Post("/convert", r.h.FFmpegHander.Convert)
 
 	javGroup := api.Group("/jav")
 	javGroup.Post("/code", r.h.JavHandler.CrawlJavByCode)

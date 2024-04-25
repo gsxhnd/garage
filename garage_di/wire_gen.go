@@ -12,6 +12,7 @@ import (
 	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/garage_server/routes"
 	"github.com/gsxhnd/garage/garage_server/service"
+	"github.com/gsxhnd/garage/garage_server/task"
 	"github.com/gsxhnd/garage/utils"
 )
 
@@ -32,10 +33,14 @@ func InitApp(path string) (*Application, error) {
 	rootHandler := handler.NewPingHandle(logger, testService)
 	websocketHandler := handler.NewWebsocketHandler(logger)
 	javHandler := handler.NewJavHandler(logger)
+	validate := utils.NewValidator()
+	taskMgr := task.NewTaskMgr(logger)
+	fFmpegHandler := handler.NewFFmpegHandler(logger, validate, taskMgr)
 	handlerHandler := handler.Handler{
 		RootHandler:      rootHandler,
 		WebsocketHandler: websocketHandler,
 		JavHandler:       javHandler,
+		FFmpegHander:     fFmpegHandler,
 	}
 	middlewarer := middleware.NewMiddleware(logger)
 	router, err := routes.NewRouter(config, handlerHandler, middlewarer)

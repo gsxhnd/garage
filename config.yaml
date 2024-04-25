@@ -3,5 +3,5 @@ port: :8080
 web_enable: true
 
 log:
-  level: "info"
+  level: "debug"
   filename: "./log/garage.log"
