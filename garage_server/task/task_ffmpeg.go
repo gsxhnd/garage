@@ -41,7 +41,10 @@ func (t *ffmpegTask) Run() {
 	switch t.cmd {
 	case "convert":
 		cmds, err := t.batcher.GetConvertBatch()
-		fmt.Println(cmds)
+		for _, c := range cmds {
+			fmt.Println("cmd: ", c)
+		}
+
 		if err != nil || len(cmds) == 0 {
 			return
 		}

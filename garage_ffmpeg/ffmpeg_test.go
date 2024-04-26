@@ -19,8 +19,6 @@ var correctMkvVideos = []string{
 	"../testdata/2/2.mkv",
 }
 
-var correctFontsParams = `-attach "../testdata/1/1.ttf" -metadata:s:t:0 mimetype=application/x-truetype-font -attach "../testdata/1/2.ttf" -metadata:s:t:1 mimetype=application/x-truetype-font -attach "../testdata/2/1.ttf" -metadata:s:t:2 mimetype=application/x-truetype-font -attach "../testdata/2/2.ttf" -metadata:s:t:3 mimetype=application/x-truetype-font `
-
 func TestNewVideoBatch(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -125,6 +123,14 @@ func Test_videoBatch_GetFontsList(t *testing.T) {
 	}
 }
 
+var correctFontsParams = `-attach "../testdata/1/1.ttf" -metadata:s:t:0 mimetype=application/x-truetype-font -attach "../testdata/1/2.ttf" -metadata:s:t:1 mimetype=application/x-truetype-font -attach "../testdata/2/1.ttf" -metadata:s:t:2 mimetype=application/x-truetype-font -attach "../testdata/2/2.ttf" -metadata:s:t:3 mimetype=application/x-truetype-font `
+var correctFontsCmd = []string{
+	"-attach", "../testdata/1/1.ttf", "-metadata:s:t:0", "mimetype=application/x-truetype-font",
+	"-attach", "../testdata/1/2.ttf", "-metadata:s:t:1", "mimetype=application/x-truetype-font",
+	"-attach", "../testdata/2/1.ttf", "-metadata:s:t:2", "mimetype=application/x-truetype-font",
+	"-attach", "../testdata/2/2.ttf", "-metadata:s:t:3", "mimetype=application/x-truetype-font",
+}
+
 func Test_videoBatch_GetFontsParams(t *testing.T) {
 	type args struct {
 		FontsPath string
@@ -132,11 +138,11 @@ func Test_videoBatch_GetFontsParams(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    string
+		want    []string
 		wantErr bool
 	}{
-		{"test_succ", args{FontsPath: "../testdata"}, correctFontsParams, false},
-		{"test_err", args{FontsPath: "../111"}, "", true},
+		{"test_succ", args{FontsPath: "../testdata"}, correctFontsCmd, false},
+		{"test_err", args{FontsPath: "../111"}, nil, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -157,10 +163,10 @@ func Test_videoBatch_GetFontsParams(t *testing.T) {
 }
 
 var correctConvertBatch = [][]string{
-	{"-i", "../testdata/1/1.mp4", "", "../testdata/output/1.mkv"},
-	{"-i", "../testdata/1/2.mp4", "", "../testdata/output/2.mkv"},
-	{"-i", "../testdata/2/1.mp4", "", "../testdata/output/1-1.mkv"},
-	{"-i", "../testdata/2/2.mp4", "", "../testdata/output/2-1.mkv"},
+	{"-i", "../testdata/1/1.mp4", "../testdata/output/1.mkv"},
+	{"-i", "../testdata/1/2.mp4", "../testdata/output/2.mkv"},
+	{"-i", "../testdata/2/1.mp4", "../testdata/output/1-1.mkv"},
+	{"-i", "../testdata/2/2.mp4", "../testdata/output/2-1.mkv"},
 }
 
 func Test_videoBatch_GetConvertBatch(t *testing.T) {
@@ -203,11 +209,27 @@ func Test_videoBatch_GetConvertBatch(t *testing.T) {
 	}
 }
 
-var correctAddFontsBatch = []string{
-	`-i "../testdata/1/1.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/1.mkv"`,
-	`-i "../testdata/1/2.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/2.mkv"`,
-	`-i "../testdata/2/1.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/1.mkv"`,
-	`-i "../testdata/2/2.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/2.mkv"`,
+var correctAddFontsCmdBatch = func() [][]string {
+	var a = [][]string{
+		{"-i", "../testdata/1/1.mkv", "-c", "copy"},
+		{"-i", "../testdata/1/2.mkv", "-c", "copy"},
+		{"-i", "../testdata/2/1.mkv", "-c", "copy"},
+		{"-i", "../testdata/2/2.mkv", "-c", "copy"},
+	}
+
+	var b = []string{
+		"../testdata/output/1.mkv",
+		"../testdata/output/2.mkv",
+		"../testdata/output/1-1.mkv",
+		"../testdata/output/2-1.mkv",
+	}
+	var c = [][]string{}
+	for i, v := range a {
+		v = append(v, correctFontsCmd...)
+		v = append(v, b[i])
+		c = append(c, v)
+	}
+	return c
 }
 
 func Test_videoBatch_GetAddFontsBatch(t *testing.T) {
@@ -221,20 +243,21 @@ func Test_videoBatch_GetAddFontsBatch(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []string
+		want    [][]string
 		wantErr bool
 	}{
-		{"test_succ", args{InputPath: "../testdata", InputFormat: "mkv", FontsPath: "../testdata", OutputPath: "../testdata/output"}, correctAddFontsBatch, false},
+		{"test_succ", args{InputPath: "../testdata", InputFormat: "mkv", FontsPath: "../testdata", OutputPath: "../testdata/output"}, correctAddFontsCmdBatch(), false},
 		{"test_fail", args{InputPath: "../111", InputFormat: "mkv", OutputPath: "../testdata/output", OutputFormat: "mkv"}, nil, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			vb := &videoBatch{
 				option: &VideoBatchOption{
-					InputPath:   tt.args.InputPath,
-					InputFormat: tt.args.InputFormat,
-					OutputPath:  tt.args.OutputPath,
-					FontsPath:   tt.args.FontsPath,
+					InputPath:    tt.args.InputPath,
+					InputFormat:  tt.args.InputFormat,
+					OutputPath:   tt.args.OutputPath,
+					OutputFormat: tt.args.InputFormat,
+					FontsPath:    tt.args.FontsPath,
 				},
 			}
 
@@ -282,6 +305,24 @@ func Test_videoBatch_filterOutput(t *testing.T) {
 
 			got := vb.filterOutput(tt.inputPath)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_videoBatch_ExecuteBatch(t *testing.T) {
+	tests := []struct {
+		name string
+	}{
+		{"test"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// var a = []string{"-i", "../testdata/1/1.mp4", "", "../data/1.mkv"}
+
+			// cmd := exec.Command("ffmpeg", a...)
+			// cmd.Stdout = os.Stdout
+			// cmd.Stderr = os.Stdout
+			// cmd.Run()
 		})
 	}
 }

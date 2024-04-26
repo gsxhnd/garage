@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gsxhnd/garage/garage_ffmpeg"
@@ -233,7 +234,8 @@ var ffmpegBatchAddFontCmd = &cli.Command{
 
 		if !opt.Exec {
 			for _, cmd := range cmds {
-				logger.Infof(cmd)
+				// logger.Infow(cmd)
+				fmt.Println(cmd)
 			}
 			return nil
 		}

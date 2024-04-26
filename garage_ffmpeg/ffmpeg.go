@@ -30,9 +30,9 @@ type VideoBatchOption struct {
 type VideoBatcher interface {
 	GetVideosList() ([]string, error)        // 获取视频列表s
 	GetFontsList() ([]string, error)         // 获取字体列表
-	GetFontsParams() (string, error)         // 获取字体列表
+	GetFontsParams() ([]string, error)       // 获取字体列表
 	GetConvertBatch() ([][]string, error)    // 获取转换视频命令
-	GetAddFontsBatch() ([]string, error)     // 获取添加字体命令
+	GetAddFontsBatch() ([][]string, error)   // 获取添加字体命令
 	GetAddSubtittleBatch() ([]string, error) // 获取添加字幕命令
 	ExecuteBatch(wOut, wError io.Writer, batchCmd [][]string) error
 	// GetExecBatch() rxgo.Observable
@@ -46,10 +46,7 @@ type videoBatch struct {
 
 var FONT_EXT = []string{".ttf", ".otf", ".ttc"}
 
-const CONVERT_TEMPLATE = `-i "%v" %v "%v"`
 const ADD_SUB_TEMPLATE = `-i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s "%v"`
-const ADD_FONT_TEMPLATE = `-i "%s" -c copy %s "%v"`
-const FONT_TEMPLATE = `-attach "%s" -metadata:s:t:%v mimetype=application/x-truetype-font `
 
 func NewVideoBatch(opt *VideoBatchOption) (VideoBatcher, error) {
 	if err := utils.MakeDir(opt.OutputPath); err != nil {
@@ -116,19 +113,23 @@ func (vb *videoBatch) GetFontsList() ([]string, error) {
 	}
 }
 
-func (vb *videoBatch) GetFontsParams() (string, error) {
-	var fontsParams = ""
+func (vb *videoBatch) GetFontsParams() ([]string, error) {
+	var fontsCmdList = []string{}
 	fontsList, err := vb.GetFontsList()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	for i, v := range fontsList {
-		fontPath := filepath.Join(vb.option.FontsPath, v)
-		fontsParams += fmt.Sprintf(FONT_TEMPLATE, fontPath, i)
+		fontsCmdList = append(fontsCmdList,
+			"-attach",
+			filepath.Join(vb.option.FontsPath, v),
+			fmt.Sprintf("-metadata:s:t:%v", i),
+			"mimetype=application/x-truetype-font",
+		)
 	}
 
-	return fontsParams, nil
+	return fontsCmdList, nil
 }
 
 func (vb *videoBatch) GetConvertBatch() ([][]string, error) {
@@ -141,31 +142,40 @@ func (vb *videoBatch) GetConvertBatch() ([][]string, error) {
 
 	for _, v := range videosList {
 		cmd := []string{"-i"}
-		cmd = append(cmd, v, vb.option.Advance, outputVideosMap[v])
+		cmd = append(cmd, v)
+		if vb.option.Advance != "" {
+			cmd = append(cmd, vb.option.Advance)
+		}
+		cmd = append(cmd, outputVideosMap[v])
 		vb.cmdBatchs = append(vb.cmdBatchs, cmd)
 	}
 
 	return vb.cmdBatchs, nil
 }
 
-func (vb *videoBatch) GetAddFontsBatch() ([]string, error) {
+func (vb *videoBatch) GetAddFontsBatch() ([][]string, error) {
 	videosList, err := vb.GetVideosList()
 	if err != nil {
 		return nil, err
 	}
 
-	fontsParams, err := vb.GetFontsParams()
+	fontCmd, err := vb.GetFontsParams()
 	if err != nil {
 		return nil, err
 	}
 
+	outputVideosMap := vb.filterOutput(videosList)
 	for _, v := range videosList {
-		outputVideo := filepath.Join(vb.option.OutputPath, filepath.Base(v))
-		s := fmt.Sprintf(ADD_FONT_TEMPLATE, v, fontsParams, outputVideo)
-		vb.cmdBatch = append(vb.cmdBatch, s)
+		var batchCmd = []string{
+			"-i", v,
+			"-c", "copy",
+		}
+		batchCmd = append(batchCmd, fontCmd...)
+		batchCmd = append(batchCmd, outputVideosMap[v])
+		vb.cmdBatchs = append(vb.cmdBatchs, batchCmd)
 	}
 
-	return vb.cmdBatch, nil
+	return vb.cmdBatchs, nil
 }
 
 func (vb *videoBatch) GetAddSubtittleBatch() ([]string, error) {
@@ -194,7 +204,6 @@ func (vb *videoBatch) GetAddSubtittleBatch() ([]string, error) {
 }
 
 func (vb *videoBatch) ExecuteBatch(wOut, wError io.Writer, cmdBatch [][]string) error {
-	// TODO: cmd need list
 	if !vb.option.Exec {
 		return nil
 	}
@@ -206,7 +215,6 @@ func (vb *videoBatch) ExecuteBatch(wOut, wError io.Writer, cmdBatch [][]string) 
 			cmd = exec.Command("ffmpeg", c...)
 		}
 
-		fmt.Println(c)
 		cmd.Stdout = wOut
 		cmd.Stderr = wError
 		err := cmd.Run()
