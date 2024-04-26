@@ -106,7 +106,9 @@ var ffmpegBatchConvertCmd = &cli.Command{
 
 		if !opt.Exec {
 			for _, cmd := range cmds {
-				logger.Infof("Cmd batch not execute,cmd: " + cmd)
+				for _, c := range cmd {
+					logger.Infof("Cmd batch not execute,cmd: " + c)
+				}
 			}
 			return nil
 		}
@@ -188,8 +190,9 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 			}
 			return nil
 		}
+		return nil
 
-		return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
+		// return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
 	},
 }
 
@@ -234,7 +237,8 @@ var ffmpegBatchAddFontCmd = &cli.Command{
 			}
 			return nil
 		}
+		return nil
 
-		return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
+		// return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
 	},
 }

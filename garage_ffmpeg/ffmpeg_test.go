@@ -19,27 +19,6 @@ var correctMkvVideos = []string{
 	"../testdata/2/2.mkv",
 }
 
-var correctFonts = []string{
-	"../testdata/1/1.ttf",
-	"../testdata/1/2.ttf",
-	"../testdata/2/1.ttf",
-	"../testdata/2/2.ttf",
-}
-
-var correctConvertBatch = []string{
-	`ffmpeg.exe -i "../testdata/1/1.mp4"  "../testdata/output/1.mkv"`,
-	`ffmpeg.exe -i "../testdata/1/2.mp4"  "../testdata/output/2.mkv"`,
-	`ffmpeg.exe -i "../testdata/2/1.mp4"  "../testdata/output/1.mkv"`,
-	`ffmpeg.exe -i "../testdata/2/2.mp4"  "../testdata/output/2.mkv"`,
-}
-
-var correctAddFontsBatch = []string{
-	`ffmpeg.exe -i "../testdata/1/1.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/1.mkv"`,
-	`ffmpeg.exe -i "../testdata/1/2.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/2.mkv"`,
-	`ffmpeg.exe -i "../testdata/2/1.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/1.mkv"`,
-	`ffmpeg.exe -i "../testdata/2/2.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/2.mkv"`,
-}
-
 var correctFontsParams = `-attach "../testdata/1/1.ttf" -metadata:s:t:0 mimetype=application/x-truetype-font -attach "../testdata/1/2.ttf" -metadata:s:t:1 mimetype=application/x-truetype-font -attach "../testdata/2/1.ttf" -metadata:s:t:2 mimetype=application/x-truetype-font -attach "../testdata/2/2.ttf" -metadata:s:t:3 mimetype=application/x-truetype-font `
 
 func TestNewVideoBatch(t *testing.T) {
@@ -106,6 +85,13 @@ func Test_videoBatch_GetVideosList(t *testing.T) {
 	}
 }
 
+var correctFonts = []string{
+	"../testdata/1/1.ttf",
+	"../testdata/1/2.ttf",
+	"../testdata/2/1.ttf",
+	"../testdata/2/2.ttf",
+}
+
 func Test_videoBatch_GetFontsList(t *testing.T) {
 	type args struct {
 		FontsPath string
@@ -170,6 +156,13 @@ func Test_videoBatch_GetFontsParams(t *testing.T) {
 	}
 }
 
+var correctConvertBatch = [][]string{
+	{"-i", "../testdata/1/1.mp4", "", "../testdata/output/1.mkv"},
+	{"-i", "../testdata/1/2.mp4", "", "../testdata/output/2.mkv"},
+	{"-i", "../testdata/2/1.mp4", "", "../testdata/output/1-1.mkv"},
+	{"-i", "../testdata/2/2.mp4", "", "../testdata/output/2-1.mkv"},
+}
+
 func Test_videoBatch_GetConvertBatch(t *testing.T) {
 	type args struct {
 		InputPath    string
@@ -180,7 +173,7 @@ func Test_videoBatch_GetConvertBatch(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []string
+		want    [][]string
 		wantErr bool
 	}{
 		{"test_succ", args{InputPath: "../testdata", InputFormat: "mp4", OutputPath: "../testdata/output", OutputFormat: "mkv"}, correctConvertBatch, false},
@@ -208,6 +201,13 @@ func Test_videoBatch_GetConvertBatch(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+var correctAddFontsBatch = []string{
+	`-i "../testdata/1/1.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/1.mkv"`,
+	`-i "../testdata/1/2.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/2.mkv"`,
+	`-i "../testdata/2/1.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/1.mkv"`,
+	`-i "../testdata/2/2.mkv" -c copy ` + correctFontsParams + ` "../testdata/output/2.mkv"`,
 }
 
 func Test_videoBatch_GetAddFontsBatch(t *testing.T) {
@@ -245,6 +245,43 @@ func Test_videoBatch_GetAddFontsBatch(t *testing.T) {
 				assert.Nil(t, err)
 				assert.Equal(t, tt.want, got)
 			}
+		})
+	}
+}
+
+var correctMp4FilterOutput = map[string]string{
+	"../testdata/1/1.mp4": "../output/1.mkv",
+	"../testdata/1/2.mp4": "../output/2.mkv",
+	"../testdata/2/1.mp4": "../output/1-1.mkv",
+	"../testdata/2/2.mp4": "../output/2-1.mkv",
+}
+
+func Test_videoBatch_filterOutput(t *testing.T) {
+	type args struct {
+		outPath   string
+		outFormat string
+	}
+
+	tests := []struct {
+		name      string
+		inputPath []string
+		args      args
+		want      map[string]string
+	}{
+		{"test", correctMp4Videos, args{outPath: "../output", outFormat: "mkv"}, correctMp4FilterOutput},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			vb := &videoBatch{
+				option: &VideoBatchOption{
+					OutputPath:   tt.args.outPath,
+					OutputFormat: tt.args.outFormat,
+				},
+			}
+
+			got := vb.filterOutput(tt.inputPath)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

@@ -25,4 +25,5 @@ func (m *taskManager) GetTaskList(id string) {
 
 func (m *taskManager) AddTask(task Task) {
 	m.tasks[task.GetId()] = task
+	go task.Run()
 }

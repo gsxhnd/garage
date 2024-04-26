@@ -32,9 +32,9 @@ func InitApp(path string) (*Application, error) {
 	testService := service.NewTestService(logger, testDao)
 	rootHandler := handler.NewPingHandle(logger, testService)
 	websocketHandler := handler.NewWebsocketHandler(logger)
-	javHandler := handler.NewJavHandler(logger)
 	validate := utils.NewValidator()
 	taskMgr := task.NewTaskMgr(logger)
+	javHandler := handler.NewJavHandler(logger, validate, taskMgr)
 	fFmpegHandler := handler.NewFFmpegHandler(logger, validate, taskMgr)
 	handlerHandler := handler.Handler{
 		RootHandler:      rootHandler,

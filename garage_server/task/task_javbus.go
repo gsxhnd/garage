@@ -20,8 +20,12 @@ func (t *javbusTask) Observable() rxgo.Observable {
 	return t.ob
 }
 
-func (t *javbusTask) Run(cmd string) {}
+func (t *javbusTask) Run() {}
 
 func (t *javbusTask) GetId() string {
 	return t.id
+}
+
+func (t *javbusTask) GetOB() rxgo.Observable {
+	return nil
 }

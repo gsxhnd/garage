@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gsxhnd/garage/garage_ffmpeg"
@@ -41,9 +43,15 @@ func (h *ffmpegHander) Convert(ctx *fiber.Ctx) error {
 		h.logger.Errorf("body validation error: %s", err.Error())
 	}
 
+	h.logger.Debugf("ffmpeg handler input path: %s", body.Name)
+
 	task, err := task.NewFFmpegTask(&garage_ffmpeg.VideoBatchOption{
-		InputPath: body.Name,
-	})
+		InputPath:    body.Name,
+		InputFormat:  "mp4",
+		OutputPath:   "/home/gsxhnd/Code/personal/garage/data",
+		OutputFormat: "mkv",
+		Exec:         true,
+	}, "convert")
 	if err != nil {
 		h.logger.Errorf("init task error: %s", err.Error())
 		return nil
@@ -52,5 +60,8 @@ func (h *ffmpegHander) Convert(ctx *fiber.Ctx) error {
 	h.taskManager.AddTask(task)
 	h.logger.Debugf("Task id: %s", task.GetId())
 
+	for i := range task.GetOB().Observe() {
+		fmt.Println(i.V)
+	}
 	return nil
 }
