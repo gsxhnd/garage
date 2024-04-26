@@ -6,6 +6,7 @@ toolchain go1.22.2
 
 require (
 	github.com/antchfx/htmlquery v1.3.0
+	github.com/emirpasic/gods v1.18.1
 	github.com/glebarez/go-sqlite v1.22.0
 	github.com/go-gota/gota v0.12.0
 	github.com/go-playground/validator/v10 v10.19.0
@@ -35,8 +36,6 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/emirpasic/gods/v2 v2.0.0-alpha // indirect
 	github.com/fasthttp/websocket v1.5.8 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect

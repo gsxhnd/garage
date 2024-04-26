@@ -123,7 +123,6 @@ func Test_videoBatch_GetFontsList(t *testing.T) {
 	}
 }
 
-var correctFontsParams = `-attach "../testdata/1/1.ttf" -metadata:s:t:0 mimetype=application/x-truetype-font -attach "../testdata/1/2.ttf" -metadata:s:t:1 mimetype=application/x-truetype-font -attach "../testdata/2/1.ttf" -metadata:s:t:2 mimetype=application/x-truetype-font -attach "../testdata/2/2.ttf" -metadata:s:t:3 mimetype=application/x-truetype-font `
 var correctFontsCmd = []string{
 	"-attach", "../testdata/1/1.ttf", "-metadata:s:t:0", "mimetype=application/x-truetype-font",
 	"-attach", "../testdata/1/2.ttf", "-metadata:s:t:1", "mimetype=application/x-truetype-font",

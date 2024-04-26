@@ -6,7 +6,7 @@ package garage_di
 
 import (
 	"github.com/google/wire"
-	"github.com/gsxhnd/garage/garage_server/dao"
+	"github.com/gsxhnd/garage/garage_server/db"
 	"github.com/gsxhnd/garage/garage_server/handler"
 	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/garage_server/routes"
@@ -23,7 +23,7 @@ func InitApp(path string) (*Application, error) {
 		middleware.NewMiddleware,
 		handler.HandlerSet,
 		service.ServiceSet,
-		dao.DaoSet,
+		db.DaoSet,
 		task.TaskSet,
 	)
 	return &Application{}, nil

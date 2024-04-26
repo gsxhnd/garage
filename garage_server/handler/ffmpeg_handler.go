@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gsxhnd/garage/garage_ffmpeg"
+	"github.com/gsxhnd/garage/garage_server/service"
 	"github.com/gsxhnd/garage/garage_server/task"
 	"github.com/gsxhnd/garage/utils"
 )
@@ -18,13 +19,15 @@ type ffmpegHander struct {
 	logger      utils.Logger
 	validator   *validator.Validate
 	taskManager task.TaskMgr
+	svc         service.TaskService
 }
 
-func NewFFmpegHandler(l utils.Logger, v *validator.Validate, t task.TaskMgr) FFmpegHandler {
+func NewFFmpegHandler(l utils.Logger, v *validator.Validate, t task.TaskMgr, svc service.TaskService) FFmpegHandler {
 	return &ffmpegHander{
 		logger:      l,
 		validator:   v,
 		taskManager: t,
+		svc:         svc,
 	}
 }
 

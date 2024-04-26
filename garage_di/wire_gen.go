@@ -7,7 +7,7 @@
 package garage_di
 
 import (
-	"github.com/gsxhnd/garage/garage_server/dao"
+	"github.com/gsxhnd/garage/garage_server/db"
 	"github.com/gsxhnd/garage/garage_server/handler"
 	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/garage_server/routes"
@@ -24,18 +24,18 @@ func InitApp(path string) (*Application, error) {
 		return nil, err
 	}
 	logger := utils.NewLogger(config)
-	database, err := dao.NewDatabase(config, logger)
-	if err != nil {
-		return nil, err
-	}
-	testDao := dao.NewTestDao(database)
-	testService := service.NewTestService(logger, testDao)
-	rootHandler := handler.NewPingHandle(logger, testService)
+	rootHandler := handler.NewPingHandle(logger)
 	websocketHandler := handler.NewWebsocketHandler(logger)
 	validate := utils.NewValidator()
 	taskMgr := task.NewTaskMgr(logger)
 	javHandler := handler.NewJavHandler(logger, validate, taskMgr)
-	fFmpegHandler := handler.NewFFmpegHandler(logger, validate, taskMgr)
+	database, err := db.NewDatabase(config, logger)
+	if err != nil {
+		return nil, err
+	}
+	taskDao := db.NewTaskDao(database, logger)
+	taskService := service.NewTaskService(logger, taskDao)
+	fFmpegHandler := handler.NewFFmpegHandler(logger, validate, taskMgr, taskService)
 	handlerHandler := handler.Handler{
 		RootHandler:      rootHandler,
 		WebsocketHandler: websocketHandler,
