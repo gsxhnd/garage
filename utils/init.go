@@ -5,5 +5,5 @@ import (
 )
 
 var UtilsSet = wire.NewSet(
-	NewLogger, NewConfig,
+	NewLogger, NewConfig, NewValidator,
 )

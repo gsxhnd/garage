@@ -7,12 +7,12 @@
 package garage_di
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gsxhnd/garage/garage_server/dao"
+	"github.com/gsxhnd/garage/garage_server/db"
 	"github.com/gsxhnd/garage/garage_server/handler"
 	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/garage_server/routes"
 	"github.com/gsxhnd/garage/garage_server/service"
+	"github.com/gsxhnd/garage/garage_server/task"
 	"github.com/gsxhnd/garage/utils"
 )
 
@@ -23,22 +23,30 @@ func InitApp(path string) (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	engine := gin.New()
 	logger := utils.NewLogger(config)
-	database, err := dao.NewDatabase(config, logger)
+	rootHandler := handler.NewPingHandle(logger)
+	websocketHandler := handler.NewWebsocketHandler(logger)
+	validate := utils.NewValidator()
+	taskMgr := task.NewTaskMgr(logger)
+	javHandler := handler.NewJavHandler(logger, validate, taskMgr)
+	database, err := db.NewDatabase(config, logger)
 	if err != nil {
 		return nil, err
 	}
-	testDao := dao.NewTestDao(database)
-	testService := service.NewTestService(logger, testDao)
-	pingHandler := handler.NewPingHandle(logger, testService)
-	websocketHandler := handler.NewWebsocketHandler(logger)
+	taskDao := db.NewTaskDao(database, logger)
+	taskService := service.NewTaskService(logger, taskDao)
+	fFmpegHandler := handler.NewFFmpegHandler(logger, validate, taskMgr, taskService)
 	handlerHandler := handler.Handler{
-		PingHandler:      pingHandler,
+		RootHandler:      rootHandler,
 		WebsocketHandler: websocketHandler,
+		JavHandler:       javHandler,
+		FFmpegHander:     fFmpegHandler,
 	}
 	middlewarer := middleware.NewMiddleware(logger)
-	routers := routes.NewRouter(config, engine, handlerHandler, middlewarer)
-	application := NewApplication(config, routers)
+	router, err := routes.NewRouter(config, handlerHandler, middlewarer)
+	if err != nil {
+		return nil, err
+	}
+	application := NewApplication(router)
 	return application, nil
 }

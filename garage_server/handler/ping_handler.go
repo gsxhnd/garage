@@ -1,26 +1,24 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gsxhnd/garage/garage_server/service"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gsxhnd/garage/utils"
 )
 
-type PingHandler interface {
-	Ping(ctx *gin.Context)
-}
-type rootHandle struct {
-	logger utils.Logger
-	svc    service.TestService
+type RootHandler interface {
+	Ping(ctx *fiber.Ctx) error
 }
 
-func NewPingHandle(l utils.Logger, s service.TestService) PingHandler {
+type rootHandle struct {
+	logger utils.Logger
+}
+
+func NewPingHandle(l utils.Logger) RootHandler {
 	return &rootHandle{
 		logger: l,
-		svc:    s,
 	}
 }
 
-func (h *rootHandle) Ping(ctx *gin.Context) {
-	ctx.JSON(200, "pong")
+func (h *rootHandle) Ping(ctx *fiber.Ctx) error {
+	return ctx.Status(200).SendString("pong")
 }

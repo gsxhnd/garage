@@ -1,4 +1,4 @@
-package dao
+package db
 
 import (
 	"database/sql"
@@ -24,4 +24,4 @@ func NewDatabase(cfg *utils.Config, l utils.Logger) (*Database, error) {
 	}, nil
 }
 
-var DaoSet = wire.NewSet(NewDatabase, NewTestDao)
+var DaoSet = wire.NewSet(NewDatabase, NewTaskDao)

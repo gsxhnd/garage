@@ -4,60 +4,39 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"github.com/gsxhnd/garage/garage_ffmpeg"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gsxhnd/garage/utils"
 )
 
 type WebsocketHandler interface {
-	Ws(ctx *gin.Context)
+	Ws(c *websocket.Conn)
 }
 
 type websocketHandler struct {
-	logger   utils.Logger
-	upgrader *websocket.Upgrader
+	logger utils.Logger
+	// upgrader *websocket.Upgrader
 }
 
 func NewWebsocketHandler(l utils.Logger) WebsocketHandler {
 	return &websocketHandler{
 		logger: l,
-		upgrader: &websocket.Upgrader{
-			ReadBufferSize:  1024,
-			WriteBufferSize: 1024,
-		},
+		// upgrader: &websocket.Upgrader{
+		// 	ReadBufferSize:  1024,
+		// 	WriteBufferSize: 1024,
+		// },
 	}
 }
 
-func (h *websocketHandler) Ws(ctx *gin.Context) {
-	conn, err := h.upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer conn.Close()
-
-	c, _ := garage_ffmpeg.NewVideoBatch(&garage_ffmpeg.VideoBatchOption{Exec: true})
-	ob := c.GetExecBatch()
-	// go c.ExecuteBatch()
-
-	go func() {
-		fmt.Print("start listning...")
-		for i := range ob.Observe() {
-			fmt.Println("get ob item...")
-			conn.WriteMessage(1, i.V.([]byte))
-		}
-	}()
-
+func (h *websocketHandler) Ws(c *websocket.Conn) {
+	fmt.Println(c.Locals("Host"))
 	for {
-		mt, message, err := conn.ReadMessage()
+		mt, msg, err := c.ReadMessage()
 		if err != nil {
 			log.Println("read:", err)
 			break
 		}
-		fmt.Println("get exec batch")
-
-		log.Printf("recv: %s", message)
-		err = conn.WriteMessage(mt, message)
+		log.Printf("recv: %s", msg)
+		err = c.WriteMessage(mt, msg)
 		if err != nil {
 			log.Println("write:", err)
 			break

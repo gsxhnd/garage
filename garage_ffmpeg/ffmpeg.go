@@ -9,8 +9,8 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/emirpasic/gods/lists/arraylist"
 	"github.com/gsxhnd/garage/utils"
-	"github.com/reactivex/rxgo/v2"
 )
 
 type VideoBatchOption struct {
@@ -28,28 +28,23 @@ type VideoBatchOption struct {
 }
 
 type VideoBatcher interface {
-	GetVideosList() ([]string, error)        // 获取视频列表s
-	GetFontsList() ([]string, error)         // 获取字体列表
-	GetFontsParams() (string, error)         // 获取字体列表
-	GetConvertBatch() ([]string, error)      // 获取转换视频命令
-	GetAddFontsBatch() ([]string, error)     // 获取添加字体命令
-	GetAddSubtittleBatch() ([]string, error) // 获取添加字幕命令
-	ExecuteBatch(wOut, wError io.Writer, batchCmd []string) error
-	GetExecBatch() rxgo.Observable
+	GetVideosList() ([]string, error)          // 获取视频列表s
+	GetFontsList() ([]string, error)           // 获取字体列表
+	GetFontsParams() ([]string, error)         // 获取字体列表
+	GetConvertBatch() ([][]string, error)      // 获取转换视频命令
+	GetAddFontsBatch() ([][]string, error)     // 获取添加字体命令
+	GetAddSubtittleBatch() ([][]string, error) // 获取添加字幕命令
+	ExecuteBatch(wOut, wError io.Writer, batchCmd [][]string) error
+	// GetExecBatch() rxgo.Observable
 }
 
 type videoBatch struct {
-	option   *VideoBatchOption
-	cmdBatch []string
-	Ob       *Observable
+	option    *VideoBatchOption
+	cmdBatch  []string
+	cmdBatchs [][]string
 }
 
 var FONT_EXT = []string{".ttf", ".otf", ".ttc"}
-
-const CONVERT_TEMPLATE = `ffmpeg.exe -i "%v" %v "%v"`
-const ADD_SUB_TEMPLATE = `ffmpeg.exe -i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s "%v"`
-const ADD_FONT_TEMPLATE = `ffmpeg.exe -i "%s" -c copy %s "%v"`
-const FONT_TEMPLATE = `-attach "%s" -metadata:s:t:%v mimetype=application/x-truetype-font `
 
 func NewVideoBatch(opt *VideoBatchOption) (VideoBatcher, error) {
 	if err := utils.MakeDir(opt.OutputPath); err != nil {
@@ -57,9 +52,9 @@ func NewVideoBatch(opt *VideoBatchOption) (VideoBatcher, error) {
 	}
 
 	return &videoBatch{
-		option:   opt,
-		cmdBatch: make([]string, 0),
-		Ob:       ObWriterNew(),
+		option:    opt,
+		cmdBatch:  make([]string, 0),
+		cmdBatchs: make([][]string, 0),
 	}, nil
 }
 
@@ -116,39 +111,72 @@ func (vb *videoBatch) GetFontsList() ([]string, error) {
 	}
 }
 
-func (vb *videoBatch) GetFontsParams() (string, error) {
-	var fontsParams = ""
+func (vb *videoBatch) GetFontsParams() ([]string, error) {
+	var fontsCmdList = []string{}
 	fontsList, err := vb.GetFontsList()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	for i, v := range fontsList {
-		fontPath := filepath.Join(vb.option.FontsPath, v)
-		fontsParams += fmt.Sprintf(FONT_TEMPLATE, fontPath, i)
+		fontsCmdList = append(fontsCmdList,
+			"-attach",
+			filepath.Join(vb.option.FontsPath, v),
+			fmt.Sprintf("-metadata:s:t:%v", i),
+			"mimetype=application/x-truetype-font",
+		)
 	}
 
-	return fontsParams, nil
+	return fontsCmdList, nil
 }
 
-func (vb *videoBatch) GetConvertBatch() ([]string, error) {
+func (vb *videoBatch) GetConvertBatch() ([][]string, error) {
 	videosList, err := vb.GetVideosList()
 	if err != nil {
 		return nil, err
 	}
 
+	outputVideosMap := vb.filterOutput(videosList)
+
 	for _, v := range videosList {
-		filename, _ := strings.CutSuffix(filepath.Base(v), filepath.Ext(v))
-		inputVideo := filepath.Join(vb.option.InputPath, v)
-		outputVideo := filepath.Join(vb.option.OutputPath, filename+"."+vb.option.OutputFormat)
-		s := fmt.Sprintf(CONVERT_TEMPLATE, inputVideo, vb.option.Advance, outputVideo)
-		vb.cmdBatch = append(vb.cmdBatch, s)
+		cmd := []string{"-i"}
+		cmd = append(cmd, v)
+		if vb.option.Advance != "" {
+			cmd = append(cmd, vb.option.Advance)
+		}
+		cmd = append(cmd, outputVideosMap[v])
+		vb.cmdBatchs = append(vb.cmdBatchs, cmd)
 	}
 
-	return vb.cmdBatch, nil
+	return vb.cmdBatchs, nil
 }
 
-func (vb *videoBatch) GetAddFontsBatch() ([]string, error) {
+func (vb *videoBatch) GetAddFontsBatch() ([][]string, error) {
+	videosList, err := vb.GetVideosList()
+	if err != nil {
+		return nil, err
+	}
+
+	fontCmd, err := vb.GetFontsParams()
+	if err != nil {
+		return nil, err
+	}
+
+	outputVideosMap := vb.filterOutput(videosList)
+	for _, v := range videosList {
+		var batchCmd = []string{
+			"-i", v,
+			"-c", "copy",
+		}
+		batchCmd = append(batchCmd, fontCmd...)
+		batchCmd = append(batchCmd, outputVideosMap[v])
+		vb.cmdBatchs = append(vb.cmdBatchs, batchCmd)
+	}
+
+	return vb.cmdBatchs, nil
+}
+
+func (vb *videoBatch) GetAddSubtittleBatch() ([][]string, error) {
 	videosList, err := vb.GetVideosList()
 	if err != nil {
 		return nil, err
@@ -159,63 +187,40 @@ func (vb *videoBatch) GetAddFontsBatch() ([]string, error) {
 		return nil, err
 	}
 
-	for _, v := range videosList {
-		sourceVideo := filepath.Join(vb.option.InputPath, v+vb.option.InputFormat)
-		destVideo := filepath.Join(vb.option.OutputPath, v+vb.option.InputFormat)
-		s := fmt.Sprintf(ADD_FONT_TEMPLATE, sourceVideo, fontsParams, destVideo)
-		vb.cmdBatch = append(vb.cmdBatch, s)
-	}
-
-	return vb.cmdBatch, nil
-}
-
-func (vb *videoBatch) GetAddSubtittleBatch() ([]string, error) {
-	videosList, err := vb.GetVideosList()
-	if err != nil {
-		return nil, err
-	}
-
-	// if vb.option.FontsPath != "" {
-	// }
-
-	fontsParams, err := vb.GetFontsParams()
-	if err != nil {
-		return nil, err
-	}
+	outputVideosMap := vb.filterOutput(videosList)
 
 	for _, v := range videosList {
-		sourceVideo := filepath.Join(vb.option.InputPath, v+vb.option.InputFormat)
+		var cmd = []string{}
+		// TODO: sub title error
 		sourceSubtitle := filepath.Join(vb.option.InputPath, v+vb.option.InputSubSuffix)
-		destVideo := filepath.Join(vb.option.OutputPath, v+vb.option.InputFormat)
-		s := fmt.Sprintf(ADD_SUB_TEMPLATE,
-			sourceVideo, sourceSubtitle, vb.option.InputSubNo,
-			vb.option.InputSubLang, vb.option.InputSubNo, vb.option.InputSubTitle,
-			fontsParams, destVideo)
-		vb.cmdBatch = append(vb.cmdBatch, s)
+		cmd = append(cmd, "-i", fmt.Sprintf(`"%v"`, v))
+		cmd = append(cmd, "-sub_charenc", "UTF-8")
+		cmd = append(cmd, "-i", fmt.Sprintf(`"%v"`, sourceSubtitle), "-map", "0", "-map", "1")
+		cmd = append(cmd, fmt.Sprintf("-metadata:s:s:%v", vb.option.InputSubNo))
+		cmd = append(cmd, fmt.Sprintf("language=%v", vb.option.InputSubLang))
+		cmd = append(cmd, fmt.Sprintf("-metadata:s:s:%v", vb.option.InputSubNo))
+		cmd = append(cmd, fmt.Sprintf(`title="%v"`, vb.option.InputSubTitle))
+		cmd = append(cmd, "-c", "copy")
+		cmd = append(cmd, fontsParams...)
+		cmd = append(cmd, fmt.Sprintf(`"%v"`, outputVideosMap[v]))
+		vb.cmdBatchs = append(vb.cmdBatchs, cmd)
 	}
 
-	return vb.cmdBatch, nil
+	return vb.cmdBatchs, nil
 }
 
-func (vb *videoBatch) ExecuteBatch(wOut, wError io.Writer, cmdBatch []string) error {
-	var name string
-	switch runtime.GOOS {
-	case "darwin":
-		name = "/bin/sh"
-	case "windows":
-		name = "powershell"
-	case "linux":
-		name = "/bin/bash"
-	default:
-		name = ""
+func (vb *videoBatch) ExecuteBatch(wOut, wError io.Writer, cmdBatch [][]string) error {
+	if !vb.option.Exec {
+		return nil
 	}
 
-	for _, cmd := range cmdBatch {
-		if !vb.option.Exec {
-			return nil
+	for _, c := range cmdBatch {
+		var cmd *exec.Cmd
+		switch runtime.GOOS {
+		case "linux":
+			cmd = exec.Command("ffmpeg", c...)
 		}
 
-		cmd := exec.Command(name, cmd)
 		cmd.Stdout = wOut
 		cmd.Stderr = wError
 		err := cmd.Run()
@@ -224,27 +229,18 @@ func (vb *videoBatch) ExecuteBatch(wOut, wError io.Writer, cmdBatch []string) er
 		}
 	}
 	return nil
-
 }
 
-func (vb *videoBatch) GetExecBatch() rxgo.Observable {
-	return vb.Ob.ob
-}
-
-type Observable struct {
-	ob rxgo.Observable
-	ch chan rxgo.Item
-}
-
-func ObWriterNew() *Observable {
-	ch := make(chan rxgo.Item)
-	return &Observable{
-		ob: rxgo.FromChannel(ch),
-		ch: ch,
+func (vb *videoBatch) filterOutput(input []string) map[string]string {
+	var output map[string]string = make(map[string]string, 0)
+	var existOutput = arraylist.New()
+	for _, v := range input {
+		filename, _ := strings.CutSuffix(filepath.Base(v), filepath.Ext(v))
+		for existOutput.Contains(filename) {
+			filename += "-1"
+		}
+		existOutput.Add(filename)
+		output[v] = filepath.Join(vb.option.OutputPath, filename+"."+vb.option.OutputFormat)
 	}
-}
-
-func (o *Observable) Write(p []byte) (int, error) {
-	o.ch <- rxgo.Of(p)
-	return len(p), nil
+	return output
 }

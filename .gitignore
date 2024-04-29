@@ -11,3 +11,4 @@ target
 testdata/
 testdb/
 data/
+log/

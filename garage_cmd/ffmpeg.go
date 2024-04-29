@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gsxhnd/garage/garage_ffmpeg"
@@ -106,7 +107,9 @@ var ffmpegBatchConvertCmd = &cli.Command{
 
 		if !opt.Exec {
 			for _, cmd := range cmds {
-				logger.Infof("Cmd batch not execute,cmd: " + cmd)
+				for _, c := range cmd {
+					logger.Infof("Cmd batch not execute,cmd: " + c)
+				}
 			}
 			return nil
 		}
@@ -184,12 +187,14 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 
 		if !opt.Exec {
 			for _, cmd := range cmds {
-				logger.Infof(cmd)
+				fmt.Println(cmd)
+				// logger.Infof(cmd)
 			}
 			return nil
 		}
+		return nil
 
-		return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
+		// return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
 	},
 }
 
@@ -230,11 +235,13 @@ var ffmpegBatchAddFontCmd = &cli.Command{
 
 		if !opt.Exec {
 			for _, cmd := range cmds {
-				logger.Infof(cmd)
+				// logger.Infow(cmd)
+				fmt.Println(cmd)
 			}
 			return nil
 		}
+		return nil
 
-		return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
+		// return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
 	},
 }
