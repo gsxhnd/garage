@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gsxhnd/garage/garage_ffmpeg"
@@ -107,9 +106,11 @@ var ffmpegBatchConvertCmd = &cli.Command{
 
 		if !opt.Exec {
 			for _, cmd := range cmds {
+				var cmdStr = "ffmpeg "
 				for _, c := range cmd {
-					logger.Infof("Cmd batch not execute,cmd: " + c)
+					cmdStr += c + " "
 				}
+				logger.Infof("Cmd batch not execute,cmd: " + cmdStr)
 			}
 			return nil
 		}
@@ -131,10 +132,6 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 		advance,
 		inputFontsPath,
 		exec,
-		&cli.StringFlag{
-			Name:  "input_fonts_path",
-			Usage: "添加的字体文件夹",
-		},
 		&cli.StringFlag{
 			Name:  "input_sub_suffix",
 			Value: ".ass",
@@ -158,13 +155,16 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 		var opt = garage_ffmpeg.VideoBatchOption{
-			InputPath:    ctx.String("input_path"),
-			InputFormat:  ctx.String("input_format"),
-			OutputPath:   ctx.String("output_path"),
-			OutputFormat: ctx.String("output_format"),
-			Advance:      ctx.String("advance"),
-			Exec:         ctx.Bool("exec"),
-			FontsPath:    ctx.String("input_fonts_path"),
+			InputPath:      ctx.String("input_path"),
+			InputFormat:    ctx.String("input_format"),
+			OutputPath:     ctx.String("output_path"),
+			OutputFormat:   ctx.String("output_format"),
+			InputSubSuffix: ctx.String("input_sub_suffix"),
+			InputSubNo:     ctx.Int("input_sub_no"),
+			InputSubTitle:  ctx.String("input_sub_title"),
+			InputSubLang:   ctx.String("input_sub_lang"),
+			FontsPath:      ctx.String("input_fonts_path"),
+			Exec:           ctx.Bool("exec"),
 		}
 
 		vb, err := garage_ffmpeg.NewVideoBatch(&opt)
@@ -173,13 +173,6 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 			return err
 		}
 
-		// vb.logger.Debug("Get matching video count: " + strconv.Itoa(len(vb.videosList)))
-		// vb.logger.Debug("Target video's subtitle stream number: " + strconv.Itoa(vb.option.InputSubNo))
-		// vb.logger.Debug("Target video's subtitle language: " + vb.option.InputSubLang)
-		// vb.logger.Debug("Target video's subtitle title: " + vb.option.InputSubTitle)
-		// vb.logger.Info("Target video's font paths not set, skip.")
-		logger.Infof("Target video's font paths: " + opt.FontsPath)
-
 		cmds, err := vb.GetAddSubtittleBatch()
 		if err != nil {
 			return err
@@ -187,14 +180,16 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 
 		if !opt.Exec {
 			for _, cmd := range cmds {
-				fmt.Println(cmd)
-				// logger.Infof(cmd)
+				var cmdStr = "ffmpeg "
+				for _, c := range cmd {
+					cmdStr += c + " "
+				}
+				logger.Infof("Cmd batch not execute,cmd: " + cmdStr)
 			}
 			return nil
 		}
-		return nil
 
-		// return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
+		return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
 	},
 }
 
@@ -228,6 +223,7 @@ var ffmpegBatchAddFontCmd = &cli.Command{
 			logger.Panicf("Create dest path error", zap.Error(err))
 			return err
 		}
+
 		cmds, err := vb.GetAddFontsBatch()
 		if err != nil {
 			return err
@@ -235,13 +231,15 @@ var ffmpegBatchAddFontCmd = &cli.Command{
 
 		if !opt.Exec {
 			for _, cmd := range cmds {
-				// logger.Infow(cmd)
-				fmt.Println(cmd)
+				var cmdStr = "ffmpeg "
+				for _, c := range cmd {
+					cmdStr += c + " "
+				}
+				logger.Infof("Cmd batch not execute,cmd: " + cmdStr)
 			}
 			return nil
 		}
-		return nil
 
-		// return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
+		return vb.ExecuteBatch(os.Stdout, os.Stderr, cmds)
 	},
 }

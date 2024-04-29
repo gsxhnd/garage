@@ -13,7 +13,7 @@ before:
 
 builds:
   - id: cli
-    main: ./src
+    main: ./garage_cmd
     env:
       - CGO_ENABLED=0
     flags:
@@ -37,6 +37,13 @@ builds:
     goarm:
       - "6"
       - "7"
+    ignore:
+      - goos: windows
+        goarm: "6"
+      - goos: windows
+        goarm: "7"
+      - goos: windows
+        goarch: "386"
 
 archives:
   - format: tar.gz

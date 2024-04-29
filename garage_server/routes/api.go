@@ -8,7 +8,7 @@ func (r *router) ApiInit() {
 	ffmpegGroup := api.Group("/ffmpeg")
 	ffmpegGroup.Post("/convert", r.h.FFmpegHander.Convert)
 	ffmpegGroup.Post("/add_fonts", r.h.FFmpegHander.AddFonts)
-	ffmpegGroup.Post("/add_subtitle", r.h.FFmpegHander.Convert)
+	ffmpegGroup.Post("/add_subtitle", r.h.FFmpegHander.AddSubtitle)
 
 	javGroup := api.Group("/jav")
 	javGroup.Post("/code", r.h.JavHandler.CrawlJavByCode)
