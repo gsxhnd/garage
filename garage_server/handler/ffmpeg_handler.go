@@ -13,6 +13,8 @@ import (
 
 type FFmpegHandler interface {
 	Convert(ctx *fiber.Ctx) error
+	AddFonts(ctx *fiber.Ctx) error
+	AddSubtitle(ctx *fiber.Ctx) error
 }
 
 type ffmpegHander struct {
@@ -31,25 +33,35 @@ func NewFFmpegHandler(l utils.Logger, v *validator.Validate, t task.TaskMgr, svc
 	}
 }
 
-type convertModel struct {
-	Name string `json:"name" validate:"required"`
+type model struct {
+	InputPath    string `json:"inputPath" validate:"required"`
+	InputFormat  string `json:"inputFormat" validate:"required"`
+	OutputPath   string `json:"outputPath" validate:"required"`
+	OutputFormat string `json:"outputFormat" validate:"required"`
+	Advance      string `json:"advance"`
+	Exec         bool   `json:"exec"`
+}
+
+type addFontsModel struct {
+	model
+	FontsPath string `json:"fontsPath" validate:"required"`
 }
 
 func (h *ffmpegHander) Convert(ctx *fiber.Ctx) error {
-	body := new(convertModel)
+	body := new(model)
 
 	if err := ctx.BodyParser(body); err != nil {
 		h.logger.Errorf("boyd parser error: %s", err.Error())
+		return nil
 	}
 
 	if err := h.validator.Struct(body); err != nil {
 		h.logger.Errorf("body validation error: %s", err.Error())
+		return nil
 	}
 
-	h.logger.Debugf("ffmpeg handler input path: %s", body.Name)
-
 	task, err := task.NewFFmpegTask(&garage_ffmpeg.VideoBatchOption{
-		InputPath:    body.Name,
+		InputPath:    body.InputPath,
 		InputFormat:  "mp4",
 		OutputPath:   "/home/gsxhnd/Code/personal/garage/data",
 		OutputFormat: "mkv",
@@ -66,5 +78,47 @@ func (h *ffmpegHander) Convert(ctx *fiber.Ctx) error {
 	for i := range task.GetOB().Observe() {
 		fmt.Println(i.V)
 	}
+	return nil
+}
+
+func (h *ffmpegHander) AddFonts(ctx *fiber.Ctx) error {
+	body := new(addFontsModel)
+
+	if err := ctx.BodyParser(body); err != nil {
+		h.logger.Errorf("boyd parser error: %s", err.Error())
+		return nil
+	}
+
+	if err := h.validator.Struct(body); err != nil {
+		h.logger.Errorf("body validation error: %s", err.Error())
+		return nil
+	}
+
+	task, err := task.NewFFmpegTask(&garage_ffmpeg.VideoBatchOption{
+		InputPath:    body.InputPath,
+		InputFormat:  body.InputFormat,
+		OutputPath:   body.OutputPath,
+		OutputFormat: body.OutputFormat,
+		FontsPath:    body.FontsPath,
+		Advance:      body.Advance,
+		Exec:         body.Exec,
+	}, "add_fonts")
+	if err != nil {
+		h.logger.Errorf("init task error: %s", err.Error())
+		return nil
+	}
+
+	h.taskManager.AddTask(task)
+	h.logger.Debugf("Task id: %s", task.GetId())
+
+	var data = map[string]interface{}{
+		"id":   task.GetId(),
+		"cmds": task.GetCmds(),
+	}
+
+	return ctx.JSON(data)
+}
+
+func (h *ffmpegHander) AddSubtitle(ctx *fiber.Ctx) error {
 	return nil
 }

@@ -28,12 +28,12 @@ type VideoBatchOption struct {
 }
 
 type VideoBatcher interface {
-	GetVideosList() ([]string, error)        // 获取视频列表s
-	GetFontsList() ([]string, error)         // 获取字体列表
-	GetFontsParams() ([]string, error)       // 获取字体列表
-	GetConvertBatch() ([][]string, error)    // 获取转换视频命令
-	GetAddFontsBatch() ([][]string, error)   // 获取添加字体命令
-	GetAddSubtittleBatch() ([]string, error) // 获取添加字幕命令
+	GetVideosList() ([]string, error)          // 获取视频列表s
+	GetFontsList() ([]string, error)           // 获取字体列表
+	GetFontsParams() ([]string, error)         // 获取字体列表
+	GetConvertBatch() ([][]string, error)      // 获取转换视频命令
+	GetAddFontsBatch() ([][]string, error)     // 获取添加字体命令
+	GetAddSubtittleBatch() ([][]string, error) // 获取添加字幕命令
 	ExecuteBatch(wOut, wError io.Writer, batchCmd [][]string) error
 	// GetExecBatch() rxgo.Observable
 }
@@ -45,8 +45,6 @@ type videoBatch struct {
 }
 
 var FONT_EXT = []string{".ttf", ".otf", ".ttc"}
-
-const ADD_SUB_TEMPLATE = `-i "%s" -sub_charenc UTF-8 -i "%s" -map 0 -map 1 -metadata:s:s:%v language=%v -metadata:s:s:%v title="%v" -c copy %s "%v"`
 
 func NewVideoBatch(opt *VideoBatchOption) (VideoBatcher, error) {
 	if err := utils.MakeDir(opt.OutputPath); err != nil {
@@ -178,7 +176,7 @@ func (vb *videoBatch) GetAddFontsBatch() ([][]string, error) {
 	return vb.cmdBatchs, nil
 }
 
-func (vb *videoBatch) GetAddSubtittleBatch() ([]string, error) {
+func (vb *videoBatch) GetAddSubtittleBatch() ([][]string, error) {
 	videosList, err := vb.GetVideosList()
 	if err != nil {
 		return nil, err
@@ -189,18 +187,26 @@ func (vb *videoBatch) GetAddSubtittleBatch() ([]string, error) {
 		return nil, err
 	}
 
+	outputVideosMap := vb.filterOutput(videosList)
+
 	for _, v := range videosList {
-		sourceVideo := filepath.Join(vb.option.InputPath, v+vb.option.InputFormat)
+		var cmd = []string{}
+		// TODO: sub title error
 		sourceSubtitle := filepath.Join(vb.option.InputPath, v+vb.option.InputSubSuffix)
-		destVideo := filepath.Join(vb.option.OutputPath, v+vb.option.InputFormat)
-		s := fmt.Sprintf(ADD_SUB_TEMPLATE,
-			sourceVideo, sourceSubtitle, vb.option.InputSubNo,
-			vb.option.InputSubLang, vb.option.InputSubNo, vb.option.InputSubTitle,
-			fontsParams, destVideo)
-		vb.cmdBatch = append(vb.cmdBatch, s)
+		cmd = append(cmd, "-i", fmt.Sprintf(`"%v"`, v))
+		cmd = append(cmd, "-sub_charenc", "UTF-8")
+		cmd = append(cmd, "-i", fmt.Sprintf(`"%v"`, sourceSubtitle), "-map", "0", "-map", "1")
+		cmd = append(cmd, fmt.Sprintf("-metadata:s:s:%v", vb.option.InputSubNo))
+		cmd = append(cmd, fmt.Sprintf("language=%v", vb.option.InputSubLang))
+		cmd = append(cmd, fmt.Sprintf("-metadata:s:s:%v", vb.option.InputSubNo))
+		cmd = append(cmd, fmt.Sprintf(`title="%v"`, vb.option.InputSubTitle))
+		cmd = append(cmd, "-c", "copy")
+		cmd = append(cmd, fontsParams...)
+		cmd = append(cmd, fmt.Sprintf(`"%v"`, outputVideosMap[v]))
+		vb.cmdBatchs = append(vb.cmdBatchs, cmd)
 	}
 
-	return vb.cmdBatch, nil
+	return vb.cmdBatchs, nil
 }
 
 func (vb *videoBatch) ExecuteBatch(wOut, wError io.Writer, cmdBatch [][]string) error {

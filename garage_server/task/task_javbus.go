@@ -29,3 +29,7 @@ func (t *javbusTask) GetId() string {
 func (t *javbusTask) GetOB() rxgo.Observable {
 	return nil
 }
+
+func (t *javbusTask) GetCmds() [][]string {
+	return nil
+}

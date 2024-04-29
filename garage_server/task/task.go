@@ -9,6 +9,7 @@ type Task interface {
 	GetId() string
 	Run()
 	GetOB() rxgo.Observable
+	GetCmds() [][]string
 }
 
 type taskOb struct {

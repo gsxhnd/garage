@@ -13,6 +13,8 @@ type ffmpegTask struct {
 	cmd     string
 	batcher garage_ffmpeg.VideoBatcher
 	ob      *taskOb
+	exec    bool
+	cmds    [][]string
 }
 
 func NewFFmpegTask(opt *garage_ffmpeg.VideoBatchOption, cmd string) (Task, error) {
@@ -21,12 +23,35 @@ func NewFFmpegTask(opt *garage_ffmpeg.VideoBatchOption, cmd string) (Task, error
 		return nil, err
 	}
 
-	return &ffmpegTask{
+	var task = &ffmpegTask{
 		id:      uuid.New().String(),
 		cmd:     cmd,
 		batcher: batcher,
+		exec:    opt.Exec,
 		ob:      newTaskOb(),
-	}, nil
+		cmds:    make([][]string, 0),
+	}
+
+	switch cmd {
+	case "convert":
+		cmds, err := batcher.GetConvertBatch()
+		for _, c := range cmds {
+			fmt.Println("cmd: ", c)
+		}
+
+		if err != nil || len(cmds) == 0 {
+			return nil, err
+		}
+	case "add_fonts":
+		cmds, err := batcher.GetAddFontsBatch()
+		if err != nil {
+			return nil, err
+		}
+		task.cmds = cmds
+	default:
+	}
+
+	return task, nil
 }
 
 func (t *ffmpegTask) GetId() string {
@@ -37,23 +62,18 @@ func (t *ffmpegTask) GetOB() rxgo.Observable {
 	return t.ob.ob
 }
 
-func (t *ffmpegTask) Run() {
-	switch t.cmd {
-	case "convert":
-		cmds, err := t.batcher.GetConvertBatch()
-		for _, c := range cmds {
-			fmt.Println("cmd: ", c)
-		}
+func (t *ffmpegTask) GetCmds() [][]string {
+	return t.cmds
+}
 
-		if err != nil || len(cmds) == 0 {
-			return
-		}
-		t.ob.ch <- rxgo.Of(cmds)
-		if err := t.batcher.ExecuteBatch(t.ob, t.ob, cmds); err != nil {
-			t.ob.ch <- rxgo.Of("error executing batch")
-			close(t.ob.ch)
-			return
-		}
-	default:
+func (t *ffmpegTask) Run() {
+	if !t.exec {
+		return
+	}
+
+	if err := t.batcher.ExecuteBatch(t.ob, t.ob, t.cmds); err != nil {
+		t.ob.ch <- rxgo.Of("error executing batch")
+		close(t.ob.ch)
+		return
 	}
 }

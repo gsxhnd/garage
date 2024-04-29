@@ -187,7 +187,8 @@ var ffmpegBatchAddSubCmd = &cli.Command{
 
 		if !opt.Exec {
 			for _, cmd := range cmds {
-				logger.Infof(cmd)
+				fmt.Println(cmd)
+				// logger.Infof(cmd)
 			}
 			return nil
 		}
