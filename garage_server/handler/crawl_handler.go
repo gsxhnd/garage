@@ -8,7 +8,7 @@ type crawlHnadler struct {
 	logger utils.Logger
 }
 
-func NewCrwalHandler(l utils.Logger) CrawlHandler {
+func NewCrawlHandler(l utils.Logger) CrawlHandler {
 	return crawlHnadler{
 		logger: l,
 	}

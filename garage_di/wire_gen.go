@@ -24,9 +24,9 @@ func InitApp(path string) (*Application, error) {
 		return nil, err
 	}
 	logger := utils.NewLogger(config)
-	rootHandler := handler.NewPingHandle(logger)
+	rootHandler := handler.NewRootHandler(logger)
 	websocketHandler := handler.NewWebsocketHandler(logger)
-	crawlHandler := handler.NewCrwalHandler()
+	crawlHandler := handler.NewCrawlHandler(logger)
 	validate := utils.NewValidator()
 	taskMgr := task.NewTaskMgr(logger)
 	javHandler := handler.NewJavHandler(logger, validate, taskMgr)

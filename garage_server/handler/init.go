@@ -13,10 +13,10 @@ type Handler struct {
 }
 
 var HandlerSet = wire.NewSet(
-	NewRootHandle,
+	NewRootHandler,
 	NewWebsocketHandler,
 	NewJavHandler,
 	NewFFmpegHandler,
-	NewCrwalHandler,
+	NewCrawlHandler,
 	wire.Struct(new(Handler), "*"),
 )
