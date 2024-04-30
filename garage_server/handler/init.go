@@ -7,14 +7,16 @@ import (
 type Handler struct {
 	RootHandler      RootHandler
 	WebsocketHandler WebsocketHandler
+	CrawlHandler     CrawlHandler
 	JavHandler       JavHandler
 	FFmpegHander     FFmpegHandler
 }
 
 var HandlerSet = wire.NewSet(
-	NewPingHandle,
+	NewRootHandle,
 	NewWebsocketHandler,
 	NewJavHandler,
 	NewFFmpegHandler,
+	NewCrwalHandler,
 	wire.Struct(new(Handler), "*"),
 )

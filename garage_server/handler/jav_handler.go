@@ -8,7 +8,7 @@ import (
 )
 
 type JavHandler interface {
-	CrawlJavByCode(ctx *fiber.Ctx) error
+	CrawlJavbus(ctx *fiber.Ctx) error
 }
 
 type javHnadler struct {
@@ -25,6 +25,6 @@ func NewJavHandler(l utils.Logger, v *validator.Validate, t task.TaskMgr) JavHan
 	}
 }
 
-func (h *javHnadler) CrawlJavByCode(ctx *fiber.Ctx) error {
+func (h *javHnadler) CrawlJavbus(ctx *fiber.Ctx) error {
 	return ctx.SendString("CrawlJavByCode")
 }

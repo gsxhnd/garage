@@ -10,6 +10,15 @@ func (r *router) ApiInit() {
 	ffmpegGroup.Post("/add_fonts", r.h.FFmpegHander.AddFonts)
 	ffmpegGroup.Post("/add_subtitle", r.h.FFmpegHander.AddSubtitle)
 
+	crawlGroup := api.Group("/crawl")
+	crawlGroup.Post("/javbus", r.h.JavHandler.CrawlJavbus)
+	crawlGroup.Post("/javdb")
+	crawlGroup.Post("/tenhou")
+
 	javGroup := api.Group("/jav")
-	javGroup.Post("/code", r.h.JavHandler.CrawlJavByCode)
+	javGroup.Get("/")
+	javGroup.Get("/code/:code")
+	javGroup.Get("/star_code/:code")
+	javGroup.Put("/code/:code")
+	javGroup.Put("/star_code/:code")
 }
