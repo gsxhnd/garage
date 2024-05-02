@@ -25,7 +25,7 @@ func init() {
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
 		crawlJavbusCmd,
-		ffmpegBatchCmd,
+		// ffmpegBatchCmd,
 		versionCmd,
 		serverCmd,
 	}
