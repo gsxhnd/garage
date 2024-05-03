@@ -21,17 +21,13 @@ var (
 
 func init() {
 	RootCmd.HideVersion = true
-	RootCmd.Usage = "命令行工具"
+	RootCmd.Usage = "Set of crwal tool"
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
 		crawlJavbusCmd,
-		// ffmpegBatchCmd,
 		versionCmd,
 		serverCmd,
 	}
-	// RootCmd.CommandNotFound = func(ctx *cli.Context, s string) {
-	// 	fmt.Println(s)
-	// }
 }
 
 func main() {
