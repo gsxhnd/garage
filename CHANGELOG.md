@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## 0.0.12
+
 ## 0.0.11
 
 - FIX: javbus redirect error
