@@ -21,3 +21,9 @@ garage --help # 获取帮助
 ## 命令行文档
 
 [爬虫相关](./docs/crawl.md)
+
+## Thanks
+
+Thank for JetBrains Open Source License
+
+[![JetBrains logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.png)](https://jb.gg/OpenSourceSupport)
