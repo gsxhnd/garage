@@ -4,7 +4,7 @@
 
 # Garage
 
-`garage`是一个命令行工具，提供爬虫和批处理等功能。
+`garage`是一个命令行工具，提供爬虫功能。
 
 [更新日志](./CHANGELOG.md)
 
@@ -21,5 +21,3 @@ garage --help # 获取帮助
 ## 命令行文档
 
 [爬虫相关](./docs/crawl.md)
-
-[视频转码相关](./docs/ffmpeg.md)

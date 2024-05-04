@@ -24,8 +24,9 @@ func InitApp(path string) (*Application, error) {
 		return nil, err
 	}
 	logger := utils.NewLogger(config)
-	rootHandler := handler.NewPingHandle(logger)
+	rootHandler := handler.NewRootHandler(logger)
 	websocketHandler := handler.NewWebsocketHandler(logger)
+	crawlHandler := handler.NewCrawlHandler(logger)
 	validate := utils.NewValidator()
 	taskMgr := task.NewTaskMgr(logger)
 	javHandler := handler.NewJavHandler(logger, validate, taskMgr)
@@ -39,6 +40,7 @@ func InitApp(path string) (*Application, error) {
 	handlerHandler := handler.Handler{
 		RootHandler:      rootHandler,
 		WebsocketHandler: websocketHandler,
+		CrawlHandler:     crawlHandler,
 		JavHandler:       javHandler,
 		FFmpegHander:     fFmpegHandler,
 	}

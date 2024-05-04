@@ -35,7 +35,6 @@ type VideoBatcher interface {
 	GetAddFontsBatch() ([][]string, error)     // 获取添加字体命令
 	GetAddSubtittleBatch() ([][]string, error) // 获取添加字幕命令
 	ExecuteBatch(wOut, wError io.Writer, batchCmd [][]string) error
-	// GetExecBatch() rxgo.Observable
 }
 
 type videoBatch struct {
@@ -112,6 +111,10 @@ func (vb *videoBatch) GetFontsList() ([]string, error) {
 }
 
 func (vb *videoBatch) GetFontsParams() ([]string, error) {
+	if vb.option.FontsPath == "" {
+		return nil, nil
+	}
+
 	var fontsCmdList = []string{}
 	fontsList, err := vb.GetFontsList()
 	if err != nil {
@@ -192,7 +195,8 @@ func (vb *videoBatch) GetAddSubtittleBatch() ([][]string, error) {
 	for _, v := range videosList {
 		var cmd = []string{}
 		// TODO: sub title error
-		sourceSubtitle := filepath.Join(vb.option.InputPath, v+vb.option.InputSubSuffix)
+		filename, _ := strings.CutSuffix(filepath.Base(v), filepath.Ext(v))
+		sourceSubtitle := filepath.Join(vb.option.InputPath, filename+"."+vb.option.InputSubSuffix)
 		cmd = append(cmd, "-i", fmt.Sprintf(`"%v"`, v))
 		cmd = append(cmd, "-sub_charenc", "UTF-8")
 		cmd = append(cmd, "-i", fmt.Sprintf(`"%v"`, sourceSubtitle), "-map", "0", "-map", "1")
@@ -201,7 +205,9 @@ func (vb *videoBatch) GetAddSubtittleBatch() ([][]string, error) {
 		cmd = append(cmd, fmt.Sprintf("-metadata:s:s:%v", vb.option.InputSubNo))
 		cmd = append(cmd, fmt.Sprintf(`title="%v"`, vb.option.InputSubTitle))
 		cmd = append(cmd, "-c", "copy")
-		cmd = append(cmd, fontsParams...)
+		if fontsParams != nil {
+			cmd = append(cmd, fontsParams...)
+		}
 		cmd = append(cmd, fmt.Sprintf(`"%v"`, outputVideosMap[v]))
 		vb.cmdBatchs = append(vb.cmdBatchs, cmd)
 	}

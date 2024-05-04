@@ -12,8 +12,8 @@ before:
     - go generate ./...
 
 builds:
-  - id: cli
-    main: ./src
+  - id: garage
+    main: ./garage_cmd
     env:
       - CGO_ENABLED=0
     flags:

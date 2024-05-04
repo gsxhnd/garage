@@ -13,7 +13,7 @@ type rootHandle struct {
 	logger utils.Logger
 }
 
-func NewPingHandle(l utils.Logger) RootHandler {
+func NewRootHandler(l utils.Logger) RootHandler {
 	return &rootHandle{
 		logger: l,
 	}

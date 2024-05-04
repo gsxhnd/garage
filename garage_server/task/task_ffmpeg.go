@@ -48,6 +48,13 @@ func NewFFmpegTask(opt *garage_ffmpeg.VideoBatchOption, cmd string) (Task, error
 			return nil, err
 		}
 		task.cmds = cmds
+
+	case "add_subtitle":
+		cmds, err := batcher.GetAddSubtittleBatch()
+		if err != nil {
+			return nil, err
+		}
+		task.cmds = cmds
 	default:
 	}
 
