@@ -5,10 +5,10 @@ func (r *router) ApiInit() {
 	api.Use(r.m.RequestLog)
 	api.Get("/ping", r.h.RootHandler.Ping)
 
-	ffmpegGroup := api.Group("/ffmpeg")
-	ffmpegGroup.Post("/convert", r.h.FFmpegHander.Convert)
-	ffmpegGroup.Post("/add_fonts", r.h.FFmpegHander.AddFonts)
-	ffmpegGroup.Post("/add_subtitle", r.h.FFmpegHander.AddSubtitle)
+	// ffmpegGroup := api.Group("/ffmpeg")
+	// ffmpegGroup.Post("/convert", r.h.FFmpegHander.Convert)
+	// ffmpegGroup.Post("/add_fonts", r.h.FFmpegHander.AddFonts)
+	// ffmpegGroup.Post("/add_subtitle", r.h.FFmpegHander.AddSubtitle)
 
 	crawlGroup := api.Group("/crawl")
 	crawlGroup.Post("/javbus", r.h.JavHandler.CrawlJavbus)

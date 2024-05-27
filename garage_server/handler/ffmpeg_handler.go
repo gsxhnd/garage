@@ -1,173 +1,162 @@
 package handler
 
-import (
-	"fmt"
+// type FFmpegHandler interface {
+// 	Convert(ctx *fiber.Ctx) error
+// 	AddFonts(ctx *fiber.Ctx) error
+// 	AddSubtitle(ctx *fiber.Ctx) error
+// }
 
-	"github.com/go-playground/validator/v10"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gsxhnd/garage/garage_ffmpeg"
-	"github.com/gsxhnd/garage/garage_server/service"
-	"github.com/gsxhnd/garage/garage_server/task"
-	"github.com/gsxhnd/garage/utils"
-)
+// type ffmpegHander struct {
+// 	logger      utils.Logger
+// 	validator   *validator.Validate
+// 	taskManager task.TaskMgr
+// 	svc         service.TaskService
+// }
 
-type FFmpegHandler interface {
-	Convert(ctx *fiber.Ctx) error
-	AddFonts(ctx *fiber.Ctx) error
-	AddSubtitle(ctx *fiber.Ctx) error
-}
+// func NewFFmpegHandler(l utils.Logger, v *validator.Validate, t task.TaskMgr, svc service.TaskService) FFmpegHandler {
+// 	return &ffmpegHander{
+// 		logger:      l,
+// 		validator:   v,
+// 		taskManager: t,
+// 		svc:         svc,
+// 	}
+// }
 
-type ffmpegHander struct {
-	logger      utils.Logger
-	validator   *validator.Validate
-	taskManager task.TaskMgr
-	svc         service.TaskService
-}
+// type model struct {
+// 	InputPath   string `json:"inputPath" validate:"required"`
+// 	InputFormat string `json:"inputFormat" validate:"required"`
+// 	OutputPath  string `json:"outputPath" validate:"required"`
+// 	Exec        bool   `json:"exec"`
+// }
 
-func NewFFmpegHandler(l utils.Logger, v *validator.Validate, t task.TaskMgr, svc service.TaskService) FFmpegHandler {
-	return &ffmpegHander{
-		logger:      l,
-		validator:   v,
-		taskManager: t,
-		svc:         svc,
-	}
-}
+// type convertModel struct {
+// 	model
+// 	OutputFormat string `json:"outputFormat" validate:"required"`
+// 	Advance      string `json:"advance"`
+// }
 
-type model struct {
-	InputPath   string `json:"inputPath" validate:"required"`
-	InputFormat string `json:"inputFormat" validate:"required"`
-	OutputPath  string `json:"outputPath" validate:"required"`
-	Exec        bool   `json:"exec"`
-}
+// type addFontsModel struct {
+// 	model
+// 	FontsPath string `json:"fontsPath" validate:"required"`
+// }
 
-type convertModel struct {
-	model
-	OutputFormat string `json:"outputFormat" validate:"required"`
-	Advance      string `json:"advance"`
-}
+// type addSubtitleModel struct {
+// 	model
+// 	FontsPath      string `json:"fontsPath"`
+// 	InputSubSuffix string `json:"inputSubSuffix" validate:"required"`
+// 	InputSubNo     int    `json:"inputSubNo"`
+// 	InputSubTitle  string `json:"inputSubTitle" validate:"required"`
+// 	InputSubLang   string `json:"inputSublang" validate:"required"`
+// }
 
-type addFontsModel struct {
-	model
-	FontsPath string `json:"fontsPath" validate:"required"`
-}
+// func (h *ffmpegHander) Convert(ctx *fiber.Ctx) error {
+// 	body := new(model)
 
-type addSubtitleModel struct {
-	model
-	FontsPath      string `json:"fontsPath"`
-	InputSubSuffix string `json:"inputSubSuffix" validate:"required"`
-	InputSubNo     int    `json:"inputSubNo"`
-	InputSubTitle  string `json:"inputSubTitle" validate:"required"`
-	InputSubLang   string `json:"inputSublang" validate:"required"`
-}
+// 	if err := ctx.BodyParser(body); err != nil {
+// 		h.logger.Errorf("boyd parser error: %s", err.Error())
+// 		return nil
+// 	}
 
-func (h *ffmpegHander) Convert(ctx *fiber.Ctx) error {
-	body := new(model)
+// 	if err := h.validator.Struct(body); err != nil {
+// 		h.logger.Errorf("body validation error: %s", err.Error())
+// 		return nil
+// 	}
 
-	if err := ctx.BodyParser(body); err != nil {
-		h.logger.Errorf("boyd parser error: %s", err.Error())
-		return nil
-	}
+// 	task, err := task.NewFFmpegTask(&garage_ffmpeg.VideoBatchOption{
+// 		InputPath:    body.InputPath,
+// 		InputFormat:  "mp4",
+// 		OutputPath:   "/home/gsxhnd/Code/personal/garage/data",
+// 		OutputFormat: "mkv",
+// 		Exec:         true,
+// 	}, "convert")
+// 	if err != nil {
+// 		h.logger.Errorf("init task error: %s", err.Error())
+// 		return nil
+// 	}
 
-	if err := h.validator.Struct(body); err != nil {
-		h.logger.Errorf("body validation error: %s", err.Error())
-		return nil
-	}
+// 	h.taskManager.AddTask(task)
+// 	h.logger.Debugf("Task id: %s", task.GetId())
 
-	task, err := task.NewFFmpegTask(&garage_ffmpeg.VideoBatchOption{
-		InputPath:    body.InputPath,
-		InputFormat:  "mp4",
-		OutputPath:   "/home/gsxhnd/Code/personal/garage/data",
-		OutputFormat: "mkv",
-		Exec:         true,
-	}, "convert")
-	if err != nil {
-		h.logger.Errorf("init task error: %s", err.Error())
-		return nil
-	}
+// 	for i := range task.GetOB().Observe() {
+// 		fmt.Println(i.V)
+// 	}
+// 	return nil
+// }
 
-	h.taskManager.AddTask(task)
-	h.logger.Debugf("Task id: %s", task.GetId())
+// func (h *ffmpegHander) AddFonts(ctx *fiber.Ctx) error {
+// 	body := new(addFontsModel)
 
-	for i := range task.GetOB().Observe() {
-		fmt.Println(i.V)
-	}
-	return nil
-}
+// 	if err := ctx.BodyParser(body); err != nil {
+// 		h.logger.Errorf("boyd parser error: %s", err.Error())
+// 		return nil
+// 	}
 
-func (h *ffmpegHander) AddFonts(ctx *fiber.Ctx) error {
-	body := new(addFontsModel)
+// 	if err := h.validator.Struct(body); err != nil {
+// 		h.logger.Errorf("body validation error: %s", err.Error())
+// 		return nil
+// 	}
 
-	if err := ctx.BodyParser(body); err != nil {
-		h.logger.Errorf("boyd parser error: %s", err.Error())
-		return nil
-	}
+// 	task, err := task.NewFFmpegTask(&garage_ffmpeg.VideoBatchOption{
+// 		InputPath:    body.InputPath,
+// 		InputFormat:  body.InputFormat,
+// 		OutputPath:   body.OutputPath,
+// 		OutputFormat: body.InputFormat,
+// 		FontsPath:    body.FontsPath,
+// 		Exec:         body.Exec,
+// 	}, "add_fonts")
+// 	if err != nil {
+// 		h.logger.Errorf("init task error: %s", err.Error())
+// 		return nil
+// 	}
 
-	if err := h.validator.Struct(body); err != nil {
-		h.logger.Errorf("body validation error: %s", err.Error())
-		return nil
-	}
+// 	h.taskManager.AddTask(task)
+// 	h.logger.Debugf("Task id: %s", task.GetId())
 
-	task, err := task.NewFFmpegTask(&garage_ffmpeg.VideoBatchOption{
-		InputPath:    body.InputPath,
-		InputFormat:  body.InputFormat,
-		OutputPath:   body.OutputPath,
-		OutputFormat: body.InputFormat,
-		FontsPath:    body.FontsPath,
-		Exec:         body.Exec,
-	}, "add_fonts")
-	if err != nil {
-		h.logger.Errorf("init task error: %s", err.Error())
-		return nil
-	}
+// 	var data = map[string]interface{}{
+// 		"id":   task.GetId(),
+// 		"cmds": task.GetCmds(),
+// 	}
 
-	h.taskManager.AddTask(task)
-	h.logger.Debugf("Task id: %s", task.GetId())
+// 	return ctx.JSON(data)
+// }
 
-	var data = map[string]interface{}{
-		"id":   task.GetId(),
-		"cmds": task.GetCmds(),
-	}
+// func (h *ffmpegHander) AddSubtitle(ctx *fiber.Ctx) error {
+// 	body := new(addSubtitleModel)
 
-	return ctx.JSON(data)
-}
+// 	if err := ctx.BodyParser(body); err != nil {
+// 		h.logger.Errorf("boyd parser error: %s", err.Error())
+// 		return nil
+// 	}
 
-func (h *ffmpegHander) AddSubtitle(ctx *fiber.Ctx) error {
-	body := new(addSubtitleModel)
+// 	if err := h.validator.Struct(body); err != nil {
+// 		h.logger.Errorf("body validation error: %s", err.Error())
+// 		return nil
+// 	}
 
-	if err := ctx.BodyParser(body); err != nil {
-		h.logger.Errorf("boyd parser error: %s", err.Error())
-		return nil
-	}
+// 	task, err := task.NewFFmpegTask(&garage_ffmpeg.VideoBatchOption{
+// 		InputPath:      body.InputPath,
+// 		InputFormat:    body.InputFormat,
+// 		OutputPath:     body.OutputPath,
+// 		OutputFormat:   body.InputFormat,
+// 		FontsPath:      body.FontsPath,
+// 		InputSubSuffix: body.InputSubSuffix,
+// 		InputSubNo:     body.InputSubNo,
+// 		InputSubTitle:  body.InputSubTitle,
+// 		InputSubLang:   body.InputSubLang,
+// 		Exec:           body.Exec,
+// 	}, "add_subtitle")
+// 	if err != nil {
+// 		h.logger.Errorf("init task error: %s", err.Error())
+// 		return nil
+// 	}
 
-	if err := h.validator.Struct(body); err != nil {
-		h.logger.Errorf("body validation error: %s", err.Error())
-		return nil
-	}
+// 	h.taskManager.AddTask(task)
+// 	h.logger.Debugf("Task id: %s", task.GetId())
 
-	task, err := task.NewFFmpegTask(&garage_ffmpeg.VideoBatchOption{
-		InputPath:      body.InputPath,
-		InputFormat:    body.InputFormat,
-		OutputPath:     body.OutputPath,
-		OutputFormat:   body.InputFormat,
-		FontsPath:      body.FontsPath,
-		InputSubSuffix: body.InputSubSuffix,
-		InputSubNo:     body.InputSubNo,
-		InputSubTitle:  body.InputSubTitle,
-		InputSubLang:   body.InputSubLang,
-		Exec:           body.Exec,
-	}, "add_subtitle")
-	if err != nil {
-		h.logger.Errorf("init task error: %s", err.Error())
-		return nil
-	}
+// 	var data = map[string]interface{}{
+// 		"id":   task.GetId(),
+// 		"cmds": task.GetCmds(),
+// 	}
 
-	h.taskManager.AddTask(task)
-	h.logger.Debugf("Task id: %s", task.GetId())
-
-	var data = map[string]interface{}{
-		"id":   task.GetId(),
-		"cmds": task.GetCmds(),
-	}
-
-	return ctx.JSON(data)
-}
+// 	return ctx.JSON(data)
+// }

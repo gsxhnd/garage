@@ -9,14 +9,14 @@ type Handler struct {
 	WebsocketHandler WebsocketHandler
 	CrawlHandler     CrawlHandler
 	JavHandler       JavHandler
-	FFmpegHander     FFmpegHandler
+	// FFmpegHander     FFmpegHandler
 }
 
 var HandlerSet = wire.NewSet(
 	NewRootHandler,
 	NewWebsocketHandler,
 	NewJavHandler,
-	NewFFmpegHandler,
+	// NewFFmpegHandler,
 	NewCrawlHandler,
 	wire.Struct(new(Handler), "*"),
 )

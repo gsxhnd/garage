@@ -29,20 +29,18 @@ func InitApp(path string) (*Application, error) {
 	crawlHandler := handler.NewCrawlHandler(logger)
 	validate := utils.NewValidator()
 	taskMgr := task.NewTaskMgr(logger)
-	javHandler := handler.NewJavHandler(logger, validate, taskMgr)
 	database, err := db.NewDatabase(config, logger)
 	if err != nil {
 		return nil, err
 	}
 	taskDao := db.NewTaskDao(database, logger)
 	taskService := service.NewTaskService(logger, taskDao)
-	fFmpegHandler := handler.NewFFmpegHandler(logger, validate, taskMgr, taskService)
+	javHandler := handler.NewJavHandler(logger, validate, taskMgr, taskService)
 	handlerHandler := handler.Handler{
 		RootHandler:      rootHandler,
 		WebsocketHandler: websocketHandler,
 		CrawlHandler:     crawlHandler,
 		JavHandler:       javHandler,
-		FFmpegHander:     fFmpegHandler,
 	}
 	middlewarer := middleware.NewMiddleware(logger)
 	router, err := routes.NewRouter(config, handlerHandler, middlewarer)
