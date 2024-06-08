@@ -5,18 +5,11 @@ import (
 
 	"github.com/gsxhnd/garage/utils"
 	"github.com/urfave/cli/v2"
-
-	_ "github.com/glebarez/go-sqlite"
 )
 
 var (
 	RootCmd = cli.NewApp()
-	logger  = utils.NewLogger(&utils.Config{
-		Dev: true,
-		LogConfig: utils.LogConfig{
-			Level: "debug",
-		},
-	})
+	logger  = utils.NewLogger()
 )
 
 func init() {
