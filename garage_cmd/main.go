@@ -18,6 +18,8 @@ func init() {
 	RootCmd.Flags = []cli.Flag{}
 	RootCmd.Commands = []*cli.Command{
 		crawlJavbusCmd,
+		crawlJavDBCmd,
+		crawlTenhouCmd,
 		versionCmd,
 	}
 }
