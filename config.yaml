@@ -1,7 +1,0 @@
-dev: true
-port: :8080
-web_enable: true
-
-log:
-  level: "debug"
-  filename: "./log/garage.log"
