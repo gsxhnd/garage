@@ -1,9 +1,13 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gsxhnd/garage/garage_server/handler"
 	"github.com/gsxhnd/garage/garage_server/middleware"
+	"github.com/gsxhnd/garage/garage_web"
 	"github.com/gsxhnd/garage/utils"
 )
 
@@ -15,10 +19,10 @@ type router struct {
 	cfg *utils.Config
 	app *fiber.App
 	h   handler.Handler
-	m   middleware.Middlewarer
+	m   middleware.Middleware
 }
 
-// @title           Tenhou API
+// @title           Garage API
 // @version         1
 // @description     This is a sample server celler server.
 // @license.name  MIT
@@ -26,7 +30,7 @@ type router struct {
 // @host      localhost:8080
 // @securityDefinitions.basic  BasicAuth
 // @externalDocs.description  OpenAPI
-func NewRouter(cfg *utils.Config, m middleware.Middlewarer, h handler.Handler) (Router, error) {
+func NewRouter(cfg *utils.Config, m middleware.Middleware, h handler.Handler) (Router, error) {
 	app := fiber.New(fiber.Config{
 		EnablePrintRoutes:     cfg.Mode == "dev",
 		DisableStartupMessage: cfg.Mode == "prod",
@@ -45,10 +49,22 @@ func (r *router) Run() error {
 	// r.app.Use(r.m.RequestLog)
 	r.app.Get("/ping", r.h.PingHandler.Ping)
 
-	// api := r.app.Group("/api/v1")
-	// api.Get("/log/:log_id", r.h.LogHandler.GetLogInfoByLogId)
-	// api.Get("/paifu")
-	// api.Get("/paifu/:log_id")
+	api := r.app.Group("/api/v1")
+	// api.Get("/crawl")
+	api.Post("/jav/movie", r.h.MovieHandler.CreateMovies)
+	api.Delete("/jav/movie", r.h.MovieHandler.DeleteMovies)
+	api.Put("/jav/movie/:code", r.h.MovieHandler.UpdateMovie)
+	api.Get("/jav/movie", r.h.MovieHandler.GetMovies)
+	api.Post("/jav/star", r.h.StarHandler.CreateStars)
+	api.Delete("/jav/star", r.h.StarHandler.DeleteStars)
+	api.Put("/jav/star/:code", r.h.StarHandler.UpdateStar)
+	api.Get("/jav/star", r.h.StarHandler.GetStars)
+
+	r.app.Use("/*", filesystem.New(filesystem.Config{
+		Root:       http.FS(garage_web.Content),
+		PathPrefix: "dist",
+		Browse:     true,
+	}))
 
 	r.app.Use(func(c *fiber.Ctx) error {
 		return c.SendStatus(404)

@@ -4,14 +4,14 @@ import (
 	"github.com/gsxhnd/garage/utils"
 )
 
-type Middlewarer interface {
+type Middleware interface {
 	// RequestLog(ctx *fiber.Ctx) error
 }
 type middleware struct {
 	logger utils.Logger
 }
 
-func NewMiddleware(l utils.Logger) Middlewarer {
+func NewMiddleware(l utils.Logger) Middleware {
 	return &middleware{
 		logger: l,
 	}

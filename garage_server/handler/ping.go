@@ -11,7 +11,7 @@ type PingHandler interface {
 
 type pingHandle struct {
 	// validator *validator.Validate
-	svc       service.PingService
+	svc service.PingService
 }
 
 func NewPingHandler(svc service.PingService) PingHandler {

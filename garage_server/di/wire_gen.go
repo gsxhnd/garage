@@ -23,17 +23,21 @@ func InitApp() (*Application, error) {
 		return nil, err
 	}
 	logger := utils.NewLogger()
-	middlewarer := middleware.NewMiddleware(logger)
+	middlewareMiddleware := middleware.NewMiddleware(logger)
 	database, err := db.NewDatabase(config, logger)
 	if err != nil {
 		return nil, err
 	}
 	pingService := service.NewPingService(logger, database)
 	pingHandler := handler.NewPingHandler(pingService)
+	movieHandler := handler.NewMovieHandler(pingService)
+	starHandler := handler.NewStarHandler(pingService)
 	handlerHandler := handler.Handler{
-		PingHandler: pingHandler,
+		PingHandler:  pingHandler,
+		MovieHandler: movieHandler,
+		StarHandler:  starHandler,
 	}
-	routerRouter, err := router.NewRouter(config, middlewarer, handlerHandler)
+	routerRouter, err := router.NewRouter(config, middlewareMiddleware, handlerHandler)
 	if err != nil {
 		return nil, err
 	}
