@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"github.com/gsxhnd/garage/garage_server/di"
+)
 
 func main() {
-	fmt.Println("server")
+	app, err := di.InitApp()
+	if err != nil {
+		panic(err)
+	}
+	if err := app.Run(); err != nil {
+		panic(err)
+	}
 }

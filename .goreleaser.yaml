@@ -52,9 +52,9 @@ builds:
       - arm64
 
 archives:
-  - format: tar.gz
-    allow_different_binary_count: true
-    # this name template makes the OS and Arch compatible with the results of uname.
+  - id: garage
+    builds: [garage]
+    format: tar.gz
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -66,6 +66,19 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
+    files:
+      - "LICENSE"
+      - "CHANGELOG.md"
+  - id: garage_server
+    builds: [garage_server]
+    format: tar.gz
+    name_template: >-
+      garage_server_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
     files:
       - "LICENSE"
       - "CHANGELOG.md"
