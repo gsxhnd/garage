@@ -7,6 +7,8 @@ on:
       - "README.md"
       - "CHANGELOG.md"
       - "LICENSE"
+    tags-ignore:
+      - "v*"
 
 jobs:
   Test:
@@ -24,13 +26,13 @@ jobs:
       - name: Get dependencies
         run: go get -v -t -d ./...
 
-      - name: Install Task
-        uses: arduino/setup-task@v1
-        with:
-          version: 3.x
+      # - name: Install Task
+      #   uses: arduino/setup-task@v1
+      #   with:
+      #     version: 3.x
 
-      - name: Mock Test Data
-        run: task gen_test
+      # - name: Mock Test Data
+      #   run: task gen_test
 
       - name: Test
         run: go test -v -coverprofile=coverage.out -covermode=atomic ./...

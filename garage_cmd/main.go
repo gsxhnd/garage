@@ -19,7 +19,6 @@ func init() {
 	RootCmd.Commands = []*cli.Command{
 		crawlJavbusCmd,
 		crawlJavDBCmd,
-		crawlTenhouCmd,
 		versionCmd,
 	}
 }
