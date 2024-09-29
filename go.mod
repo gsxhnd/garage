@@ -7,11 +7,11 @@ toolchain go1.22.2
 require (
 	github.com/antchfx/htmlquery v1.3.2
 	github.com/go-gota/gota v0.12.0
-	github.com/go-resty/resty/v2 v2.13.1
+	github.com/go-resty/resty/v2 v2.15.3
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/inhies/go-bytesize v0.0.0-20220417184213-4913239db9cf
 	github.com/stretchr/testify v1.9.0
-	github.com/urfave/cli/v2 v2.27.2
+	github.com/urfave/cli/v2 v2.27.4
 	go.uber.org/zap v1.27.0
 )
 
@@ -32,10 +32,10 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
-	github.com/xrash/smetrics v0.0.0-20240312152122-5f08fbb34913 // indirect
+	github.com/xrash/smetrics v0.0.0-20240521201337-686a1a2994c1 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/net v0.27.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	gonum.org/v1/gonum v0.9.1 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
