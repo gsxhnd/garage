@@ -12,6 +12,7 @@ import (
 	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/garage_server/router"
 	"github.com/gsxhnd/garage/garage_server/service"
+	"github.com/gsxhnd/garage/garage_server/storage"
 	"github.com/gsxhnd/garage/utils"
 )
 
@@ -28,10 +29,17 @@ func InitApp() (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	pingService := service.NewPingService(logger, database)
+	storageStorage, err := storage.NewStorage(config)
+	if err != nil {
+		return nil, err
+	}
+	pingService := service.NewPingService(logger, database, storageStorage)
 	pingHandler := handler.NewPingHandler(pingService)
-	movieHandler := handler.NewMovieHandler(pingService)
-	starHandler := handler.NewStarHandler(pingService)
+	movieService := service.NewMovieService(logger, database)
+	validate := utils.NewValidator()
+	movieHandler := handler.NewMovieHandler(movieService, validate)
+	starService := service.NewStarService(logger, database)
+	starHandler := handler.NewStarHandler(starService, validate)
 	handlerHandler := handler.Handler{
 		PingHandler:  pingHandler,
 		MovieHandler: movieHandler,

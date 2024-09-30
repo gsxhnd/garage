@@ -10,7 +10,6 @@ type PingHandler interface {
 }
 
 type pingHandle struct {
-	// validator *validator.Validate
 	svc service.PingService
 }
 

@@ -11,6 +11,7 @@ import (
 	"github.com/gsxhnd/garage/garage_server/middleware"
 	"github.com/gsxhnd/garage/garage_server/router"
 	"github.com/gsxhnd/garage/garage_server/service"
+	"github.com/gsxhnd/garage/garage_server/storage"
 	"github.com/gsxhnd/garage/utils"
 )
 
@@ -22,6 +23,7 @@ func InitApp() (*Application, error) {
 		middleware.NewMiddleware,
 		handler.HandlerSet,
 		service.ServiceSet,
+		storage.StorageSet,
 		db.DBSet,
 	)
 	return &Application{}, nil

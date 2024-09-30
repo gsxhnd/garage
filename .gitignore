@@ -12,3 +12,4 @@ testdata/
 testdb/
 data/
 log/
+.env/.dev.env

@@ -22,10 +22,6 @@ func NewMovieService(l utils.Logger, db *db.Database) MovieService {
 }
 
 func (p movieService) Ping() error {
-	if err := p.db.TenhouDB.Ping(); err != nil {
-		p.logger.Errorf(err.Error())
-		return err
-	}
 
 	return nil
 }

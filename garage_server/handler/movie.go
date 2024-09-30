@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gsxhnd/garage/garage_server/service"
 )
@@ -14,13 +15,14 @@ type MovieHandler interface {
 }
 
 type movieHandle struct {
-	// validator *validator.Validate
-	// svc service.PingService
+	valid *validator.Validate
+	svc   service.MovieService
 }
 
-func NewMovieHandler(svc service.PingService) MovieHandler {
+func NewMovieHandler(svc service.MovieService, v *validator.Validate) MovieHandler {
 	return &movieHandle{
-		// svc: svc,
+		valid: v,
+		svc:   svc,
 	}
 }
 
