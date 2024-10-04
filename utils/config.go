@@ -8,13 +8,21 @@ import (
 
 type Config struct {
 	Mode         string `env:"MODE" envDefault:"dev"`
-	LogFileName  string `env:"LOG_FILE_NAME" envDefault:"./data/log/garage.log"`
 	DatabasePath string `env:"DB_PATH" envDefault:"./data/garage.db"`
 	Listen       string `env:"LISTEN" envDefault:":8080"`
+	Log          Log
 	Storage      Storage
 }
 
+type Log struct {
+	Level      string `env:"LOG_LEVEL" envDefault:"debug"`
+	FileName   string `env:"LOG_FILE_NAME" envDefault:"./data/log/garage.log"`
+	MaxBackups int    `env:"LOG_MAX_BACKUPS" envDefault:"10"`
+	MaxAge     int    `env:"LOG_MAX_AGE" envDefault:"7"`
+}
+
 type Storage struct {
+	Type       string `env:"STORAGE_TYPE" envDefault:"local"`
 	Endpoint   string `env:"STORAGE_ENDPOINT" envDefault:"localhost:9000"`
 	BucketName string `env:"STORAGE_BUCKET_NAME" envDefault:"jav-cover"`
 	AccessKey  string `env:"STORAGE_ACCESS_KEY"`

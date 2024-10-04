@@ -6,6 +6,7 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 type Logger interface {
@@ -57,33 +58,34 @@ var (
 	})
 )
 
-func NewLogger() Logger {
+func NewLogger(cfg *Config) Logger {
 	var (
 		level zapcore.Level
 		core  zapcore.Core
 	)
 
 	level = zap.InfoLevel
-	// if cfg.LogConfig.Level == "info" {
-	// 	level = zap.InfoLevel
-	// } else if cfg.LogConfig.Level == "warn" {
-	// 	level = zap.WarnLevel
-	// } else {
-	// 	level = zap.DebugLevel
-	// }
+	switch cfg.Log.Level {
+	case "debug":
+		level = zap.DebugLevel
+	case "info":
+		level = zap.InfoLevel
+	case "warn":
+		level = zap.WarnLevel
+	default:
+		level = zap.InfoLevel
+	}
 
-	// if !cfg.Dev {
-	// 	core = zapcore.NewCore(prodEncoder, zapcore.AddSync(&lumberjack.Logger{
-	// 		Filename:   cfg.LogConfig.Filename,
-	// 		MaxSize:    cfg.LogConfig.MaxSize,
-	// 		MaxBackups: cfg.LogConfig.MaxBackups,
-	// 		MaxAge:     cfg.LogConfig.MaxAge,
-	// 	},
-	// 	), level)
-	// } else {
-	// 	core = zapcore.NewCore(devEncoder, os.Stdout, level)
-	// }
-	core = zapcore.NewCore(devEncoder, os.Stdout, level)
+	if !(cfg.Mode == "dev") {
+		core = zapcore.NewCore(prodEncoder, zapcore.AddSync(&lumberjack.Logger{
+			Filename:   cfg.Log.FileName,
+			MaxBackups: cfg.Log.MaxBackups,
+			MaxAge:     cfg.Log.MaxAge,
+		},
+		), level)
+	} else {
+		core = zapcore.NewCore(devEncoder, os.Stdout, level)
+	}
 
 	return &logger{
 		Suger: zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1)).Sugar(),

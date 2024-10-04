@@ -9,7 +9,7 @@ import (
 
 var (
 	RootCmd = cli.NewApp()
-	logger  = utils.NewLogger()
+	logger  = utils.NewLogger(nil)
 )
 
 func init() {
