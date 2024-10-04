@@ -18,6 +18,7 @@ require (
 	github.com/urfave/cli/v2 v2.27.4
 	go.uber.org/zap v1.27.0
 	golang.org/x/sync v0.8.0
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (

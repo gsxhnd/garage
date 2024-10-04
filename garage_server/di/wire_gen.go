@@ -23,7 +23,7 @@ func InitApp() (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	logger := utils.NewLogger()
+	logger := utils.NewLogger(config)
 	middlewareMiddleware := middleware.NewMiddleware(logger)
 	database, err := db.NewDatabase(config, logger)
 	if err != nil {
