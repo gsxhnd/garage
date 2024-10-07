@@ -3,7 +3,7 @@ module github.com/gsxhnd/garage
 go 1.22
 
 require (
-	github.com/antchfx/htmlquery v1.3.2
+	github.com/antchfx/htmlquery v1.3.3
 	github.com/caarlos0/env/v11 v11.2.2
 	github.com/go-gota/gota v0.12.0
 	github.com/go-playground/validator/v10 v10.22.1
@@ -26,7 +26,7 @@ require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/antchfx/xmlquery v1.2.4 // indirect
-	github.com/antchfx/xpath v1.3.1 // indirect
+	github.com/antchfx/xpath v1.3.2 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
