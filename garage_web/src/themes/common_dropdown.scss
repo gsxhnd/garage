@@ -1,0 +1,10 @@
+.dropdown {
+  &-content {
+    color: var(--app-font-color);
+    background-color: var(--app-dropdown-content-background);
+    border-radius: var(--app-dropdown-content-border-radius);
+    .dropdown-item {
+      display: flex;
+    }
+  }
+}

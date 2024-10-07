@@ -1,0 +1,24 @@
+.multiselect {
+  color: white;
+  .multiselect__tags {
+    border: none;
+    color: var(--app-multi-select-color);
+    background-color: var(--app-multi-select-background);
+    .multiselect__single {
+      background-color: var(--app-multi-select-background);
+    }
+  }
+  .multiselect__content-wrapper {
+    border: none;
+    background-color: var(--app-multi-select-background);
+    .multiselect__element {
+      .multiselect__option--highlight {
+        background: none;
+      }
+      .multiselect__option--selected {
+        color: white;
+        background: none;
+      }
+    }
+  }
+}
