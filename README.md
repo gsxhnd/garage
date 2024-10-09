@@ -40,12 +40,6 @@ $ garage crawl jav-code --help
 $ garage crawl jav-path-code --help
 $ garage crawl jav-prefix-code --help
 $ garage crawl jav-star-code --help
-
-garage jav_code --proxy "http://127.0.0.1:7890" xxx-01
-```
-
-```bash
-swag init -d ./api/router -g init.go --outputTypes yaml --pdl 3
 ```
 
 ## Thanks

@@ -1,0 +1,24 @@
+externalDocs:
+  description: OpenAPI
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a sample server celler server.
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit
+  title: Garage API
+  version: "1"
+paths:
+  /ping:
+    get:
+      description: ping serivce working, db connect
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"
