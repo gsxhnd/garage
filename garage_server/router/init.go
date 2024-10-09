@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,10 +17,11 @@ type Router interface {
 }
 
 type router struct {
-	cfg *utils.Config
-	app *fiber.App
-	h   handler.Handler
-	m   middleware.Middleware
+	cfg    *utils.Config
+	app    *fiber.App
+	logger utils.Logger
+	h      handler.Handler
+	m      middleware.Middleware
 }
 
 // @title           Garage API
@@ -30,7 +32,7 @@ type router struct {
 // @host      localhost:8080
 // @securityDefinitions.basic  BasicAuth
 // @externalDocs.description  OpenAPI
-func NewRouter(cfg *utils.Config, m middleware.Middleware, h handler.Handler) (Router, error) {
+func NewRouter(cfg *utils.Config, l utils.Logger, m middleware.Middleware, h handler.Handler) (Router, error) {
 	app := fiber.New(fiber.Config{
 		EnablePrintRoutes:     cfg.Mode == "dev",
 		DisableStartupMessage: cfg.Mode == "prod",
@@ -38,10 +40,11 @@ func NewRouter(cfg *utils.Config, m middleware.Middleware, h handler.Handler) (R
 	})
 
 	return &router{
-		cfg: cfg,
-		app: app,
-		h:   h,
-		m:   m,
+		cfg:    cfg,
+		app:    app,
+		logger: l,
+		h:      h,
+		m:      m,
 	}, nil
 }
 
@@ -50,7 +53,6 @@ func (r *router) Run() error {
 	r.app.Get("/ping", r.h.PingHandler.Ping)
 
 	api := r.app.Group("/api/v1")
-	// api.Get("/crawl")
 	api.Post("/jav/movie", r.h.MovieHandler.CreateMovies)
 	api.Delete("/jav/movie", r.h.MovieHandler.DeleteMovies)
 	api.Put("/jav/movie/:code", r.h.MovieHandler.UpdateMovie)
@@ -60,15 +62,23 @@ func (r *router) Run() error {
 	api.Put("/jav/star/:code", r.h.StarHandler.UpdateStar)
 	api.Get("/jav/star", r.h.StarHandler.GetStars)
 
+	img := r.app.Group("/api/v1/img")
+	img.Get("/movie/:id", r.h.ImageHandler.GetMovieImage)
+	img.Get("/star/:id", r.h.ImageHandler.GetStarImage)
+
 	r.app.Use("/*", filesystem.New(filesystem.Config{
 		Root:       http.FS(garage_web.Content),
 		PathPrefix: "dist",
 		Browse:     true,
 	}))
 
+	fmt.Println(r.cfg.Storage.Path)
+
 	r.app.Use(func(c *fiber.Ctx) error {
 		return c.SendStatus(404)
 	})
+
+	r.logger.Infof("Server start listening")
 
 	return r.app.Listen(r.cfg.Listen)
 }

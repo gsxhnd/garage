@@ -40,7 +40,7 @@
       "program": "${workspaceRoot}/garage_server",
       "args": [],
       "output": "${workspaceRoot}/build/garage_server",
-      "envFile": "${workspaceFolder}/.env/.dev.env",
+      "envFile": "${workspaceFolder}/.dev.env",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
     }
