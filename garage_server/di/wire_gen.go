@@ -25,7 +25,7 @@ func InitApp() (*Application, error) {
 	}
 	logger := utils.NewLogger(config)
 	middlewareMiddleware := middleware.NewMiddleware(logger)
-	database, err := db.NewDatabase(config, logger)
+	driver, err := db.NewDatabase(config, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -33,12 +33,12 @@ func InitApp() (*Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	pingService := service.NewPingService(logger, database, storageStorage)
+	pingService := service.NewPingService(logger, driver, storageStorage)
 	pingHandler := handler.NewPingHandler(pingService)
-	movieService := service.NewMovieService(logger, database)
+	movieService := service.NewMovieService(logger, driver)
 	validate := utils.NewValidator()
 	movieHandler := handler.NewMovieHandler(movieService, validate)
-	starService := service.NewStarService(logger, database)
+	starService := service.NewStarService(logger, driver)
 	starHandler := handler.NewStarHandler(starService, validate)
 	handlerHandler := handler.Handler{
 		PingHandler:  pingHandler,

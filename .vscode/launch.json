@@ -5,37 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Command Version",
-      "type": "go",
-      "request": "launch",
-      "mode": "auto",
-      "program": "${workspaceRoot}/src",
-      "args": ["version"],
-      "output": "${workspaceRoot}/build/garage",
-      "trace": "verbose",
-      "cwd": "${workspaceRoot}"
-    },
-    {
-      "name": "Command Help",
-      "type": "go",
-      "request": "launch",
-      "mode": "auto",
-      "showLog": true,
-      "debugAdapter": "dlv-dap",
-      "program": "${workspaceRoot}/src",
-      "args": ["help"],
-      "output": "${workspaceRoot}/build/garage",
-      "trace": "verbose",
-      "cwd": "${workspaceRoot}"
-    },
-    {
       "name": "Command Crawl",
       "type": "go",
       "request": "launch",
       "mode": "auto",
       "showLog": true,
       "debugAdapter": "dlv-dap",
-      "program": "${workspaceRoot}/src",
+      "program": "${workspaceRoot}/garage_cmd",
       "args": ["crawl", "jav-code", "--magnet", "TKD-048"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
@@ -48,9 +24,23 @@
       "mode": "auto",
       "showLog": true,
       "debugAdapter": "dlv-dap",
-      "program": "${workspaceRoot}/src",
+      "program": "${workspaceRoot}/garage_cmd",
       "args": ["crawl", "jav-star-code", "--magnet"],
       "output": "${workspaceRoot}/build/garage",
+      "trace": "verbose",
+      "cwd": "${workspaceRoot}"
+    },
+    {
+      "name": "Command Server",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "showLog": true,
+      "debugAdapter": "dlv-dap",
+      "program": "${workspaceRoot}/garage_server",
+      "args": [],
+      "output": "${workspaceRoot}/build/garage_server",
+      "envFile": "${workspaceFolder}/.env/.dev.env",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
     }
