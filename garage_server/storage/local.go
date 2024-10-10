@@ -39,14 +39,15 @@ func (s *localStorage) Ping() error {
 }
 
 func (s *localStorage) GetImage(cover string, id uint, filename string) ([]byte, string, error) {
-	var file = path.Join(s.path, cover, "1.jpeg")
-	b, err := os.Open(file)
+	var filepath = path.Join(s.path, cover, "1.jpeg")
+	file, err := os.Open(filepath)
 	if err != nil {
 		return nil, "", err
 	}
+	defer file.Close()
 
 	var buf bytes.Buffer
-	var tee = io.TeeReader(b, &buf)
+	var tee = io.TeeReader(file, &buf)
 
 	_, f, err := image.Decode(tee)
 	if err != nil {
