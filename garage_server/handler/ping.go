@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gsxhnd/garage/garage_server/errno"
 	"github.com/gsxhnd/garage/garage_server/service"
 )
 
@@ -26,7 +27,7 @@ func NewPingHandler(svc service.PingService) PingHandler {
 func (h *pingHandle) Ping(ctx *fiber.Ctx) error {
 	err := h.svc.Ping()
 	if err != nil {
-		return ctx.Status(400).SendString(err.Error())
+		return ctx.Status(500).SendString(err.Error())
 	}
-	return ctx.Status(200).SendString("pong")
+	return ctx.JSON(errno.DecodeError(errno.UnknownError))
 }
