@@ -29,5 +29,5 @@ func (h *pingHandle) Ping(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.Status(500).SendString(err.Error())
 	}
-	return ctx.JSON(errno.DecodeError(errno.UnknownError))
+	return ctx.JSON(errno.DecodeError(errno.InternalServerError))
 }

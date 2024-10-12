@@ -13,7 +13,7 @@ import (
 )
 
 type sqliteDB struct {
-	db     *sql.DB
+	conn   *sql.DB
 	logger utils.Logger
 }
 
@@ -24,13 +24,13 @@ func NewSqliteDB(dataSource string, l utils.Logger) (database.Driver, error) {
 	}
 
 	return &sqliteDB{
-		db:     db,
+		conn:   db,
 		logger: l,
 	}, nil
 }
 
 func (db *sqliteDB) Ping() error {
-	return db.db.Ping()
+	return db.conn.Ping()
 }
 
 //go:embed migrations/*.sql
@@ -43,7 +43,7 @@ func (db *sqliteDB) Migrate() error {
 		return err
 	}
 
-	driver, err := migrate_sqlite.WithInstance(db.db, &migrate_sqlite.Config{})
+	driver, err := migrate_sqlite.WithInstance(db.conn, &migrate_sqlite.Config{})
 	if err != nil {
 		db.logger.Errorw("", "error", err)
 		return err
