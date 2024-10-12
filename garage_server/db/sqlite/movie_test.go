@@ -29,6 +29,22 @@ func Test_sqliteDB_CreateMovies(t *testing.T) {
 	}
 }
 
+func Test_sqliteDB_DeleteMovies(t *testing.T) {
+	tests := []struct {
+		name string
+	}{
+		{"test"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db, err := getMockDB()
+			assert.Nil(t, err)
+
+			db.DeleteMovies([]uint{3, 4, 5})
+		})
+	}
+}
+
 func Test_sqliteDB_GetMovies(t *testing.T) {
 	tests := []struct {
 		name string

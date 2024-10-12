@@ -7,14 +7,14 @@ import (
 	"github.com/gsxhnd/garage/garage_server/model"
 )
 
-func (db *sqliteDB) CreateStars(stars []model.Star) error {
+func (db *sqliteDB) CreateTags(tags []model.Tag) error {
 	tx, err := db.conn.Begin()
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
 	}
-	stmt, err := tx.Prepare(`INSERT INTO star 
-	(name, alias_name, created_at, updated_at) 
+	stmt, err := tx.Prepare(`INSERT INTO tag 
+	(name, pid, created_at, updated_at) 
 	VALUES (?,?,?,?);`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
@@ -22,8 +22,8 @@ func (db *sqliteDB) CreateStars(stars []model.Star) error {
 	}
 	defer stmt.Close()
 
-	for _, v := range stars {
-		_, err := stmt.Exec(v.Name, v.AliasName, v.CreatedAt, v.UpdatedAt)
+	for _, v := range tags {
+		_, err := stmt.Exec(v.Name, v.Pid, v.CreatedAt, v.UpdatedAt)
 		if err != nil {
 			db.logger.Errorf(err.Error())
 			return err
@@ -36,13 +36,13 @@ func (db *sqliteDB) CreateStars(stars []model.Star) error {
 	return nil
 }
 
-func (db *sqliteDB) DeleteStars(ids []uint) error {
+func (db *sqliteDB) DeleteTags(ids []uint) error {
 	tx, err := db.conn.Begin()
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
 	}
-	stmt, err := tx.Prepare(`DELETE FROM star WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
+	stmt, err := tx.Prepare(`DELETE FROM tag WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -67,14 +67,14 @@ func (db *sqliteDB) DeleteStars(ids []uint) error {
 	return nil
 }
 
-func (db *sqliteDB) UpdateStar(star model.Star) error {
+func (db *sqliteDB) UpdateTag(tag model.Tag) error {
 	tx, err := db.conn.Begin()
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
 	}
-	stmt, err := tx.Prepare(`UPDATE star SET 
-	name=?, alias_name=?, updated_at=? 
+	stmt, err := tx.Prepare(`UPDATE tag SET 
+	name=?, pid=?, updated_at=? 
 	WHERE id=?;`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
@@ -82,7 +82,7 @@ func (db *sqliteDB) UpdateStar(star model.Star) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(star.Name, star.AliasName, time.Now(), star.Id)
+	_, err = stmt.Exec(tag.Name, tag.Pid, time.Now(), tag.Id)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		tx.Rollback()
@@ -95,18 +95,18 @@ func (db *sqliteDB) UpdateStar(star model.Star) error {
 	return nil
 }
 
-func (db *sqliteDB) GetStars() ([]model.Star, error) {
-	rows, err := db.conn.Query("SELECT id, name, alias_name, created_at, updated_at FROM star")
+func (db *sqliteDB) GetTags() ([]model.Tag, error) {
+	rows, err := db.conn.Query("SELECT id, name, pid, created_at, updated_at FROM tag")
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err
 	}
 	defer rows.Close()
 
-	var dataList []model.Star
+	var dataList []model.Tag
 	for rows.Next() {
-		var data = model.Star{}
-		if err := rows.Scan(&data.Id, &data.Name, &data.AliasName, &data.CreatedAt, &data.UpdatedAt); err != nil {
+		var data = model.Tag{}
+		if err := rows.Scan(&data.Id, &data.Name, &data.Pid, &data.CreatedAt, &data.UpdatedAt); err != nil {
 			db.logger.Errorf(err.Error())
 			return nil, err
 		}
