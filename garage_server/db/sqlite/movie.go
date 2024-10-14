@@ -78,7 +78,19 @@ func (db *sqliteDB) GetMovies(p *database.Pagination) ([]model.Movie, error) {
 	var dataList []model.Movie
 	for rows.Next() {
 		var data = model.Movie{}
-		if err := rows.Scan(&data.Id, &data.Code); err != nil {
+		if err := rows.Scan(
+			&data.Id,
+			&data.Code,
+			&data.Title,
+			&data.Cover,
+			&data.PublishDate,
+			&data.Director,
+			&data.ProduceCompany,
+			&data.PublishCompany,
+			&data.Series,
+			&data.CreatedAt,
+			&data.UpdatedAt,
+		); err != nil {
 			db.logger.Errorf(err.Error())
 			return nil, err
 		}
