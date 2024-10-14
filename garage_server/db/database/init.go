@@ -4,6 +4,7 @@ import "github.com/gsxhnd/garage/garage_server/model"
 
 type Driver interface {
 	Ping() error
+	Migrate() error
 	CreateMovies(movies []model.Movie) error
 	DeleteMovies(ids []uint) error
 	GetMovies() ([]model.Movie, error)
@@ -13,5 +14,4 @@ type Driver interface {
 	CreateTags(tags []model.Tag) error
 	DeleteTags(ids []uint) error
 	GetTags() ([]model.Tag, error)
-	Migrate() error
 }

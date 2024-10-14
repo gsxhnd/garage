@@ -65,8 +65,6 @@ CREATE TABLE IF NOT EXISTS "movie_tag"
     "id"         INTEGER  NOT NULL UNIQUE,
     "movie_id"   INTEGER  NOT NULL,
     "tag_id"     INTEGER,
-    "created_at" DATETIME NOT NULL default CURRENT_TIMESTAMP,
-    "updated_at" DATETIME,
     PRIMARY KEY ("id")
 );
 CREATE INDEX IF NOT EXISTS "movie_tag_index_0"

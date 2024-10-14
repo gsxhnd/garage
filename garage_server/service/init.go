@@ -7,4 +7,5 @@ var ServiceSet = wire.NewSet(
 	NewMovieService,
 	NewStarService,
 	NewTagService,
+	NewAnimeService,
 )

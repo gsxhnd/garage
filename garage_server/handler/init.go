@@ -10,6 +10,7 @@ type Handler struct {
 	StarHandler  StarHandler
 	ImageHandler ImageHandler
 	TagHandler   TagHandler
+	AnimeHandler AnimeHandler
 }
 
 var HandlerSet = wire.NewSet(
@@ -18,5 +19,6 @@ var HandlerSet = wire.NewSet(
 	NewStarHandler,
 	NewImageHandler,
 	NewTagHandler,
+	NewAnimeHandler,
 	wire.Struct(new(Handler), "*"),
 )

@@ -1,4 +1,3 @@
-// garage_server/handler/tag.go
 package handler
 
 import (
