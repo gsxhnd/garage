@@ -7,10 +7,10 @@ import (
 )
 
 type MovieService interface {
-	CreateMovies(data []model.Movie) error
-	DeleteMovies(ids []uint) error
+	CreateMovies([]model.Movie) error
+	DeleteMovies([]uint) error
 	UpdateMovie(model.Movie) error
-	GetMovies() ([]model.Movie, error)
+	GetMovies(*database.Pagination) ([]model.Movie, error)
 }
 
 type movieService struct {
@@ -26,13 +26,13 @@ func NewMovieService(l utils.Logger, db database.Driver) MovieService {
 }
 
 // CreateMovies implements MovieService.
-func (s movieService) CreateMovies(data []model.Movie) error {
-	panic("unimplemented")
+func (s movieService) CreateMovies(movies []model.Movie) error {
+	return s.db.CreateMovies(movies)
 }
 
 // DeleteMovies implements MovieService.
 func (s movieService) DeleteMovies(ids []uint) error {
-	panic("unimplemented")
+	return s.db.DeleteMovies(ids)
 }
 
 // UpdateMovie implements MovieService.
@@ -41,6 +41,6 @@ func (s movieService) UpdateMovie(model.Movie) error {
 }
 
 // GetMovies implements MovieService.
-func (s movieService) GetMovies() ([]model.Movie, error) {
-	panic("unimplemented")
+func (s movieService) GetMovies(p *database.Pagination) ([]model.Movie, error) {
+	return s.db.GetMovies(p)
 }

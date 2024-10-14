@@ -3,6 +3,7 @@ package sqlite
 import (
 	"strings"
 
+	"github.com/gsxhnd/garage/garage_server/db/database"
 	"github.com/gsxhnd/garage/garage_server/model"
 )
 
@@ -68,7 +69,7 @@ func (db *sqliteDB) DeleteMovies(ids []uint) error {
 
 func (db *sqliteDB) UpdateMovie() {}
 
-func (db *sqliteDB) GetMovies() ([]model.Movie, error) {
+func (db *sqliteDB) GetMovies(p *database.Pagination) ([]model.Movie, error) {
 	rows, err := db.conn.Query("select * from movie")
 	if err != nil {
 		db.logger.Errorf(err.Error())

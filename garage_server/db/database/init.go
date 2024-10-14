@@ -7,11 +7,16 @@ type Driver interface {
 	Migrate() error
 	CreateMovies(movies []model.Movie) error
 	DeleteMovies(ids []uint) error
-	GetMovies() ([]model.Movie, error)
+	GetMovies(*Pagination) ([]model.Movie, error)
 	CreateStars(stars []model.Star) error
 	DeleteStars(ids []uint) error
 	GetStars() ([]model.Star, error)
 	CreateTags(tags []model.Tag) error
 	DeleteTags(ids []uint) error
 	GetTags() ([]model.Tag, error)
+}
+
+type Pagination struct {
+	Limit  uint
+	Offset uint
 }

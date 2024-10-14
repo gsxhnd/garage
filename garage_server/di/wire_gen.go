@@ -37,18 +37,21 @@ func InitApp() (*Application, error) {
 	pingHandler := handler.NewPingHandler(pingService)
 	movieService := service.NewMovieService(logger, driver)
 	validate := utils.NewValidator()
-	movieHandler := handler.NewMovieHandler(movieService, validate)
+	movieHandler := handler.NewMovieHandler(movieService, validate, logger)
 	starService := service.NewStarService(logger, driver)
 	starHandler := handler.NewStarHandler(starService, validate)
 	imageHandler := handler.NewImageHandler(validate, storageStorage, logger)
 	tagService := service.NewTagService(logger, driver)
 	tagHandler := handler.NewTagHandler(tagService, validate)
+	animeService := service.NewAnimeService(logger, driver)
+	animeHandler := handler.NewAnimeHandler(animeService, validate)
 	handlerHandler := handler.Handler{
 		PingHandler:  pingHandler,
 		MovieHandler: movieHandler,
 		StarHandler:  starHandler,
 		ImageHandler: imageHandler,
 		TagHandler:   tagHandler,
+		AnimeHandler: animeHandler,
 	}
 	routerRouter, err := router.NewRouter(config, logger, middlewareMiddleware, handlerHandler)
 	if err != nil {

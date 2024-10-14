@@ -56,7 +56,7 @@ func Test_sqliteDB_GetMovies(t *testing.T) {
 			db, err := getMockDB()
 			assert.Nil(t, err)
 
-			db.GetMovies()
+			db.GetMovies(nil)
 		})
 	}
 }
