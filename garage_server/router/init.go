@@ -61,6 +61,12 @@ func (r *router) Run() error {
 	api.Delete("/jav/star", r.h.StarHandler.DeleteStars)
 	api.Put("/jav/star/:code", r.h.StarHandler.UpdateStar)
 	api.Get("/jav/star", r.h.StarHandler.GetStars)
+	// tag
+	api.Post("/tag", r.h.TagHandler.CreateTag)
+	api.Delete("/tag", r.h.TagHandler.DeleteTag)
+	api.Put("/tag", r.h.TagHandler.UpdateTag)
+	api.Get("/tag", r.h.TagHandler.GetTags)
+	// api.Get("/anime")
 
 	img := r.app.Group("/api/v1/img")
 	img.Get("/movie/:id", r.h.ImageHandler.GetMovieImage)
