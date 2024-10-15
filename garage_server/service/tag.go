@@ -27,13 +27,13 @@ func NewTagService(l utils.Logger, db database.Driver) TagService {
 }
 
 // CreateTags implements TagService.
-func (s tagService) CreateTags(data []model.Tag) error {
-	panic("unimplemented")
+func (s tagService) CreateTags(tags []model.Tag) error {
+	return s.db.CreateTags(tags)
 }
 
 // DeleteTags implements TagService.
 func (s tagService) DeleteTags(ids []uint) error {
-	panic("unimplemented")
+	return s.db.DeleteTags(ids)
 }
 
 // UpdateTag implements TagService.
@@ -43,5 +43,5 @@ func (s tagService) UpdateTag(tag model.Tag) error {
 
 // GetTags implements TagService.
 func (s tagService) GetTags() ([]model.Tag, error) {
-	panic("unimplemented")
+	return s.db.GetTags()
 }

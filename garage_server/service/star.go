@@ -12,6 +12,7 @@ type StarService interface {
 	DeleteStars([]uint) error
 	UpdateStar(model.Star) error
 	GetStars(*database.Pagination) ([]model.Star, error)
+	SearchStarByName(string) ([]model.Star, error)
 }
 
 type starService struct {
@@ -44,4 +45,8 @@ func (s starService) UpdateStar(star model.Star) error {
 // GetStars implements StarService.
 func (s starService) GetStars(p *database.Pagination) ([]model.Star, error) {
 	return s.db.GetStars()
+}
+
+func (s starService) SearchStarByName(name string) ([]model.Star, error) {
+	return s.db.SearchStarByName(name)
 }

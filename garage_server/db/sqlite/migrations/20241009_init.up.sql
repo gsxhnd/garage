@@ -21,8 +21,8 @@ CREATE INDEX IF NOT EXISTS "movie_index_1"
 CREATE TABLE IF NOT EXISTS "star"
 (
     "id"         INTEGER  NOT NULL UNIQUE,
-    "name"       VARCHAR  NOT NULL,
-    "alias_name" INTEGER,
+    "name"       TEXT  NOT NULL,
+    "alias_name" TEXT,
     "cover"      TEXT,
     "created_at" DATETIME NOT NULL default CURRENT_TIMESTAMP,
     "updated_at" DATETIME,

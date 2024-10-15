@@ -11,11 +11,12 @@ import (
 )
 
 type StarHandler interface {
-	GetStar(ctx *fiber.Ctx) error
-	GetStars(ctx *fiber.Ctx) error
 	CreateStars(ctx *fiber.Ctx) error
 	DeleteStars(ctx *fiber.Ctx) error
 	UpdateStar(ctx *fiber.Ctx) error
+	GetStar(ctx *fiber.Ctx) error
+	GetStars(ctx *fiber.Ctx) error
+	SearchStarByName(ctx *fiber.Ctx) error
 }
 
 type starHandle struct {
@@ -84,4 +85,12 @@ func (h *starHandle) GetStars(ctx *fiber.Ctx) error {
 // UpdateStar implements StarHandler.
 func (h *starHandle) UpdateStar(ctx *fiber.Ctx) error {
 	panic("unimplemented")
+}
+
+func (h *starHandle) SearchStarByName(ctx *fiber.Ctx) error {
+	data, err := h.svc.SearchStarByName(ctx.Query("name"))
+	if err != nil {
+		return ctx.JSON(errno.DecodeError(err))
+	}
+	return ctx.JSON(errno.OK.WithData(data))
 }

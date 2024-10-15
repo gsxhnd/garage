@@ -53,19 +53,30 @@ func (r *router) Run() error {
 	r.app.Get("/ping", r.h.PingHandler.Ping)
 
 	api := r.app.Group("/api/v1")
-	api.Post("/jav/movie", r.h.MovieHandler.CreateMovies)
-	api.Delete("/jav/movie", r.h.MovieHandler.DeleteMovies)
-	api.Put("/jav/movie/:code", r.h.MovieHandler.UpdateMovie)
-	api.Get("/jav/movie", r.h.MovieHandler.GetMovies)
-	api.Post("/jav/star", r.h.StarHandler.CreateStars)
-	api.Delete("/jav/star", r.h.StarHandler.DeleteStars)
-	api.Put("/jav/star/:code", r.h.StarHandler.UpdateStar)
-	api.Get("/jav/star", r.h.StarHandler.GetStars)
+	// movie api
+	api.Post("/movie", r.h.MovieHandler.CreateMovies)
+	api.Delete("/movie", r.h.MovieHandler.DeleteMovies)
+	api.Put("/movie/:code", r.h.MovieHandler.UpdateMovie)
+	api.Get("/movie", r.h.MovieHandler.GetMovies)
+	// star api
+	api.Post("/star", r.h.StarHandler.CreateStars)
+	api.Delete("/star", r.h.StarHandler.DeleteStars)
+	api.Put("/star", r.h.StarHandler.UpdateStar)
+	api.Get("/star", r.h.StarHandler.GetStars)
+	api.Get("/star/search", r.h.StarHandler.SearchStarByName)
 	// tag
 	api.Post("/tag", r.h.TagHandler.CreateTag)
 	api.Delete("/tag", r.h.TagHandler.DeleteTag)
 	api.Put("/tag", r.h.TagHandler.UpdateTag)
 	api.Get("/tag", r.h.TagHandler.GetTags)
+	// movie star
+	api.Post("/movie_star", r.h.MovieStarHandle.CreateMovieStars)
+	api.Delete("/movie_star", r.h.MovieStarHandle.DeleteMovieStars)
+	api.Get("/movie_star", r.h.MovieStarHandle.GetMovieStars)
+	// movie tag
+	api.Post("/movie_tag", r.h.MovieStarHandle.CreateMovieStars)
+	api.Delete("/movie_tag", r.h.MovieStarHandle.DeleteMovieStars)
+	api.Get("/movie_tag", r.h.MovieStarHandle.GetMovieStars)
 	// anime
 	api.Post("/anime", r.h.AnimeHandler.CreateAnime)
 	api.Delete("/anime", r.h.AnimeHandler.DeleteAnime)

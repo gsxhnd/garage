@@ -124,3 +124,21 @@ func (db *sqliteDB) GetStars() ([]model.Star, error) {
 	}
 	return dataList, nil
 }
+
+func (db *sqliteDB) SearchStarByName(name string) ([]model.Star, error) {
+	rows, err := db.conn.Query("SELECT id FROM star WHERE name = ? or alias_name like %?%", name, name)
+	if err != nil {
+		db.logger.Errorf(err.Error())
+		return nil, err
+	}
+	var dataList []model.Star
+	for rows.Next() {
+		var data = model.Star{}
+		if err := rows.Scan(&data.Id, &data.Name, &data.AliasName, &data.CreatedAt, &data.UpdatedAt); err != nil {
+			db.logger.Errorf(err.Error())
+			return nil, err
+		}
+		dataList = append(dataList, data)
+	}
+	return dataList, nil
+}

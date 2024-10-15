@@ -62,7 +62,6 @@ func (db *sqliteDB) Migrate() error {
 }
 
 func (db *sqliteDB) txRollback(tx *sql.Tx, err error) {
-	db.logger.Debugf("restsdasdsadasdad========")
 	if err != nil {
 		errRb := tx.Rollback()
 		db.logger.Errorf(errRb.Error())
