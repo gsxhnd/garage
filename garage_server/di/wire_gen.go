@@ -39,7 +39,7 @@ func InitApp() (*Application, error) {
 	validate := utils.NewValidator()
 	movieHandler := handler.NewMovieHandler(movieService, validate, logger)
 	starService := service.NewStarService(logger, driver)
-	starHandler := handler.NewStarHandler(starService, validate)
+	starHandler := handler.NewStarHandler(starService, validate, logger)
 	imageHandler := handler.NewImageHandler(validate, storageStorage, logger)
 	tagService := service.NewTagService(logger, driver)
 	tagHandler := handler.NewTagHandler(tagService, validate)

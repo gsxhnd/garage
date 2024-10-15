@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"time"
 )
 
 type Anime struct {
@@ -10,6 +9,6 @@ type Anime struct {
 	Title       string        `json:"title"`
 	Cover       string        `json:"cover"`
 	PublishDate *sql.NullTime `json:"publish_date"`
-	CreatedAt   time.Time     `json:"created_at"`
-	UpdatedAt   time.Time     `json:"updated_at"`
+	CreatedAt   *sql.NullTime `json:"created_at"`
+	UpdatedAt   *sql.NullTime `json:"updated_at"`
 }

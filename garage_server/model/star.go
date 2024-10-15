@@ -1,11 +1,13 @@
 package model
 
-import "time"
+import (
+	"database/sql"
+)
 
 type Star struct {
-	Id        uint      `json:"id"`
-	Name      string    `json:"name"`
-	AliasName string    `json:"alias_name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id        uint            `json:"id"`
+	Name      string          `json:"name"`
+	AliasName *sql.NullString `json:"alias_name"`
+	CreatedAt *sql.NullTime   `json:"created_at"`
+	UpdatedAt *sql.NullTime   `json:"updated_at"`
 }

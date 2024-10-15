@@ -2,7 +2,6 @@ package model
 
 import (
 	"database/sql"
-	"time"
 )
 
 type Movie struct {
@@ -15,6 +14,6 @@ type Movie struct {
 	ProduceCompany *sql.NullString `json:"produce_company"`
 	PublishCompany *sql.NullString `json:"publish_company"`
 	Series         *sql.NullString `json:"series"`
-	CreatedAt      time.Time       `json:"created_at"`
+	CreatedAt      *sql.NullTime   `json:"created_at"`
 	UpdatedAt      *sql.NullTime   `json:"updated_at"`
 }

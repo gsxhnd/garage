@@ -1,24 +1,13 @@
 package model
 
 import (
-	"time"
+	"database/sql"
 )
 
-// CREATE TABLE IF NOT EXISTS "tag"
-// (
-//
-//	"id"         INTEGER  NOT NULL UNIQUE,
-//	"name"       TEXT     NOT NULL,
-//	"pid"        INTEGER,
-//	"created_at" DATETIME NOT NULL default CURRENT_TIMESTAMP,
-//	"updated_at" DATETIME,
-//	PRIMARY KEY ("id")
-//
-// );
 type Tag struct {
-	Id        uint      `json:"id"`
-	Name      string    `json:"name"`
-	Pid       string    `json:"p"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id        uint          `json:"id"`
+	Name      string        `json:"name"`
+	Pid       uint          `json:"pid"`
+	CreatedAt *sql.NullTime `json:"created_at"`
+	UpdatedAt *sql.NullTime `json:"updated_at"`
 }
