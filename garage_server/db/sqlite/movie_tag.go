@@ -8,10 +8,12 @@ import (
 
 func (db *sqliteDB) CreateMovieTags(movieTags []model.MovieTag) error {
 	tx, err := db.conn.Begin()
+	defer db.txRollback(tx, err)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
 	}
+
 	stmt, err := tx.Prepare(`INSERT INTO movie_tag 
 	(movie_id, tag_id) 
 	VALUES (?,?);`)
@@ -22,25 +24,25 @@ func (db *sqliteDB) CreateMovieTags(movieTags []model.MovieTag) error {
 	defer stmt.Close()
 
 	for _, v := range movieTags {
-		_, err := stmt.Exec(v.MovieId, v.TagId)
+		_, err = stmt.Exec(v.MovieId, v.TagId)
 		if err != nil {
 			db.logger.Errorf(err.Error())
 			return err
 		}
 	}
 
-	if err := tx.Commit(); err != nil {
-		return tx.Rollback()
-	}
-	return nil
+	err = tx.Commit()
+	return err
 }
 
 func (db *sqliteDB) DeleteMovieTags(ids []uint) error {
 	tx, err := db.conn.Begin()
+	defer db.txRollback(tx, err)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
 	}
+
 	stmt, err := tx.Prepare(`DELETE FROM movie_tag WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
@@ -55,23 +57,20 @@ func (db *sqliteDB) DeleteMovieTags(ids []uint) error {
 
 	_, err = stmt.Exec(args...)
 	if err != nil {
-		db.logger.Errorf(err.Error())
-		tx.Rollback()
 		return err
 	}
-
-	if err := tx.Commit(); err != nil {
-		return tx.Rollback()
-	}
-	return nil
+	err = tx.Commit()
+	return err
 }
 
 func (db *sqliteDB) UpdateMovieTag(movieTag model.MovieTag) error {
 	tx, err := db.conn.Begin()
+	defer db.txRollback(tx, err)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
 	}
+
 	stmt, err := tx.Prepare(`UPDATE movie_tag SET 
 	movie_id=?, tag_id=? 
 	WHERE id=?;`)
@@ -84,14 +83,11 @@ func (db *sqliteDB) UpdateMovieTag(movieTag model.MovieTag) error {
 	_, err = stmt.Exec(movieTag.MovieId, movieTag.TagId, movieTag.Id)
 	if err != nil {
 		db.logger.Errorf(err.Error())
-		tx.Rollback()
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return tx.Rollback()
-	}
-	return nil
+	err = tx.Commit()
+	return err
 }
 
 func (db *sqliteDB) GetMovieTags() ([]model.MovieTag, error) {

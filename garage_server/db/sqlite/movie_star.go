@@ -8,10 +8,12 @@ import (
 
 func (db *sqliteDB) CreateMovieStars(movieStars []model.MovieStar) error {
 	tx, err := db.conn.Begin()
+	defer db.txRollback(tx, err)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
 	}
+
 	stmt, err := tx.Prepare(`INSERT INTO movie_star 
 	(movie_id, star_id) 
 	VALUES (?,?);`)
@@ -22,25 +24,25 @@ func (db *sqliteDB) CreateMovieStars(movieStars []model.MovieStar) error {
 	defer stmt.Close()
 
 	for _, v := range movieStars {
-		_, err := stmt.Exec(v.MovieId, v.StarId)
+		_, err = stmt.Exec(v.MovieId, v.StarId)
 		if err != nil {
 			db.logger.Errorf(err.Error())
 			return err
 		}
 	}
 
-	if err := tx.Commit(); err != nil {
-		return tx.Rollback()
-	}
-	return nil
+	err = tx.Commit()
+	return err
 }
 
 func (db *sqliteDB) DeleteMovieStars(ids []uint) error {
 	tx, err := db.conn.Begin()
+	defer db.txRollback(tx, err)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
 	}
+
 	stmt, err := tx.Prepare(`DELETE FROM movie_star WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
@@ -55,23 +57,20 @@ func (db *sqliteDB) DeleteMovieStars(ids []uint) error {
 
 	_, err = stmt.Exec(args...)
 	if err != nil {
-		db.logger.Errorf(err.Error())
-		tx.Rollback()
 		return err
 	}
-
-	if err := tx.Commit(); err != nil {
-		return tx.Rollback()
-	}
-	return nil
+	err = tx.Commit()
+	return err
 }
 
 func (db *sqliteDB) UpdateMovieStar(movieStar model.MovieStar) error {
 	tx, err := db.conn.Begin()
+	defer db.txRollback(tx, err)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
 	}
+
 	stmt, err := tx.Prepare(`UPDATE movie_star SET 
 	movie_id=?, star_id=? 
 	WHERE id=?;`)
@@ -84,14 +83,11 @@ func (db *sqliteDB) UpdateMovieStar(movieStar model.MovieStar) error {
 	_, err = stmt.Exec(movieStar.MovieId, movieStar.StarId, movieStar.Id)
 	if err != nil {
 		db.logger.Errorf(err.Error())
-		tx.Rollback()
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return tx.Rollback()
-	}
-	return nil
+	err = tx.Commit()
+	return err
 }
 
 func (db *sqliteDB) GetMovieStars() ([]model.MovieStar, error) {
