@@ -48,7 +48,7 @@ func InitApp() (*Application, error) {
 	tagService := service.NewTagService(logger, driver)
 	tagHandler := handler.NewTagHandler(tagService, validate, logger)
 	animeService := service.NewAnimeService(logger, driver)
-	animeHandler := handler.NewAnimeHandler(animeService, validate)
+	animeHandler := handler.NewAnimeHandler(animeService, validate, logger)
 	handlerHandler := handler.Handler{
 		PingHandler:     pingHandler,
 		MovieHandler:    movieHandler,

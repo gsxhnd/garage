@@ -3,7 +3,11 @@ package handler
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gsxhnd/garage/garage_server/db/database"
+	"github.com/gsxhnd/garage/garage_server/errno"
+	"github.com/gsxhnd/garage/garage_server/model"
 	"github.com/gsxhnd/garage/garage_server/service"
+	"github.com/gsxhnd/garage/utils"
 )
 
 type AnimeHandler interface {
@@ -15,38 +19,68 @@ type AnimeHandler interface {
 }
 
 type animeHandle struct {
-	valid *validator.Validate
-	svc   service.AnimeService
+	valid  *validator.Validate
+	svc    service.AnimeService
+	logger utils.Logger
 }
 
-func NewAnimeHandler(svc service.AnimeService, v *validator.Validate) AnimeHandler {
+func NewAnimeHandler(svc service.AnimeService, v *validator.Validate, l utils.Logger) AnimeHandler {
 	return &animeHandle{
-		valid: v,
-		svc:   svc,
+		valid:  v,
+		svc:    svc,
+		logger: l,
 	}
 }
 
-// CreateAnime implements AnimeHandler.
-func (a *animeHandle) CreateAnime(ctx *fiber.Ctx) error {
-	panic("unimplemented")
+func (h *animeHandle) CreateAnime(ctx *fiber.Ctx) error {
+	var body = make([]model.Anime, 0)
+	if err := ctx.BodyParser(&body); err != nil {
+		h.logger.Errorf(err.Error())
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	if err := h.valid.Var(body, "dive"); err != nil {
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	err := h.svc.CreateAnimes(body)
+	return ctx.JSON(errno.DecodeError(err))
 }
 
-// DeleteAnime implements AnimeHandler.
-func (a *animeHandle) DeleteAnime(ctx *fiber.Ctx) error {
-	panic("unimplemented")
+func (h *animeHandle) DeleteAnime(ctx *fiber.Ctx) error {
+	var body = make([]uint, 0)
+	if err := ctx.BodyParser(&body); err != nil {
+		h.logger.Errorf(err.Error())
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	if err := h.valid.Var(body, "dive"); err != nil {
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	err := h.svc.DeleteAnimes(body)
+	return ctx.JSON(errno.DecodeError(err))
 }
 
-// GetAnime implements AnimeHandler.
-func (a *animeHandle) GetAnime(ctx *fiber.Ctx) error {
-	panic("unimplemented")
+// @Description  Get animes
+// @Produce      json
+// @Success      200
+// @Router       /ping [get]
+func (h *animeHandle) GetAnimes(ctx *fiber.Ctx) error {
+	var p = database.Pagination{
+		Limit:  uint(ctx.QueryInt("page_size", 50)),
+		Offset: uint(ctx.QueryInt("page_size", 50) * ctx.QueryInt("page", 0)),
+	}
+
+	data, err := h.svc.GetAnimes(&p)
+
+	return ctx.JSON(errno.DecodeError(err).WithData(data))
 }
 
-// GetAnimes implements AnimeHandler.
-func (a *animeHandle) GetAnimes(ctx *fiber.Ctx) error {
-	panic("unimplemented")
+func (h *animeHandle) GetAnime(ctx *fiber.Ctx) error {
+	return ctx.Status(200).SendString("pong")
 }
 
-// UpdateAnime implements AnimeHandler.
-func (a *animeHandle) UpdateAnime(ctx *fiber.Ctx) error {
-	panic("unimplemented")
+func (h *animeHandle) UpdateAnime(ctx *fiber.Ctx) error {
+	return ctx.Status(200).SendString("pong")
 }

@@ -7,10 +7,10 @@ import (
 )
 
 type AnimeService interface {
-	CreateAnimes(data []model.Anime) error
-	DeleteAnimes(ids []uint) error
+	CreateAnimes([]model.Anime) error
+	DeleteAnimes([]uint) error
 	UpdateAnime(model.Anime) error
-	GetAnimes() ([]model.Anime, error)
+	GetAnimes(*database.Pagination) ([]model.Anime, error)
 }
 
 type animeService struct {
@@ -27,20 +27,20 @@ func NewAnimeService(l utils.Logger, db database.Driver) AnimeService {
 
 // CreateAnimes implements AnimeService.
 func (s animeService) CreateAnimes(data []model.Anime) error {
-	panic("unimplemented")
+	return s.db.CreateAnimes(data)
 }
 
 // DeleteAnimes implements AnimeService.
 func (s animeService) DeleteAnimes(ids []uint) error {
-	panic("unimplemented")
+	return s.db.DeleteAnimes(ids)
 }
 
 // UpdateAnime implements AnimeService.
-func (s animeService) UpdateAnime(model.Anime) error {
-	panic("unimplemented")
+func (s animeService) UpdateAnime(data model.Anime) error {
+	return s.db.UpdateAnime(data)
 }
 
 // GetAnimes implements AnimeService.
-func (s animeService) GetAnimes() ([]model.Anime, error) {
-	panic("unimplemented")
+func (s animeService) GetAnimes(p *database.Pagination) ([]model.Anime, error) {
+	return s.db.GetAnimes(p)
 }

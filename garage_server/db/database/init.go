@@ -5,24 +5,28 @@ import "github.com/gsxhnd/garage/garage_server/model"
 type Driver interface {
 	Ping() error
 	Migrate() error
-	CreateMovies(movies []model.Movie) error
-	DeleteMovies(ids []uint) error
+	CreateMovies([]model.Movie) error
+	DeleteMovies([]uint) error
 	GetMovies(*Pagination) ([]model.Movie, error)
-	CreateStars(stars []model.Star) error
-	DeleteStars(ids []uint) error
+	CreateStars([]model.Star) error
+	DeleteStars([]uint) error
 	GetStars() ([]model.Star, error)
-	SearchStarByName(name string) ([]model.Star, error)
-	CreateTags(tags []model.Tag) error
-	DeleteTags(ids []uint) error
+	SearchStarByName(string) ([]model.Star, error)
+	CreateTags([]model.Tag) error
+	DeleteTags([]uint) error
 	GetTags() ([]model.Tag, error)
 	CreateMovieStars(movieStars []model.MovieStar) error
 	DeleteMovieStars(ids []uint) error
 	GetMovieStars() ([]model.MovieStar, error)
-	UpdateMovieStar(movieStar model.MovieStar) error
-	CreateMovieTags(movieTags []model.MovieTag) error
+	UpdateMovieStar(model.MovieStar) error
+	CreateMovieTags([]model.MovieTag) error
 	DeleteMovieTags(ids []uint) error
 	GetMovieTags() ([]model.MovieTag, error)
-	UpdateMovieTag(movieTag model.MovieTag) error
+	UpdateMovieTag(model.MovieTag) error
+	CreateAnimes([]model.Anime) error
+	DeleteAnimes([]uint) error
+	UpdateAnime(model.Anime) error
+	GetAnimes(*Pagination) ([]model.Anime, error)
 }
 
 type Pagination struct {
