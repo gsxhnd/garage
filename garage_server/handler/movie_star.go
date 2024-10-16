@@ -30,6 +30,12 @@ func NewMovieStarHandler(svc service.MovieStarService, v *validator.Validate, l 
 	}
 }
 
+// @Summary      Get movie star
+// @Description  Get movie star
+// @Tags         movie_star
+// @Produce      json
+// @Success      200
+// @Router       /movie_star [post]
 func (h *movieStarHandle) CreateMovieStars(ctx *fiber.Ctx) error {
 	var body = make([]model.MovieStar, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -45,6 +51,12 @@ func (h *movieStarHandle) CreateMovieStars(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
+// @Summary      Delete movie star
+// @Description  Delete movie star
+// @Tags         movie_star
+// @Produce      json
+// @Success      200
+// @Router       /movie_star [delete]
 func (h *movieStarHandle) DeleteMovieStars(ctx *fiber.Ctx) error {
 	var body = make([]uint, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -60,10 +72,12 @@ func (h *movieStarHandle) DeleteMovieStars(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
-// @Description  Get movie stars
+// @Summary      Get movie star
+// @Description  Get movie star
+// @Tags         movie_star
 // @Produce      json
 // @Success      200
-// @Router       /ping [get]
+// @Router       /movie_star [get]
 func (h *movieStarHandle) GetMovieStars(ctx *fiber.Ctx) error {
 	data, err := h.svc.GetMovieStars()
 

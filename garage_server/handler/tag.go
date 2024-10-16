@@ -31,10 +31,13 @@ func NewTagHandler(svc service.TagService, v *validator.Validate, l utils.Logger
 	}
 }
 
+// @Summary      Get a single tag by ID
 // @Description  Get a single tag by ID
+// @Tags         tag
 // @Produce      json
-// @Success      200 {object} model.Tag
-// @Router       /tags/{id} [get]
+// @Param        id   path      string  true  "Tag ID"
+// @Success      200  {object}   errno.errno
+// @Router       /tag/{id} [get]
 func (h *tagHandle) GetTag(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	if id == "" {
@@ -46,13 +49,15 @@ func (h *tagHandle) GetTag(ctx *fiber.Ctx) error {
 	// 	return ctx.Status(fiber.StatusInternalServerError).JSON(errno.DecodeError(err))
 	// }
 
-	return ctx.Status(fiber.StatusOK).JSON(nil)
+	return ctx.JSON(errno.OK)
 }
 
+// @Summary      Get all tags
 // @Description  Get all tags
+// @Tags         tag
 // @Produce      json
-// @Success      200 {array} model.Tag
-// @Router       /tags [get]
+// @Success      200  {object}   errno.errno{data=[]model.Tag}
+// @Router       /tag [get]
 func (h *tagHandle) GetTags(ctx *fiber.Ctx) error {
 	tags, err := h.svc.GetTags()
 	if err != nil {
@@ -62,10 +67,14 @@ func (h *tagHandle) GetTags(ctx *fiber.Ctx) error {
 	return ctx.JSON(tags)
 }
 
+// @Summary      Create a new tag
 // @Description  Create a new tag
+// @Tags         tag
+// @Accept       json
 // @Produce      json
-// @Success      201 {object} model.Tag
-// @Router       /tags [post]
+// @Param        tag  body      []model.Tag  true  "Tag object"
+// @Success      200  {object}  errno.errno
+// @Router       /tag [post]
 func (h *tagHandle) CreateTag(ctx *fiber.Ctx) error {
 	var tag []model.Tag
 	if err := ctx.BodyParser(&tag); err != nil {
@@ -85,10 +94,14 @@ func (h *tagHandle) CreateTag(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.OK)
 }
 
+// @Summary      Delete a tag by ID
 // @Description  Delete a tag by ID
+// @Tags         tag
+// @Accept       json
 // @Produce      json
+// @Param        id  body      []uint  true  "Tag IDs"
 // @Success      204
-// @Router       /tags [delete]
+// @Router       /tag [delete]
 func (h *tagHandle) DeleteTag(ctx *fiber.Ctx) error {
 	var body = make([]uint, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -104,10 +117,15 @@ func (h *tagHandle) DeleteTag(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
+// @Summary      Update a tag by ID
 // @Description  Update a tag by ID
+// @Tags         tag
+// @Accept       json
 // @Produce      json
-// @Success      200 {object} model.Tag
-// @Router       /tags/{id} [put]
+// @Param        id   path      string        true  "Tag ID"
+// @Param        tag  body      model.Tag     true  "Tag object"
+// @Success      200  {object}  model.Tag
+// @Router       /tag/{id} [put]
 func (h *tagHandle) UpdateTag(ctx *fiber.Ctx) error {
 	// id := ctx.Params("id")
 	// if id == "" {

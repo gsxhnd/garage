@@ -34,6 +34,12 @@ func NewStarHandler(svc service.StarService, v *validator.Validate, l utils.Logg
 }
 
 // CreateStars implements StarHandler.
+// @Summary      Create stars
+// @Description  Create star
+// @Tags         star
+// @Produce      json
+// @Success      200
+// @Router       /star [post]
 func (h *starHandle) CreateStars(ctx *fiber.Ctx) error {
 	var body = make([]model.Star, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -50,6 +56,12 @@ func (h *starHandle) CreateStars(ctx *fiber.Ctx) error {
 }
 
 // DeleteStars implements StarHandler.
+// @Summary      Delete stars
+// @Description  Delete star
+// @Tags         star
+// @Produce      json
+// @Success      200
+// @Router       /star [delete]
 func (h *starHandle) DeleteStars(ctx *fiber.Ctx) error {
 	var body = make([]uint, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -71,6 +83,12 @@ func (h *starHandle) GetStar(ctx *fiber.Ctx) error {
 }
 
 // GetStars implements StarHandler.
+// @Summary      Get stars
+// @Description  Get stars List
+// @Tags         star
+// @Produce      json
+// @Success      200
+// @Router       /star [get]
 func (h *starHandle) GetStars(ctx *fiber.Ctx) error {
 	var p = database.Pagination{
 		Limit:  uint(ctx.QueryInt("page_size", 50)),
@@ -87,6 +105,13 @@ func (h *starHandle) UpdateStar(ctx *fiber.Ctx) error {
 	panic("unimplemented")
 }
 
+// @Summary      Search stars
+// @Description  Search stars List
+// @Tags         star
+// @Param        q    query     string  false  "name search by q"
+// @Produce      json
+// @Success      200
+// @Router       /star/search [get]
 func (h *starHandle) SearchStarByName(ctx *fiber.Ctx) error {
 	data, err := h.svc.SearchStarByName(ctx.Query("name"))
 	if err != nil {

@@ -31,6 +31,12 @@ func NewMovieTagHandler(svc service.MovieTagService, v *validator.Validate, l ut
 	}
 }
 
+// @Summary      Create movie tags
+// @Description  Create movie tags
+// @Tags         movie_tag
+// @Produce      json
+// @Success      200  {object}   errno.errno
+// @Router       /movie_tag [post]
 func (h *movieTagHandle) CreateMovieTags(ctx *fiber.Ctx) error {
 	var body = make([]model.MovieTag, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -46,6 +52,12 @@ func (h *movieTagHandle) CreateMovieTags(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
+// @Summary      Delete movie tags
+// @Description  Delete movie tags
+// @Tags         movie_tag
+// @Produce      json
+// @Success      200  {object}   errno.errno
+// @Router       /movie_tag [delete]
 func (h *movieTagHandle) DeleteMovieTags(ctx *fiber.Ctx) error {
 	var body = make([]uint, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -61,10 +73,12 @@ func (h *movieTagHandle) DeleteMovieTags(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
+// @Summary      Get movie tags
 // @Description  Get movie tags
+// @Tags         movie_tag
 // @Produce      json
-// @Success      200
-// @Router       /ping [get]
+// @Success      200  {object}   errno.errno{data=[]model.MovieTag}
+// @Router       /movie_tag [get]
 func (h *movieTagHandle) GetMovieTags(ctx *fiber.Ctx) error {
 	data, err := h.svc.GetMovieTags()
 

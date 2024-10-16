@@ -32,6 +32,12 @@ func NewMovieHandler(svc service.MovieService, v *validator.Validate, l utils.Lo
 	}
 }
 
+// @Summary      Create movies
+// @Description  Create movies
+// @Tags         movie
+// @Produce      json
+// @Success      200
+// @Router       /movie [post]
 func (h *movieHandle) CreateMovies(ctx *fiber.Ctx) error {
 	var body = make([]model.Movie, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -47,6 +53,12 @@ func (h *movieHandle) CreateMovies(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
+// @Summary      Delete movies
+// @Description  Delete movies
+// @Tags         movie
+// @Produce      json
+// @Success      200
+// @Router       /movie [delete]
 func (h *movieHandle) DeleteMovies(ctx *fiber.Ctx) error {
 	var body = make([]uint, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -62,10 +74,12 @@ func (h *movieHandle) DeleteMovies(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
+// @Summary      Get movies
 // @Description  Get movies
+// @Tags         movie
 // @Produce      json
 // @Success      200
-// @Router       /ping [get]
+// @Router       /movie [get]
 func (h *movieHandle) GetMovies(ctx *fiber.Ctx) error {
 	var p = database.Pagination{
 		Limit:  uint(ctx.QueryInt("page_size", 50)),

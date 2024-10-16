@@ -1,3 +1,36 @@
+definitions:
+  errno.errno:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  model.MovieTag:
+    properties:
+      id:
+        type: integer
+      movie_id:
+        type: integer
+      tag_id:
+        type: integer
+    type: object
+  model.Tag:
+    properties:
+      created_at:
+        $ref: '#/definitions/time.Time'
+      id:
+        type: integer
+      name:
+        type: string
+      pid:
+        type: integer
+      updated_at:
+        $ref: '#/definitions/time.Time'
+    type: object
+  time.Time:
+    type: object
 externalDocs:
   description: OpenAPI
 host: localhost:8080
@@ -10,6 +43,143 @@ info:
   title: Garage API
   version: "1"
 paths:
+  /anime:
+    delete:
+      description: Delete animes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete animes
+      tags:
+      - anime
+    get:
+      description: Get animes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: List animes
+      tags:
+      - anime
+    post:
+      description: Create animes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Create animes
+      tags:
+      - anime
+  /movie:
+    delete:
+      description: Delete movies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete movies
+      tags:
+      - movie
+    get:
+      description: Get movies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get movies
+      tags:
+      - movie
+    post:
+      description: Create movies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Create movies
+      tags:
+      - movie
+  /movie_star:
+    delete:
+      description: Delete movie star
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete movie star
+      tags:
+      - movie_star
+    get:
+      description: Get movie star
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get movie star
+      tags:
+      - movie_star
+    post:
+      description: Get movie star
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get movie star
+      tags:
+      - movie_star
+  /movie_tag:
+    delete:
+      description: Delete movie tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/errno.errno'
+      summary: Delete movie tags
+      tags:
+      - movie_tag
+    get:
+      description: Get movie tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.MovieTag'
+                  type: array
+              type: object
+      summary: Get movie tags
+      tags:
+      - movie_tag
+    post:
+      description: Create movie tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/errno.errno'
+      summary: Create movie tags
+      tags:
+      - movie_tag
   /ping:
     get:
       description: ping serivce working, db connect
@@ -18,6 +188,162 @@ paths:
       responses:
         "200":
           description: OK
+  /star:
+    delete:
+      description: Delete star
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete stars
+      tags:
+      - star
+    get:
+      description: Get stars List
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get stars
+      tags:
+      - star
+    post:
+      description: Create star
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Create stars
+      tags:
+      - star
+  /star/search:
+    get:
+      description: Search stars List
+      parameters:
+      - description: name search by q
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Search stars
+      tags:
+      - star
+  /tag:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a tag by ID
+      parameters:
+      - description: Tag IDs
+        in: body
+        name: id
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a tag by ID
+      tags:
+      - tag
+    get:
+      description: Get all tags
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Tag'
+                  type: array
+              type: object
+      summary: Get all tags
+      tags:
+      - tag
+    post:
+      consumes:
+      - application/json
+      description: Create a new tag
+      parameters:
+      - description: Tag object
+        in: body
+        name: tag
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/model.Tag'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/errno.errno'
+      summary: Create a new tag
+      tags:
+      - tag
+  /tag/{id}:
+    get:
+      description: Get a single tag by ID
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/errno.errno'
+      summary: Get a single tag by ID
+      tags:
+      - tag
+    put:
+      consumes:
+      - application/json
+      description: Update a tag by ID
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Tag object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/model.Tag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Tag'
+      summary: Update a tag by ID
+      tags:
+      - tag
 securityDefinitions:
   BasicAuth:
     type: basic

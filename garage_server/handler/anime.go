@@ -32,6 +32,12 @@ func NewAnimeHandler(svc service.AnimeService, v *validator.Validate, l utils.Lo
 	}
 }
 
+// @Summary      Create animes
+// @Description  Create animes
+// @Tags         anime
+// @Produce      json
+// @Success      200
+// @Router       /anime [post]
 func (h *animeHandle) CreateAnime(ctx *fiber.Ctx) error {
 	var body = make([]model.Anime, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -47,6 +53,12 @@ func (h *animeHandle) CreateAnime(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
+// @Summary      Delete animes
+// @Description  Delete animes
+// @Tags         anime
+// @Produce      json
+// @Success      200
+// @Router       /anime [delete]
 func (h *animeHandle) DeleteAnime(ctx *fiber.Ctx) error {
 	var body = make([]uint, 0)
 	if err := ctx.BodyParser(&body); err != nil {
@@ -62,10 +74,12 @@ func (h *animeHandle) DeleteAnime(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
+// @Summary      List animes
 // @Description  Get animes
+// @Tags         anime
 // @Produce      json
 // @Success      200
-// @Router       /ping [get]
+// @Router       /anime [get]
 func (h *animeHandle) GetAnimes(ctx *fiber.Ctx) error {
 	var p = database.Pagination{
 		Limit:  uint(ctx.QueryInt("page_size", 50)),
