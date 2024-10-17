@@ -11,11 +11,11 @@ import (
 )
 
 type MovieHandler interface {
-	GetMovie(ctx *fiber.Ctx) error
-	GetMovies(ctx *fiber.Ctx) error
 	CreateMovies(ctx *fiber.Ctx) error
 	DeleteMovies(ctx *fiber.Ctx) error
 	UpdateMovie(ctx *fiber.Ctx) error
+	GetMovies(ctx *fiber.Ctx) error
+	GetMovieInfo(ctx *fiber.Ctx) error
 }
 
 type movieHandle struct {
@@ -36,7 +36,7 @@ func NewMovieHandler(svc service.MovieService, v *validator.Validate, l utils.Lo
 // @Description  Create movies
 // @Tags         movie
 // @Produce      json
-// @Success      200
+// @Success      200  {object}  errno.errno
 // @Router       /movie [post]
 func (h *movieHandle) CreateMovies(ctx *fiber.Ctx) error {
 	var body = make([]model.Movie, 0)
@@ -56,8 +56,10 @@ func (h *movieHandle) CreateMovies(ctx *fiber.Ctx) error {
 // @Summary      Delete movies
 // @Description  Delete movies
 // @Tags         movie
+// @Accept       json
 // @Produce      json
-// @Success      200
+// @Param        default body []uint true "default"
+// @Success      200 {object} errno.errno{data=nil}
 // @Router       /movie [delete]
 func (h *movieHandle) DeleteMovies(ctx *fiber.Ctx) error {
 	var body = make([]uint, 0)
@@ -78,12 +80,18 @@ func (h *movieHandle) DeleteMovies(ctx *fiber.Ctx) error {
 // @Description  Get movies
 // @Tags         movie
 // @Produce      json
-// @Success      200
+// @Param        page_size query int false "int valid" default(50)
+// @Param        page query int false "int valid" default(1)
+// @Success      200 {object} errno.errno{data=nil}
 // @Router       /movie [get]
 func (h *movieHandle) GetMovies(ctx *fiber.Ctx) error {
 	var p = database.Pagination{
 		Limit:  uint(ctx.QueryInt("page_size", 50)),
-		Offset: uint(ctx.QueryInt("page_size", 50) * ctx.QueryInt("page", 0)),
+		Offset: uint(ctx.QueryInt("page_size", 50) * (ctx.QueryInt("page", 1) - 1)),
+	}
+
+	if err := h.valid.Struct(p); err != nil {
+		return ctx.JSON(errno.DecodeError(err))
 	}
 
 	data, err := h.svc.GetMovies(&p)
@@ -91,8 +99,17 @@ func (h *movieHandle) GetMovies(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err).WithData(data))
 }
 
-func (h *movieHandle) GetMovie(ctx *fiber.Ctx) error {
-	return ctx.Status(200).SendString("pong")
+// @Summary      Get movies
+// @Description  Get movies
+// @Tags         movie
+// @Produce      json
+// @Param        code path string true "movie code"
+// @Success      200 {object} errno.errno{data=model.MovieInfo}
+// @Router       /movie/:code [get]
+func (h *movieHandle) GetMovieInfo(ctx *fiber.Ctx) error {
+	code := ctx.Params("code", "")
+	data, err := h.svc.GetMovieInfo(code)
+	return ctx.JSON(errno.DecodeError(err).WithData(data))
 }
 
 func (h *movieHandle) UpdateMovie(ctx *fiber.Ctx) error {

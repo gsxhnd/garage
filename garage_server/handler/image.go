@@ -12,7 +12,7 @@ import (
 
 type ImageHandler interface {
 	GetMovieImage(ctx *fiber.Ctx) error
-	GetStarImage(ctx *fiber.Ctx) error
+	GetActorImage(ctx *fiber.Ctx) error
 }
 
 type imageHandle struct {
@@ -34,7 +34,7 @@ func (h *imageHandle) GetMovieImage(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (h *imageHandle) GetStarImage(ctx *fiber.Ctx) error {
+func (h *imageHandle) GetActorImage(ctx *fiber.Ctx) error {
 	// var id = ctx.Params("id")
 	b, format, err := h.storage.GetImage("star", 0, "")
 	h.logger.Errorw("GET Star Image", "error", err)

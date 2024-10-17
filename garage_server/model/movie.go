@@ -1,19 +1,24 @@
 package model
 
 import (
-	"database/sql"
+	"time"
 )
 
 type Movie struct {
-	Id             uint            `json:"id"`
-	Code           string          `json:"code" validate:"required"`
-	Title          string          `json:"title" validate:"required"`
-	Cover          *sql.NullTime   `json:"cover"`
-	PublishDate    *sql.NullTime   `json:"publish_date"`
-	Director       *sql.NullString `json:"director"`
-	ProduceCompany *sql.NullString `json:"produce_company"`
-	PublishCompany *sql.NullString `json:"publish_company"`
-	Series         *sql.NullString `json:"series"`
-	CreatedAt      *sql.NullTime   `json:"created_at"`
-	UpdatedAt      *sql.NullTime   `json:"updated_at"`
+	Id             uint       `json:"id"`
+	Code           string     `json:"code" validate:"required"`
+	Title          string     `json:"title" validate:"required"`
+	Cover          *string    `json:"cover"`
+	PublishDate    *time.Time `json:"publish_date"`
+	Director       *string    `json:"director"`
+	ProduceCompany *string    `json:"produce_company"`
+	PublishCompany *string    `json:"publish_company"`
+	Series         *string    `json:"series"`
+	CreatedAt      *time.Time `json:"created_at"`
+	UpdatedAt      *time.Time `json:"updated_at"`
+}
+
+type MovieInfo struct {
+	Movie  Movie    `json:"movie"`
+	Actors []string `json:"actors"`
 }

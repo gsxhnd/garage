@@ -1,7 +1,7 @@
 package model
 
-type MovieStar struct {
+type MovieActor struct {
 	Id      uint `json:"id"`
 	MovieId uint `json:"movie_id"`
-	StarId  uint `json:"star_id"`
+	ActorId uint `json:"actor_id"`
 }

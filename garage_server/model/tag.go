@@ -1,13 +1,11 @@
 package model
 
-import (
-	"database/sql"
-)
+import "time"
 
 type Tag struct {
-	Id        uint          `json:"id"`
-	Name      string        `json:"name"`
-	Pid       uint          `json:"pid"`
-	CreatedAt *sql.NullTime `json:"created_at"`
-	UpdatedAt *sql.NullTime `json:"updated_at"`
+	Id        uint       `json:"id"`
+	Name      string     `json:"name"`
+	Pid       uint       `json:"pid"`
+	CreatedAt *time.Time `json:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at"`
 }

@@ -5,22 +5,22 @@ import (
 )
 
 type Handler struct {
-	PingHandler     PingHandler
-	MovieHandler    MovieHandler
-	MovieStarHandle MovieStarHandler
-	MovieTagHandler MovieTagHandler
-	StarHandler     StarHandler
-	ImageHandler    ImageHandler
-	TagHandler      TagHandler
-	AnimeHandler    AnimeHandler
+	PingHandler      PingHandler
+	MovieHandler     MovieHandler
+	MovieActorHandle MovieActorHandler
+	MovieTagHandler  MovieTagHandler
+	ActorHandler     ActorHandler
+	ImageHandler     ImageHandler
+	TagHandler       TagHandler
+	AnimeHandler     AnimeHandler
 }
 
 var HandlerSet = wire.NewSet(
 	NewPingHandler,
 	NewMovieHandler,
-	NewMovieStarHandler,
+	NewMovieActorHandler,
 	NewMovieTagHandler,
-	NewStarHandler,
+	NewActorHandler,
 	NewImageHandler,
 	NewTagHandler,
 	NewAnimeHandler,

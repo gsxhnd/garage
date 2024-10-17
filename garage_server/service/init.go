@@ -5,9 +5,9 @@ import "github.com/google/wire"
 var ServiceSet = wire.NewSet(
 	NewPingService,
 	NewMovieService,
-	NewMovieStarService,
+	NewMovieActorService,
 	NewMovieTagService,
-	NewStarService,
+	NewActorService,
 	NewTagService,
 	NewAnimeService,
 )

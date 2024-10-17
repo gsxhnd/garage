@@ -21,7 +21,7 @@ func NewLocalStorage(cfg utils.StorageConfig) (Storage, error) {
 		return nil, err
 	}
 
-	if err := utils.MakeDir(path.Join(cfg.Path, "star")); err != nil {
+	if err := utils.MakeDir(path.Join(cfg.Path, "actor")); err != nil {
 		return nil, err
 	}
 

@@ -1,3 +1,4 @@
+basePath: /api/v1
 definitions:
   errno.errno:
     properties:
@@ -6,6 +7,38 @@ definitions:
       data: {}
       message:
         type: string
+    type: object
+  model.MovieInfo:
+    properties:
+      actors:
+        items:
+          type: string
+        type: array
+      code:
+        type: string
+      cover:
+        type: string
+      created_at:
+        type: string
+      director:
+        type: string
+      id:
+        type: integer
+      produce_company:
+        type: string
+      publish_company:
+        type: string
+      publish_date:
+        type: string
+      series:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - code
+    - title
     type: object
   model.MovieTag:
     properties:
@@ -43,6 +76,53 @@ info:
   title: Garage API
   version: "1"
 paths:
+  /actor:
+    delete:
+      description: Delete actor
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete actors
+      tags:
+      - actor
+    get:
+      description: Get actors List
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get actors
+      tags:
+      - actor
+    post:
+      description: Create actor
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Create actors
+      tags:
+      - actor
+  /actor/search:
+    get:
+      description: Search actors List
+      parameters:
+      - description: name search by q
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Search actors
+      tags:
+      - actor
   /anime:
     delete:
       description: Delete animes
@@ -76,22 +156,58 @@ paths:
       - anime
   /movie:
     delete:
+      consumes:
+      - application/json
       description: Delete movies
+      parameters:
+      - description: default
+        in: body
+        name: default
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Delete movies
       tags:
       - movie
     get:
       description: Get movies
+      parameters:
+      - default: 50
+        description: int valid
+        in: query
+        name: page_size
+        type: integer
+      - default: 1
+        description: int valid
+        in: query
+        name: page
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Get movies
       tags:
       - movie
@@ -102,40 +218,66 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/errno.errno'
       summary: Create movies
       tags:
       - movie
-  /movie_star:
-    delete:
-      description: Delete movie star
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Delete movie star
-      tags:
-      - movie_star
+  /movie/:code:
     get:
-      description: Get movie star
+      description: Get movies
+      parameters:
+      - description: movie code
+        in: path
+        name: code
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
-      summary: Get movie star
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.MovieInfo'
+              type: object
+      summary: Get movies
       tags:
-      - movie_star
+      - movie
+  /movie_actor:
+    delete:
+      description: Delete movie actor
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Delete movie actor
+      tags:
+      - movie_actor
+    get:
+      description: Get movie actor
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get movie actor
+      tags:
+      - movie_actor
     post:
-      description: Get movie star
+      description: Get movie actor
       produces:
       - application/json
       responses:
         "200":
           description: OK
-      summary: Get movie star
+      summary: Get movie actor
       tags:
-      - movie_star
+      - movie_actor
   /movie_tag:
     delete:
       description: Delete movie tags
@@ -188,53 +330,6 @@ paths:
       responses:
         "200":
           description: OK
-  /star:
-    delete:
-      description: Delete star
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Delete stars
-      tags:
-      - star
-    get:
-      description: Get stars List
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Get stars
-      tags:
-      - star
-    post:
-      description: Create star
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Create stars
-      tags:
-      - star
-  /star/search:
-    get:
-      description: Search stars List
-      parameters:
-      - description: name search by q
-        in: query
-        name: q
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Search stars
-      tags:
-      - star
   /tag:
     delete:
       consumes:

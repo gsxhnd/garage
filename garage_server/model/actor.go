@@ -4,7 +4,7 @@ import (
 	"database/sql"
 )
 
-type Star struct {
+type Actor struct {
 	Id        uint            `json:"id"`
 	Name      string          `json:"name"`
 	AliasName *sql.NullString `json:"alias_name"`

@@ -6,7 +6,7 @@ import (
 	"github.com/gsxhnd/garage/garage_server/model"
 )
 
-func (db *sqliteDB) CreateMovieStars(movieStars []model.MovieStar) error {
+func (db *sqliteDB) CreateMovieActors(movieActors []model.MovieActor) error {
 	tx, err := db.conn.Begin()
 	defer db.txRollback(tx, err)
 	if err != nil {
@@ -14,8 +14,8 @@ func (db *sqliteDB) CreateMovieStars(movieStars []model.MovieStar) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(`INSERT INTO movie_star 
-	(movie_id, star_id) 
+	stmt, err := tx.Prepare(`INSERT INTO movie_actor 
+	(movie_id, actor_id) 
 	VALUES (?,?);`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
@@ -23,8 +23,8 @@ func (db *sqliteDB) CreateMovieStars(movieStars []model.MovieStar) error {
 	}
 	defer stmt.Close()
 
-	for _, v := range movieStars {
-		_, err = stmt.Exec(v.MovieId, v.StarId)
+	for _, v := range movieActors {
+		_, err = stmt.Exec(v.MovieId, v.ActorId)
 		if err != nil {
 			db.logger.Errorf(err.Error())
 			return err
@@ -35,7 +35,7 @@ func (db *sqliteDB) CreateMovieStars(movieStars []model.MovieStar) error {
 	return err
 }
 
-func (db *sqliteDB) DeleteMovieStars(ids []uint) error {
+func (db *sqliteDB) DeleteMovieActors(ids []uint) error {
 	tx, err := db.conn.Begin()
 	defer db.txRollback(tx, err)
 	if err != nil {
@@ -43,7 +43,7 @@ func (db *sqliteDB) DeleteMovieStars(ids []uint) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(`DELETE FROM movie_star WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
+	stmt, err := tx.Prepare(`DELETE FROM movie_actor WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -63,7 +63,7 @@ func (db *sqliteDB) DeleteMovieStars(ids []uint) error {
 	return err
 }
 
-func (db *sqliteDB) UpdateMovieStar(movieStar model.MovieStar) error {
+func (db *sqliteDB) UpdateMovieActor(movieActor model.MovieActor) error {
 	tx, err := db.conn.Begin()
 	defer db.txRollback(tx, err)
 	if err != nil {
@@ -71,8 +71,8 @@ func (db *sqliteDB) UpdateMovieStar(movieStar model.MovieStar) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(`UPDATE movie_star SET 
-	movie_id=?, star_id=? 
+	stmt, err := tx.Prepare(`UPDATE movie_actor SET 
+	movie_id=?, actor_id=? 
 	WHERE id=?;`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
@@ -80,7 +80,7 @@ func (db *sqliteDB) UpdateMovieStar(movieStar model.MovieStar) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(movieStar.MovieId, movieStar.StarId, movieStar.Id)
+	_, err = stmt.Exec(movieActor.MovieId, movieActor.ActorId, movieActor.Id)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -90,18 +90,18 @@ func (db *sqliteDB) UpdateMovieStar(movieStar model.MovieStar) error {
 	return err
 }
 
-func (db *sqliteDB) GetMovieStars() ([]model.MovieStar, error) {
-	rows, err := db.conn.Query("SELECT id, movie_id, star_id FROM movie_star")
+func (db *sqliteDB) GetMovieActors() ([]model.MovieActor, error) {
+	rows, err := db.conn.Query("SELECT id, movie_id, actor_id FROM movie_actor")
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err
 	}
 	defer rows.Close()
 
-	var dataList []model.MovieStar
+	var dataList []model.MovieActor
 	for rows.Next() {
-		var data = model.MovieStar{}
-		if err := rows.Scan(&data.Id, &data.MovieId, &data.StarId); err != nil {
+		var data = model.MovieActor{}
+		if err := rows.Scan(&data.Id, &data.MovieId, &data.ActorId); err != nil {
 			db.logger.Errorf(err.Error())
 			return nil, err
 		}

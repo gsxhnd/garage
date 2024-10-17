@@ -11,6 +11,7 @@ type MovieService interface {
 	DeleteMovies([]uint) error
 	UpdateMovie(model.Movie) error
 	GetMovies(*database.Pagination) ([]model.Movie, error)
+	GetMovieInfo(code string) (*model.MovieInfo, error)
 }
 
 type movieService struct {
@@ -43,4 +44,15 @@ func (s movieService) UpdateMovie(model.Movie) error {
 // GetMovies implements MovieService.
 func (s movieService) GetMovies(p *database.Pagination) ([]model.Movie, error) {
 	return s.db.GetMovies(p)
+}
+
+func (s movieService) GetMovieInfo(code string) (*model.MovieInfo, error) {
+	var data model.MovieInfo
+	movie, err := s.db.GetMovieByCode(code)
+	if err != nil {
+		return nil, err
+	}
+	data.Movie = *movie
+
+	return &data, nil
 }

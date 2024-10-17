@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -30,6 +29,7 @@ type router struct {
 // @license.name  MIT
 // @license.url   https://opensource.org/license/mit
 // @host      localhost:8080
+// @BasePath  /api/v1
 // @securityDefinitions.basic  BasicAuth
 // @externalDocs.description  OpenAPI
 func NewRouter(cfg *utils.Config, l utils.Logger, m middleware.Middleware, h handler.Handler) (Router, error) {
@@ -58,25 +58,26 @@ func (r *router) Run() error {
 	api.Delete("/movie", r.h.MovieHandler.DeleteMovies)
 	api.Put("/movie/:code", r.h.MovieHandler.UpdateMovie)
 	api.Get("/movie", r.h.MovieHandler.GetMovies)
-	// star api
-	api.Post("/star", r.h.StarHandler.CreateStars)
-	api.Delete("/star", r.h.StarHandler.DeleteStars)
-	api.Put("/star", r.h.StarHandler.UpdateStar)
-	api.Get("/star", r.h.StarHandler.GetStars)
-	api.Get("/star/search", r.h.StarHandler.SearchStarByName)
+	api.Get("/movie/:code", r.h.MovieHandler.GetMovieInfo)
+	// actor api
+	api.Post("/actor", r.h.ActorHandler.CreateActors)
+	api.Delete("/actor", r.h.ActorHandler.DeleteActors)
+	api.Put("/actor", r.h.ActorHandler.UpdateActor)
+	api.Get("/actor", r.h.ActorHandler.GetActors)
+	api.Get("/actor/search", r.h.ActorHandler.SearchActorByName)
 	// tag
 	api.Post("/tag", r.h.TagHandler.CreateTag)
 	api.Delete("/tag", r.h.TagHandler.DeleteTag)
 	api.Put("/tag", r.h.TagHandler.UpdateTag)
 	api.Get("/tag", r.h.TagHandler.GetTags)
-	// movie star
-	api.Post("/movie_star", r.h.MovieStarHandle.CreateMovieStars)
-	api.Delete("/movie_star", r.h.MovieStarHandle.DeleteMovieStars)
-	api.Get("/movie_star", r.h.MovieStarHandle.GetMovieStars)
+	// movie actor
+	api.Post("/movie_actor", r.h.MovieActorHandle.CreateMovieActors)
+	api.Delete("/movie_actor", r.h.MovieActorHandle.DeleteMovieActors)
+	api.Get("/movie_actor", r.h.MovieActorHandle.GetMovieActors)
 	// movie tag
-	api.Post("/movie_tag", r.h.MovieStarHandle.CreateMovieStars)
-	api.Delete("/movie_tag", r.h.MovieStarHandle.DeleteMovieStars)
-	api.Get("/movie_tag", r.h.MovieStarHandle.GetMovieStars)
+	api.Post("/movie_tag", r.h.MovieActorHandle.CreateMovieActors)
+	api.Delete("/movie_tag", r.h.MovieActorHandle.DeleteMovieActors)
+	api.Get("/movie_tag", r.h.MovieActorHandle.GetMovieActors)
 	// anime
 	api.Post("/anime", r.h.AnimeHandler.CreateAnime)
 	api.Delete("/anime", r.h.AnimeHandler.DeleteAnime)
@@ -85,7 +86,7 @@ func (r *router) Run() error {
 
 	img := r.app.Group("/api/v1/img")
 	img.Get("/movie/:id", r.h.ImageHandler.GetMovieImage)
-	img.Get("/star/:id", r.h.ImageHandler.GetStarImage)
+	img.Get("/actor/:id", r.h.ImageHandler.GetActorImage)
 
 	r.app.Use("/*", filesystem.New(filesystem.Config{
 		Root:       http.FS(garage_web.Content),
@@ -93,13 +94,11 @@ func (r *router) Run() error {
 		Browse:     true,
 	}))
 
-	fmt.Println(r.cfg.Storage.Path)
-
 	r.app.Use(func(c *fiber.Ctx) error {
 		return c.SendStatus(404)
 	})
 
-	r.logger.Infof("Server start listening")
+	r.logger.Infof("Server actort listening")
 
 	return r.app.Listen(r.cfg.Listen)
 }

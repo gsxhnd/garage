@@ -8,17 +8,18 @@ type Driver interface {
 	CreateMovies([]model.Movie) error
 	DeleteMovies([]uint) error
 	GetMovies(*Pagination) ([]model.Movie, error)
-	CreateStars([]model.Star) error
-	DeleteStars([]uint) error
-	GetStars() ([]model.Star, error)
-	SearchStarByName(string) ([]model.Star, error)
+	GetMovieByCode(code string) (*model.Movie, error)
+	CreateActors([]model.Actor) error
+	DeleteActors([]uint) error
+	GetActors() ([]model.Actor, error)
+	SearchActorByName(string) ([]model.Actor, error)
 	CreateTags([]model.Tag) error
 	DeleteTags([]uint) error
 	GetTags() ([]model.Tag, error)
-	CreateMovieStars(movieStars []model.MovieStar) error
-	DeleteMovieStars(ids []uint) error
-	GetMovieStars() ([]model.MovieStar, error)
-	UpdateMovieStar(model.MovieStar) error
+	CreateMovieActors(movieActors []model.MovieActor) error
+	DeleteMovieActors(ids []uint) error
+	GetMovieActors() ([]model.MovieActor, error)
+	UpdateMovieActor(model.MovieActor) error
 	CreateMovieTags([]model.MovieTag) error
 	DeleteMovieTags(ids []uint) error
 	GetMovieTags() ([]model.MovieTag, error)
@@ -30,6 +31,6 @@ type Driver interface {
 }
 
 type Pagination struct {
-	Limit  uint
-	Offset uint
+	Limit  uint `validate:"max=100,min=1,number"`
+	Offset uint `validate:"min=0,number"`
 }

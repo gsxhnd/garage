@@ -7,7 +7,7 @@ import (
 	"github.com/gsxhnd/garage/garage_server/model"
 )
 
-func (db *sqliteDB) CreateStars(stars []model.Star) error {
+func (db *sqliteDB) CreateActors(actors []model.Actor) error {
 	tx, err := db.conn.Begin()
 	defer db.txRollback(tx, err)
 	if err != nil {
@@ -15,7 +15,7 @@ func (db *sqliteDB) CreateStars(stars []model.Star) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(`INSERT INTO star 
+	stmt, err := tx.Prepare(`INSERT INTO actor 
 	(name, alias_name) 
 	VALUES (?,?);`)
 	if err != nil {
@@ -24,7 +24,7 @@ func (db *sqliteDB) CreateStars(stars []model.Star) error {
 	}
 	defer stmt.Close()
 
-	for _, v := range stars {
+	for _, v := range actors {
 		_, err = stmt.Exec(v.Name, v.AliasName)
 		if err != nil {
 			db.logger.Errorf(err.Error())
@@ -36,7 +36,7 @@ func (db *sqliteDB) CreateStars(stars []model.Star) error {
 	return err
 }
 
-func (db *sqliteDB) DeleteStars(ids []uint) error {
+func (db *sqliteDB) DeleteActors(ids []uint) error {
 	tx, err := db.conn.Begin()
 	defer func() {
 		if err != nil {
@@ -51,7 +51,7 @@ func (db *sqliteDB) DeleteStars(ids []uint) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(`DELETE FROM star WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
+	stmt, err := tx.Prepare(`DELETE FROM actor WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -71,7 +71,7 @@ func (db *sqliteDB) DeleteStars(ids []uint) error {
 	return err
 }
 
-func (db *sqliteDB) UpdateStar(star model.Star) error {
+func (db *sqliteDB) UpdateActor(actor model.Actor) error {
 	tx, err := db.conn.Begin()
 	defer func() {
 		if err != nil {
@@ -86,7 +86,7 @@ func (db *sqliteDB) UpdateStar(star model.Star) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(`UPDATE star SET 
+	stmt, err := tx.Prepare(`UPDATE actor SET 
 	name=?, alias_name=?, updated_at=? 
 	WHERE id=?;`)
 	if err != nil {
@@ -95,7 +95,7 @@ func (db *sqliteDB) UpdateStar(star model.Star) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(star.Name, star.AliasName, time.Now(), star.Id)
+	_, err = stmt.Exec(actor.Name, actor.AliasName, time.Now(), actor.Id)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -105,17 +105,17 @@ func (db *sqliteDB) UpdateStar(star model.Star) error {
 	return err
 }
 
-func (db *sqliteDB) GetStars() ([]model.Star, error) {
-	rows, err := db.conn.Query("SELECT id, name, alias_name, created_at, updated_at FROM star")
+func (db *sqliteDB) GetActors() ([]model.Actor, error) {
+	rows, err := db.conn.Query("SELECT id, name, alias_name, created_at, updated_at FROM actor")
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err
 	}
 	defer rows.Close()
 
-	var dataList []model.Star
+	var dataList []model.Actor
 	for rows.Next() {
-		var data = model.Star{}
+		var data = model.Actor{}
 		if err := rows.Scan(&data.Id, &data.Name, &data.AliasName, &data.CreatedAt, &data.UpdatedAt); err != nil {
 			db.logger.Errorf(err.Error())
 			return nil, err
@@ -125,15 +125,15 @@ func (db *sqliteDB) GetStars() ([]model.Star, error) {
 	return dataList, nil
 }
 
-func (db *sqliteDB) SearchStarByName(name string) ([]model.Star, error) {
-	rows, err := db.conn.Query("SELECT id FROM star WHERE name = ? or alias_name like %?%", name, name)
+func (db *sqliteDB) SearchActorByName(name string) ([]model.Actor, error) {
+	rows, err := db.conn.Query("SELECT id FROM actor WHERE name = ? or alias_name like %?%", name, name)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err
 	}
-	var dataList []model.Star
+	var dataList []model.Actor
 	for rows.Next() {
-		var data = model.Star{}
+		var data = model.Actor{}
 		if err := rows.Scan(&data.Id, &data.Name, &data.AliasName, &data.CreatedAt, &data.UpdatedAt); err != nil {
 			db.logger.Errorf(err.Error())
 			return nil, err
