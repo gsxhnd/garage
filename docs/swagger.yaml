@@ -8,12 +8,8 @@ definitions:
       message:
         type: string
     type: object
-  model.MovieInfo:
+  model.Movie:
     properties:
-      actors:
-        items:
-          type: string
-        type: array
       code:
         type: string
       cover:
@@ -40,6 +36,30 @@ definitions:
     - code
     - title
     type: object
+  model.MovieActor:
+    properties:
+      actor_id:
+        type: integer
+      actor_name:
+        type: string
+      id:
+        type: integer
+      movie_id:
+        type: integer
+    type: object
+  model.MovieInfo:
+    properties:
+      actors:
+        items:
+          $ref: '#/definitions/model.MovieActor'
+        type: array
+      movie:
+        $ref: '#/definitions/model.Movie'
+      tags:
+        items:
+          $ref: '#/definitions/model.MovieTag'
+        type: array
+    type: object
   model.MovieTag:
     properties:
       id:
@@ -48,11 +68,13 @@ definitions:
         type: integer
       tag_id:
         type: integer
+      tag_name:
+        type: string
     type: object
   model.Tag:
     properties:
       created_at:
-        $ref: '#/definitions/time.Time'
+        type: string
       id:
         type: integer
       name:
@@ -60,9 +82,7 @@ definitions:
       pid:
         type: integer
       updated_at:
-        $ref: '#/definitions/time.Time'
-    type: object
-  time.Time:
+        type: string
     type: object
 externalDocs:
   description: OpenAPI

@@ -109,3 +109,26 @@ func (db *sqliteDB) GetMovieTags() ([]model.MovieTag, error) {
 	}
 	return dataList, nil
 }
+
+func (db *sqliteDB) GetMovieTagByMovieId(movieId uint) ([]model.MovieTag, error) {
+	rows, err := db.conn.Query(`SELECT mt.id, mt.movie_id, mt.tag_id, t.name as tag_name
+FROM movie_tag as mt
+         LEFT JOIN tag t on t.id = mt.tag_id
+where movie_id = ?;`, movieId)
+	if err != nil {
+		db.logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var dataList []model.MovieTag
+	for rows.Next() {
+		var data = model.MovieTag{}
+		if err := rows.Scan(&data.Id, &data.MovieId, &data.TagId, &data.TagName); err != nil {
+			db.logger.Errorf(err.Error())
+			return nil, err
+		}
+		dataList = append(dataList, data)
+	}
+	return dataList, nil
+}

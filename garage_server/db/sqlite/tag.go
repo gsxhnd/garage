@@ -15,8 +15,7 @@ func (db *sqliteDB) CreateTags(tags []model.Tag) error {
 	}
 
 	stmt, err := tx.Prepare(`INSERT INTO tag 
-	(name, pid, created_at, updated_at) 
-	VALUES (?,?,?,?);`)
+	(name, pid) VALUES (?,?);`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -24,7 +23,7 @@ func (db *sqliteDB) CreateTags(tags []model.Tag) error {
 	defer stmt.Close()
 
 	for _, v := range tags {
-		_, err = stmt.Exec(v.Name, v.Pid, v.CreatedAt, v.UpdatedAt)
+		_, err = stmt.Exec(v.Name, v.Pid)
 		if err != nil {
 			db.logger.Errorf(err.Error())
 			return err
@@ -37,6 +36,10 @@ func (db *sqliteDB) CreateTags(tags []model.Tag) error {
 
 func (db *sqliteDB) DeleteTags(ids []uint) error {
 	tx, err := db.conn.Begin()
+	if err != nil {
+		db.logger.Errorf(err.Error())
+		return err
+	}
 	defer db.txRollback(tx, err)
 	stmt, err := tx.Prepare(`DELETE FROM tag WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
 	if err != nil {
@@ -67,6 +70,8 @@ func (db *sqliteDB) UpdateTag(tag model.Tag) error {
 		db.logger.Errorf(err.Error())
 		return err
 	}
+	defer db.txRollback(tx, err)
+
 	stmt, err := tx.Prepare(`UPDATE tag SET 
 	name=?, pid=?, updated_at=? 
 	WHERE id=?;`)

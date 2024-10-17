@@ -38,15 +38,7 @@ func (db *sqliteDB) CreateActors(actors []model.Actor) error {
 
 func (db *sqliteDB) DeleteActors(ids []uint) error {
 	tx, err := db.conn.Begin()
-	defer func() {
-		if err != nil {
-			errRollBack := tx.Rollback()
-			if errRollBack != nil {
-				db.logger.Errorf(err.Error())
-			}
-			db.logger.Errorf(err.Error())
-		}
-	}()
+	defer db.txRollback(tx, err)
 	if err != nil {
 		return err
 	}
@@ -73,14 +65,7 @@ func (db *sqliteDB) DeleteActors(ids []uint) error {
 
 func (db *sqliteDB) UpdateActor(actor model.Actor) error {
 	tx, err := db.conn.Begin()
-	defer func() {
-		if err != nil {
-			errRollBack := tx.Rollback()
-			if errRollBack != nil {
-				db.logger.Errorf(err.Error())
-			}
-		}
-	}()
+	defer db.txRollback(tx, err)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err

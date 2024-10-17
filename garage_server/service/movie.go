@@ -54,5 +54,18 @@ func (s movieService) GetMovieInfo(code string) (*model.MovieInfo, error) {
 	}
 	data.Movie = *movie
 
+	movieTags, err := s.db.GetMovieTagByMovieId(movie.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	data.Tags = movieTags
+
+	movieActor, err := s.db.GetMovieActorsByMovieId(movie.Id)
+	if err != nil {
+		return nil, err
+	}
+	data.Actors = movieActor
+
 	return &data, nil
 }

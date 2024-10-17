@@ -109,3 +109,26 @@ func (db *sqliteDB) GetMovieActors() ([]model.MovieActor, error) {
 	}
 	return dataList, nil
 }
+
+func (db *sqliteDB) GetMovieActorsByMovieId(id uint) ([]model.MovieActor, error) {
+	rows, err := db.conn.Query(`SELECT ma.id, ma.movie_id, ma.actor_id, a.name as actor_name
+FROM movie_actor as ma
+         LEFT JOIN actor a on a.id = ma.actor_id
+where movie_id = ?;`, id)
+	if err != nil {
+		db.logger.Errorf(err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var dataList []model.MovieActor
+	for rows.Next() {
+		var data = model.MovieActor{}
+		if err := rows.Scan(&data.Id, &data.MovieId, &data.ActorId, &data.ActorName); err != nil {
+			db.logger.Errorf(err.Error())
+			return nil, err
+		}
+		dataList = append(dataList, data)
+	}
+	return dataList, nil
+}

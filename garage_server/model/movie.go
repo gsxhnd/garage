@@ -19,6 +19,7 @@ type Movie struct {
 }
 
 type MovieInfo struct {
-	Movie  Movie    `json:"movie"`
-	Actors []string `json:"actors"`
+	Movie  Movie        `json:"movie"`
+	Actors []MovieActor `json:"actors"`
+	Tags   []MovieTag   `json:"tags"`
 }

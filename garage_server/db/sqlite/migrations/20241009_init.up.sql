@@ -18,7 +18,7 @@ CREATE INDEX IF NOT EXISTS "movie_index_0"
 CREATE INDEX IF NOT EXISTS "movie_index_1"
     ON "movie" ("code");
 
-CREATE TABLE IF NOT EXISTS "star"
+CREATE TABLE IF NOT EXISTS "actor"
 (
     "id"         INTEGER  NOT NULL UNIQUE,
     "name"       TEXT  NOT NULL,
@@ -28,22 +28,22 @@ CREATE TABLE IF NOT EXISTS "star"
     "updated_at" DATETIME,
     PRIMARY KEY ("id")
 );
-CREATE INDEX IF NOT EXISTS "star_index_0"
-    ON "star" ("id");
-CREATE INDEX IF NOT EXISTS "star_index_1"
-    ON "star" ("name");
+CREATE INDEX IF NOT EXISTS "actor_index_0"
+    ON "actor" ("id");
+CREATE INDEX IF NOT EXISTS "actor_index_1"
+    ON "actor" ("name");
 
-CREATE TABLE IF NOT EXISTS "movie_star"
+CREATE TABLE IF NOT EXISTS "movie_actor"
 (
     "id"         INTEGER  NOT NULL UNIQUE,
     "movie_id"   INTEGER  NOT NULL,
-    "star_id"    INTEGER,
+    "actor_id"    INTEGER,
     PRIMARY KEY ("id")
 );
-CREATE INDEX IF NOT EXISTS "movie_star_index_0"
-    ON "movie_star" ("movie_id");
-CREATE INDEX IF NOT EXISTS "movie_star_index_1"
-    ON "movie_star" ("star_id");
+CREATE INDEX IF NOT EXISTS "movie_actor_index_0"
+    ON "movie_actor" ("movie_id");
+CREATE INDEX IF NOT EXISTS "movie_actor_index_1"
+    ON "movie_actor" ("actor_id");
 
 
 CREATE TABLE IF NOT EXISTS "tag"
