@@ -8,6 +8,24 @@ definitions:
       message:
         type: string
     type: object
+  model.Actor:
+    properties:
+      alias_name:
+        type: string
+      cover:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - id
+    - name
+    type: object
   model.Movie:
     properties:
       code:
@@ -83,6 +101,9 @@ definitions:
         type: integer
       updated_at:
         type: string
+    required:
+    - id
+    - name
     type: object
 externalDocs:
   description: OpenAPI
@@ -114,6 +135,15 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Actor'
+                  type: array
+              type: object
       summary: Get actors
       tags:
       - actor
@@ -127,19 +157,49 @@ paths:
       summary: Create actors
       tags:
       - actor
+    put:
+      consumes:
+      - application/json
+      description: Update a actor by id
+      parameters:
+      - description: Actor object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/model.Actor'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/errno.errno'
+      summary: Update a actor by id
+      tags:
+      - actor
   /actor/search:
     get:
       description: Search actors List
       parameters:
-      - description: name search by q
+      - description: name search by name
         in: query
-        name: q
+        name: name
         type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Actor'
+                  type: array
+              type: object
       summary: Search actors
       tags:
       - actor
@@ -270,11 +330,27 @@ paths:
   /movie_actor:
     delete:
       description: Delete movie actor
+      parameters:
+      - description: default
+        in: body
+        name: default
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
       produces:
       - application/json
       responses:
         "200":
           description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  type: object
+              type: object
       summary: Delete movie actor
       tags:
       - movie_actor
@@ -301,6 +377,41 @@ paths:
   /movie_tag:
     delete:
       description: Delete movie tags
+      parameters:
+      - description: default
+        in: body
+        name: default
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: Delete movie tags
+      tags:
+      - movie_tag
+    post:
+      description: Create movie tags
+      parameters:
+      - description: default
+        in: body
+        name: default
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/model.MovieTag'
+          type: array
       produces:
       - application/json
       responses:
@@ -308,11 +419,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/errno.errno'
-      summary: Delete movie tags
+      summary: Create movie tags
       tags:
       - movie_tag
+  /movie_tag/{movie_id}:
     get:
       description: Get movie tags
+      parameters:
+      - description: default
+        in: path
+        name: movie_id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -328,18 +446,6 @@ paths:
                   type: array
               type: object
       summary: Get movie tags
-      tags:
-      - movie_tag
-    post:
-      description: Create movie tags
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/errno.errno'
-      summary: Create movie tags
       tags:
       - movie_tag
   /ping:
@@ -414,35 +520,11 @@ paths:
       summary: Create a new tag
       tags:
       - tag
-  /tag/{id}:
-    get:
-      description: Get a single tag by ID
-      parameters:
-      - description: Tag ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/errno.errno'
-      summary: Get a single tag by ID
-      tags:
-      - tag
     put:
       consumes:
       - application/json
       description: Update a tag by ID
       parameters:
-      - description: Tag ID
-        in: path
-        name: id
-        required: true
-        type: string
       - description: Tag object
         in: body
         name: tag
@@ -455,8 +537,33 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Tag'
+            $ref: '#/definitions/errno.errno'
       summary: Update a tag by ID
+      tags:
+      - tag
+  /tag/search:
+    get:
+      description: search tag by name, return match tag list
+      parameters:
+      - description: name search by name
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Tag'
+                  type: array
+              type: object
+      summary: Get all tags
       tags:
       - tag
 securityDefinitions:
