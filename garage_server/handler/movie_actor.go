@@ -13,7 +13,6 @@ type MovieActorHandler interface {
 	GetMovieActors(ctx *fiber.Ctx) error
 	CreateMovieActors(ctx *fiber.Ctx) error
 	DeleteMovieActors(ctx *fiber.Ctx) error
-	UpdateMovieActor(ctx *fiber.Ctx) error
 }
 
 type movieActorHandle struct {
@@ -55,7 +54,8 @@ func (h *movieActorHandle) CreateMovieActors(ctx *fiber.Ctx) error {
 // @Description  Delete movie actor
 // @Tags         movie_actor
 // @Produce      json
-// @Success      200
+// @Param        default body []uint true "default"
+// @Success      200 {object} errno.errno{data=nil}
 // @Router       /movie_actor [delete]
 func (h *movieActorHandle) DeleteMovieActors(ctx *fiber.Ctx) error {
 	var body = make([]uint, 0)
@@ -82,8 +82,4 @@ func (h *movieActorHandle) GetMovieActors(ctx *fiber.Ctx) error {
 	data, err := h.svc.GetMovieActors()
 
 	return ctx.JSON(errno.DecodeError(err).WithData(data))
-}
-
-func (h *movieActorHandle) UpdateMovieActor(ctx *fiber.Ctx) error {
-	return ctx.Status(200).SendString("pong")
 }

@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gsxhnd/garage/garage_server/errno"
@@ -10,11 +12,11 @@ import (
 )
 
 type TagHandler interface {
-	GetTag(ctx *fiber.Ctx) error
-	GetTags(ctx *fiber.Ctx) error
 	CreateTag(ctx *fiber.Ctx) error
 	DeleteTag(ctx *fiber.Ctx) error
 	UpdateTag(ctx *fiber.Ctx) error
+	GetTags(ctx *fiber.Ctx) error
+	SearchTags(ctx *fiber.Ctx) error
 }
 
 type tagHandle struct {
@@ -29,42 +31,6 @@ func NewTagHandler(svc service.TagService, v *validator.Validate, l utils.Logger
 		svc:    svc,
 		logger: l,
 	}
-}
-
-// @Summary      Get a single tag by ID
-// @Description  Get a single tag by ID
-// @Tags         tag
-// @Produce      json
-// @Param        id   path      string  true  "Tag ID"
-// @Success      200  {object}   errno.errno
-// @Router       /tag/{id} [get]
-func (h *tagHandle) GetTag(ctx *fiber.Ctx) error {
-	id := ctx.Params("id")
-	if id == "" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(errno.InternalServerError)
-	}
-
-	// tag, err := h.svc.GetTag(id)
-	// if err != nil {
-	// 	return ctx.Status(fiber.StatusInternalServerError).JSON(errno.DecodeError(err))
-	// }
-
-	return ctx.JSON(errno.OK)
-}
-
-// @Summary      Get all tags
-// @Description  Get all tags
-// @Tags         tag
-// @Produce      json
-// @Success      200  {object}   errno.errno{data=[]model.Tag}
-// @Router       /tag [get]
-func (h *tagHandle) GetTags(ctx *fiber.Ctx) error {
-	tags, err := h.svc.GetTags()
-	if err != nil {
-		return ctx.JSON(errno.DecodeError(err))
-	}
-
-	return ctx.JSON(tags)
 }
 
 // @Summary      Create a new tag
@@ -122,31 +88,52 @@ func (h *tagHandle) DeleteTag(ctx *fiber.Ctx) error {
 // @Tags         tag
 // @Accept       json
 // @Produce      json
-// @Param        id   path      string        true  "Tag ID"
 // @Param        tag  body      model.Tag     true  "Tag object"
-// @Success      200  {object}  model.Tag
-// @Router       /tag/{id} [put]
+// @Success      200  {object}  errno.errno
+// @Router       /tag [put]
 func (h *tagHandle) UpdateTag(ctx *fiber.Ctx) error {
-	// id := ctx.Params("id")
-	// if id == "" {
-	// 	return ctx.Status(fiber.StatusBadRequest).JSON(errno.InvalidIDError())
-	// }
+	var body model.Tag
+	if err := ctx.BodyParser(&body); err != nil {
+		h.logger.Errorf(err.Error())
+		return ctx.JSON(errno.DecodeError(err))
+	}
 
-	// var tag model.Tag
-	// if err := ctx.BodyParser(&tag); err != nil {
-	// 	h.logger.Errorf(err.Error())
-	// 	return ctx.Status(fiber.StatusBadRequest).JSON(errno.DecodeError(err))
-	// }
-
-	// if err := h.valid.Struct(tag); err != nil {
-	// 	return ctx.Status(fiber.StatusBadRequest).JSON(errno.DecodeError(err))
-	// }
-
-	// tag.ID = id
-	// err := h.svc.UpdateTag(&tag)
-	// if err != nil {
-	// 	return ctx.Status(fiber.StatusInternalServerError).JSON(errno.DecodeError(err))
-	// }
+	if err := h.valid.Struct(body); err != nil {
+		h.logger.Errorf(err.Error())
+		return ctx.JSON(errno.DecodeError(err))
+	}
+	h.svc.UpdateTag(&body)
 
 	return ctx.JSON(errno.OK)
+}
+
+// @Summary      Get all tags
+// @Description  Get all tags
+// @Tags         tag
+// @Produce      json
+// @Success      200  {object}   errno.errno{data=[]model.Tag}
+// @Router       /tag [get]
+func (h *tagHandle) GetTags(ctx *fiber.Ctx) error {
+	tags, err := h.svc.GetTags()
+	if err != nil {
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	return ctx.JSON(tags)
+}
+
+// @Summary      Get all tags
+// @Description  search tag by name, return match tag list
+// @Tags         tag
+// @Produce      json
+// @Param        name    query     string  false  "name search by name"
+// @Success      200  {object}   errno.errno{data=[]model.Tag}
+// @Router       /tag/search [get]
+func (h *tagHandle) SearchTags(ctx *fiber.Ctx) error {
+	fmt.Println(ctx.Query("name"))
+	data, err := h.svc.SearchTagsByName(ctx.Query("name"))
+	if err != nil {
+		return ctx.JSON(errno.DecodeError(err))
+	}
+	return ctx.JSON(errno.OK.WithData(data))
 }

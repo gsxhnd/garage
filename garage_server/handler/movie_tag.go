@@ -10,11 +10,9 @@ import (
 )
 
 type MovieTagHandler interface {
-	GetMovieTag(ctx *fiber.Ctx) error
-	GetMovieTags(ctx *fiber.Ctx) error
 	CreateMovieTags(ctx *fiber.Ctx) error
 	DeleteMovieTags(ctx *fiber.Ctx) error
-	UpdateMovieTag(ctx *fiber.Ctx) error
+	GetMovieTags(ctx *fiber.Ctx) error
 }
 
 type movieTagHandle struct {
@@ -35,6 +33,7 @@ func NewMovieTagHandler(svc service.MovieTagService, v *validator.Validate, l ut
 // @Description  Create movie tags
 // @Tags         movie_tag
 // @Produce      json
+// @Param        default body []model.MovieTag true "default"
 // @Success      200  {object}   errno.errno
 // @Router       /movie_tag [post]
 func (h *movieTagHandle) CreateMovieTags(ctx *fiber.Ctx) error {
@@ -56,7 +55,8 @@ func (h *movieTagHandle) CreateMovieTags(ctx *fiber.Ctx) error {
 // @Description  Delete movie tags
 // @Tags         movie_tag
 // @Produce      json
-// @Success      200  {object}   errno.errno
+// @Param        default body []uint true "default"
+// @Success      200 {object} errno.errno{data=nil}
 // @Router       /movie_tag [delete]
 func (h *movieTagHandle) DeleteMovieTags(ctx *fiber.Ctx) error {
 	var body = make([]uint, 0)
@@ -73,22 +73,22 @@ func (h *movieTagHandle) DeleteMovieTags(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
-// @Summary      Get movie tags
-// @Description  Get movie tags
+// @Summary      Get movie id tags
+// @Description  Get movie id tags
 // @Tags         movie_tag
 // @Produce      json
+// @Param        movie_id path uint true "movie id"
 // @Success      200  {object}   errno.errno{data=[]model.MovieTag}
-// @Router       /movie_tag [get]
+// @Router       /movie_tag/{movie_id} [get]
 func (h *movieTagHandle) GetMovieTags(ctx *fiber.Ctx) error {
-	data, err := h.svc.GetMovieTags()
+	p := struct {
+		MovieId uint `params:"movie_id"`
+	}{}
 
+	if err := ctx.ParamsParser(&p); err != nil {
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	data, err := h.svc.GetMovieTags(p.MovieId)
 	return ctx.JSON(errno.DecodeError(err).WithData(data))
-}
-
-func (h *movieTagHandle) GetMovieTag(ctx *fiber.Ctx) error {
-	return ctx.Status(200).SendString("pong")
-}
-
-func (h *movieTagHandle) UpdateMovieTag(ctx *fiber.Ctx) error {
-	return ctx.Status(200).SendString("pong")
 }

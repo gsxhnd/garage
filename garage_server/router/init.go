@@ -70,14 +70,15 @@ func (r *router) Run() error {
 	api.Delete("/tag", r.h.TagHandler.DeleteTag)
 	api.Put("/tag", r.h.TagHandler.UpdateTag)
 	api.Get("/tag", r.h.TagHandler.GetTags)
+	api.Get("/tag/search", r.h.TagHandler.SearchTags)
 	// movie actor
 	api.Post("/movie_actor", r.h.MovieActorHandle.CreateMovieActors)
 	api.Delete("/movie_actor", r.h.MovieActorHandle.DeleteMovieActors)
-	api.Get("/movie_actor", r.h.MovieActorHandle.GetMovieActors)
+	api.Get("/movie_actor/:actor_id", r.h.MovieActorHandle.GetMovieActors)
 	// movie tag
-	api.Post("/movie_tag", r.h.MovieActorHandle.CreateMovieActors)
-	api.Delete("/movie_tag", r.h.MovieActorHandle.DeleteMovieActors)
-	api.Get("/movie_tag", r.h.MovieActorHandle.GetMovieActors)
+	api.Post("/movie_tag", r.h.MovieTagHandler.CreateMovieTags)
+	api.Delete("/movie_tag", r.h.MovieTagHandler.DeleteMovieTags)
+	api.Get("/movie_tag/:movie_id", r.h.MovieTagHandler.GetMovieTags)
 	// anime
 	api.Post("/anime", r.h.AnimeHandler.CreateAnime)
 	api.Delete("/anime", r.h.AnimeHandler.DeleteAnime)

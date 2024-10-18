@@ -112,6 +112,7 @@ func (h *movieHandle) GetMovieInfo(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err).WithData(data))
 }
 
+// TODO: update movie info
 func (h *movieHandle) UpdateMovie(ctx *fiber.Ctx) error {
 	return ctx.Status(200).SendString("pong")
 }

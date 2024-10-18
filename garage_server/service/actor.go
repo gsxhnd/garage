@@ -9,7 +9,7 @@ import (
 type ActorService interface {
 	CreateActors([]model.Actor) error
 	DeleteActors([]uint) error
-	UpdateActor(model.Actor) error
+	UpdateActor(*model.Actor) error
 	GetActors(*database.Pagination) ([]model.Actor, error)
 	SearchActorByName(string) ([]model.Actor, error)
 }
@@ -37,8 +37,8 @@ func (s actorService) DeleteActors(ids []uint) error {
 }
 
 // UpdateActor implements ActorService.
-func (s actorService) UpdateActor(actor model.Actor) error {
-	panic("unimplemented")
+func (s actorService) UpdateActor(actor *model.Actor) error {
+	return s.db.UpdateActor(actor)
 }
 
 // GetActors implements ActorService.

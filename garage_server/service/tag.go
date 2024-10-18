@@ -10,8 +10,9 @@ import (
 type TagService interface {
 	CreateTags(data []model.Tag) error
 	DeleteTags(ids []uint) error
-	UpdateTag(model.Tag) error
+	UpdateTag(*model.Tag) error
 	GetTags() ([]model.Tag, error)
+	SearchTagsByName(name string) ([]model.Tag, error)
 }
 
 type tagService struct {
@@ -37,11 +38,15 @@ func (s tagService) DeleteTags(ids []uint) error {
 }
 
 // UpdateTag implements TagService.
-func (s tagService) UpdateTag(tag model.Tag) error {
-	panic("unimplemented")
+func (s tagService) UpdateTag(tag *model.Tag) error {
+	return s.db.UpdateTag(tag)
 }
 
 // GetTags implements TagService.
 func (s tagService) GetTags() ([]model.Tag, error) {
 	return s.db.GetTags()
+}
+
+func (s tagService) SearchTagsByName(name string) ([]model.Tag, error) {
+	return s.db.SearchTagsByName(name)
 }

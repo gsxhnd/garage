@@ -11,12 +11,14 @@ type Driver interface {
 	GetMovieByCode(code string) (*model.Movie, error)
 	CreateActors([]model.Actor) error
 	DeleteActors([]uint) error
+	UpdateActor(actor *model.Actor) error
 	GetActors() ([]model.Actor, error)
 	SearchActorByName(string) ([]model.Actor, error)
 	CreateTags([]model.Tag) error
 	DeleteTags([]uint) error
+	UpdateTag(tag *model.Tag) error
 	GetTags() ([]model.Tag, error)
-	GetMovieTagByMovieId(movieId uint) ([]model.MovieTag, error)
+	SearchTagsByName(name string) ([]model.Tag, error)
 	CreateMovieActors(movieActors []model.MovieActor) error
 	DeleteMovieActors(ids []uint) error
 	UpdateMovieActor(model.MovieActor) error
@@ -24,7 +26,7 @@ type Driver interface {
 	GetMovieActorsByMovieId(id uint) ([]model.MovieActor, error)
 	CreateMovieTags([]model.MovieTag) error
 	DeleteMovieTags(ids []uint) error
-	GetMovieTags() ([]model.MovieTag, error)
+	GetMovieTagByMovieId(movieId uint) ([]model.MovieTag, error)
 	UpdateMovieTag(model.MovieTag) error
 	CreateAnimes([]model.Anime) error
 	DeleteAnimes([]uint) error

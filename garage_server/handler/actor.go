@@ -77,9 +77,29 @@ func (h *actorHandle) DeleteActors(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
-// GetActor implements ActorHandler.
-func (h *actorHandle) GetActor(ctx *fiber.Ctx) error {
-	panic("unimplemented")
+// UpdateActor implements ActorHandler.
+// @Summary      Update a actor by id
+// @Description  Update a actor by id
+// @Tags         actor
+// @Accept       json
+// @Produce      json
+// @Param        tag body model.Actor true "Actor object"
+// @Success      200 {object} errno.errno
+// @Router       /actor [put]
+func (h *actorHandle) UpdateActor(ctx *fiber.Ctx) error {
+	var body model.Actor
+	if err := ctx.BodyParser(&body); err != nil {
+		h.logger.Errorf(err.Error())
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	if err := h.valid.Struct(body); err != nil {
+		h.logger.Errorf(err.Error())
+		return ctx.JSON(errno.DecodeError(err))
+	}
+	h.svc.UpdateActor(&body)
+
+	return ctx.JSON(errno.OK)
 }
 
 // GetActors implements ActorHandler.
@@ -87,7 +107,7 @@ func (h *actorHandle) GetActor(ctx *fiber.Ctx) error {
 // @Description  Get actors List
 // @Tags         actor
 // @Produce      json
-// @Success      200
+// @Success      200  {object}   errno.errno{data=[]model.Actor}
 // @Router       /actor [get]
 func (h *actorHandle) GetActors(ctx *fiber.Ctx) error {
 	var p = database.Pagination{
@@ -100,17 +120,18 @@ func (h *actorHandle) GetActors(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err).WithData(data))
 }
 
-// UpdateActor implements ActorHandler.
-func (h *actorHandle) UpdateActor(ctx *fiber.Ctx) error {
+// GetActor implements ActorHandler.
+// TODO: get actor movies
+func (h *actorHandle) GetActor(ctx *fiber.Ctx) error {
 	panic("unimplemented")
 }
 
 // @Summary      Search actors
 // @Description  Search actors List
 // @Tags         actor
-// @Param        q    query     string  false  "name search by q"
+// @Param        name    query     string  false  "name search by name"
 // @Produce      json
-// @Success      200
+// @Success      200  {object}   errno.errno{data=[]model.Actor}
 // @Router       /actor/search [get]
 func (h *actorHandle) SearchActorByName(ctx *fiber.Ctx) error {
 	data, err := h.svc.SearchActorByName(ctx.Query("name"))

@@ -63,7 +63,7 @@ func (db *sqliteDB) DeleteActors(ids []uint) error {
 	return err
 }
 
-func (db *sqliteDB) UpdateActor(actor model.Actor) error {
+func (db *sqliteDB) UpdateActor(actor *model.Actor) error {
 	tx, err := db.conn.Begin()
 	defer db.txRollback(tx, err)
 	if err != nil {
@@ -72,7 +72,7 @@ func (db *sqliteDB) UpdateActor(actor model.Actor) error {
 	}
 
 	stmt, err := tx.Prepare(`UPDATE actor SET 
-	name=?, alias_name=?, updated_at=? 
+	name=?, alias_name=?,cover=?, updated_at=? 
 	WHERE id=?;`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
@@ -80,7 +80,7 @@ func (db *sqliteDB) UpdateActor(actor model.Actor) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(actor.Name, actor.AliasName, time.Now(), actor.Id)
+	_, err = stmt.Exec(actor.Name, actor.AliasName, actor.Cover, time.Now(), actor.Id)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -91,7 +91,7 @@ func (db *sqliteDB) UpdateActor(actor model.Actor) error {
 }
 
 func (db *sqliteDB) GetActors() ([]model.Actor, error) {
-	rows, err := db.conn.Query("SELECT id, name, alias_name, created_at, updated_at FROM actor")
+	rows, err := db.conn.Query("SELECT * FROM actor")
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err
@@ -101,7 +101,7 @@ func (db *sqliteDB) GetActors() ([]model.Actor, error) {
 	var dataList []model.Actor
 	for rows.Next() {
 		var data = model.Actor{}
-		if err := rows.Scan(&data.Id, &data.Name, &data.AliasName, &data.CreatedAt, &data.UpdatedAt); err != nil {
+		if err := rows.Scan(&data.Id, &data.Name, &data.AliasName, &data.Cover, &data.CreatedAt, &data.UpdatedAt); err != nil {
 			db.logger.Errorf(err.Error())
 			return nil, err
 		}
@@ -111,7 +111,7 @@ func (db *sqliteDB) GetActors() ([]model.Actor, error) {
 }
 
 func (db *sqliteDB) SearchActorByName(name string) ([]model.Actor, error) {
-	rows, err := db.conn.Query("SELECT id FROM actor WHERE name = ? or alias_name like %?%", name, name)
+	rows, err := db.conn.Query("SELECT * FROM actor WHERE name like ? or alias_name like ?;", "%"+name+"%", "%"+name+"%")
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err
@@ -119,7 +119,7 @@ func (db *sqliteDB) SearchActorByName(name string) ([]model.Actor, error) {
 	var dataList []model.Actor
 	for rows.Next() {
 		var data = model.Actor{}
-		if err := rows.Scan(&data.Id, &data.Name, &data.AliasName, &data.CreatedAt, &data.UpdatedAt); err != nil {
+		if err := rows.Scan(&data.Id, &data.Name, &data.AliasName, &data.Cover, &data.CreatedAt, &data.UpdatedAt); err != nil {
 			db.logger.Errorf(err.Error())
 			return nil, err
 		}

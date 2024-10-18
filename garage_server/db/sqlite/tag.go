@@ -64,7 +64,7 @@ func (db *sqliteDB) DeleteTags(ids []uint) error {
 	return err
 }
 
-func (db *sqliteDB) UpdateTag(tag model.Tag) error {
+func (db *sqliteDB) UpdateTag(tag *model.Tag) error {
 	tx, err := db.conn.Begin()
 	if err != nil {
 		db.logger.Errorf(err.Error())
@@ -81,7 +81,7 @@ func (db *sqliteDB) UpdateTag(tag model.Tag) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(tag.Name, tag.Pid, time.Now(), tag.Id)
+	_, err = stmt.Exec(tag.Name, tag.Pid, time.Now().UTC(), tag.Id)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		tx.Rollback()
@@ -102,6 +102,24 @@ func (db *sqliteDB) GetTags() ([]model.Tag, error) {
 	}
 	defer rows.Close()
 
+	var dataList []model.Tag
+	for rows.Next() {
+		var data = model.Tag{}
+		if err := rows.Scan(&data.Id, &data.Name, &data.Pid, &data.CreatedAt, &data.UpdatedAt); err != nil {
+			db.logger.Errorf(err.Error())
+			return nil, err
+		}
+		dataList = append(dataList, data)
+	}
+	return dataList, nil
+}
+
+func (db *sqliteDB) SearchTagsByName(name string) ([]model.Tag, error) {
+	rows, err := db.conn.Query("SELECT * FROM tag WHERE name like ?;", "%"+name+"%")
+	if err != nil {
+		db.logger.Errorf(err.Error())
+		return nil, err
+	}
 	var dataList []model.Tag
 	for rows.Next() {
 		var data = model.Tag{}

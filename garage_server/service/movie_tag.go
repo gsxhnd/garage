@@ -9,9 +9,8 @@ import (
 
 type MovieTagService interface {
 	CreateMovieTags(data []model.MovieTag) error
-	DeleteMovieTags(ids []uint) error
-	UpdateMovieTag(model.MovieTag) error
-	GetMovieTags() ([]model.MovieTag, error)
+	DeleteMovieTags(movieIds []uint) error
+	GetMovieTags(movieId uint) ([]model.MovieTag, error)
 }
 
 type movieTagService struct {
@@ -36,12 +35,7 @@ func (s movieTagService) DeleteMovieTags(ids []uint) error {
 	return s.db.DeleteMovieTags(ids)
 }
 
-// UpdateMovieTag implements MovieTagService.
-func (s movieTagService) UpdateMovieTag(movieTag model.MovieTag) error {
-	panic("unimplemented")
-}
-
 // GetMovieTags implements MovieTagService.
-func (s movieTagService) GetMovieTags() ([]model.MovieTag, error) {
-	return s.db.GetMovieTags()
+func (s movieTagService) GetMovieTags(movieId uint) ([]model.MovieTag, error) {
+	return s.db.GetMovieTagByMovieId(movieId)
 }
