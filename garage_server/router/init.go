@@ -56,9 +56,10 @@ func (r *router) Run() error {
 	// movie api
 	api.Post("/movie", r.h.MovieHandler.CreateMovies)
 	api.Delete("/movie", r.h.MovieHandler.DeleteMovies)
-	api.Put("/movie/:code", r.h.MovieHandler.UpdateMovie)
+	api.Put("/movie", r.h.MovieHandler.UpdateMovie)
 	api.Get("/movie", r.h.MovieHandler.GetMovies)
-	api.Get("/movie/:code", r.h.MovieHandler.GetMovieInfo)
+	api.Get("/movie/info/:code", r.h.MovieHandler.GetMovieInfo)
+	api.Get("/movie/search", r.h.MovieHandler.SearchMovies)
 	// actor api
 	api.Post("/actor", r.h.ActorHandler.CreateActors)
 	api.Delete("/actor", r.h.ActorHandler.DeleteActors)

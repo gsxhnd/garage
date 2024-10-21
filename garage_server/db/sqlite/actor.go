@@ -43,7 +43,7 @@ func (db *sqliteDB) DeleteActors(ids []uint) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(`DELETE FROM actor WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
+	stmt, err := tx.Prepare(`DELETE FROM actor WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `);`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -91,7 +91,7 @@ func (db *sqliteDB) UpdateActor(actor *model.Actor) error {
 }
 
 func (db *sqliteDB) GetActors() ([]model.Actor, error) {
-	rows, err := db.conn.Query("SELECT * FROM actor")
+	rows, err := db.conn.Query("SELECT * FROM actor;")
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err

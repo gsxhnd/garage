@@ -286,7 +286,9 @@ paths:
             - $ref: '#/definitions/errno.errno'
             - properties:
                 data:
-                  type: object
+                  items:
+                    $ref: '#/definitions/model.Movie'
+                  type: array
               type: object
       summary: Get movies
       tags:
@@ -303,7 +305,28 @@ paths:
       summary: Create movies
       tags:
       - movie
-  /movie/:code:
+    put:
+      consumes:
+      - application/json
+      description: Update a movie by id
+      parameters:
+      - description: movie object
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/model.Movie'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/errno.errno'
+      summary: Update a movie by id
+      tags:
+      - movie
+  /movie/info/:code:
     get:
       description: Get movies
       parameters:
@@ -325,6 +348,32 @@ paths:
                   $ref: '#/definitions/model.MovieInfo'
               type: object
       summary: Get movies
+      tags:
+      - movie
+  /movie/search:
+    get:
+      description: Search movies by code
+      parameters:
+      - description: movie code
+        in: query
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/errno.errno'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Movie'
+                  type: array
+              type: object
+      summary: Search movies
       tags:
       - movie
   /movie_actor:
@@ -424,9 +473,9 @@ paths:
       - movie_tag
   /movie_tag/{movie_id}:
     get:
-      description: Get movie tags
+      description: Get movie id tags
       parameters:
-      - description: default
+      - description: movie id
         in: path
         name: movie_id
         required: true
@@ -445,7 +494,7 @@ paths:
                     $ref: '#/definitions/model.MovieTag'
                   type: array
               type: object
-      summary: Get movie tags
+      summary: Get movie id tags
       tags:
       - movie_tag
   /ping:

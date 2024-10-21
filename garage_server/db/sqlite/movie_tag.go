@@ -43,7 +43,7 @@ func (db *sqliteDB) DeleteMovieTags(ids []uint) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(`DELETE FROM movie_tag WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
+	stmt, err := tx.Prepare(`DELETE FROM movie_tag WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `);`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -91,7 +91,7 @@ func (db *sqliteDB) UpdateMovieTag(movieTag model.MovieTag) error {
 }
 
 func (db *sqliteDB) GetMovieTags() ([]model.MovieTag, error) {
-	rows, err := db.conn.Query("SELECT id, movie_id, tag_id FROM movie_tag")
+	rows, err := db.conn.Query("SELECT id, movie_id, tag_id FROM movie_tag;")
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err

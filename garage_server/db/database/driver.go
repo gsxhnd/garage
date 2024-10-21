@@ -7,7 +7,8 @@ type Driver interface {
 	Migrate() error
 	CreateMovies([]model.Movie) error
 	DeleteMovies([]uint) error
-	GetMovies(*Pagination) ([]model.Movie, error)
+	UpdateMovie(*model.Movie) error
+	GetMovies(*Pagination, ...string) ([]model.Movie, error)
 	GetMovieByCode(code string) (*model.Movie, error)
 	CreateActors([]model.Actor) error
 	DeleteActors([]uint) error

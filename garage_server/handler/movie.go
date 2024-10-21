@@ -16,6 +16,7 @@ type MovieHandler interface {
 	UpdateMovie(ctx *fiber.Ctx) error
 	GetMovies(ctx *fiber.Ctx) error
 	GetMovieInfo(ctx *fiber.Ctx) error
+	SearchMovies(ctx *fiber.Ctx) error
 }
 
 type movieHandle struct {
@@ -76,18 +77,47 @@ func (h *movieHandle) DeleteMovies(ctx *fiber.Ctx) error {
 	return ctx.JSON(errno.DecodeError(err))
 }
 
+// UpdateMovie implements MovieHandler.
+// @Summary      Update a movie by id
+// @Description  Update a movie by id
+// @Tags         movie
+// @Accept       json
+// @Produce      json
+// @Param        tag body model.Movie true "movie object"
+// @Success      200 {object} errno.errno
+// @Router       /movie [put]
+func (h *movieHandle) UpdateMovie(ctx *fiber.Ctx) error {
+	var body model.Movie
+	if err := ctx.BodyParser(&body); err != nil {
+		h.logger.Errorf(err.Error())
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	if err := h.valid.Struct(body); err != nil {
+		h.logger.Errorf(err.Error())
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	if err := h.svc.UpdateMovie(&body); err != nil {
+		h.logger.Errorf(err.Error())
+		return ctx.JSON(errno.DecodeError(err))
+	}
+
+	return ctx.JSON(errno.OK)
+}
+
 // @Summary      Get movies
 // @Description  Get movies
 // @Tags         movie
 // @Produce      json
 // @Param        page_size query int false "int valid" default(50)
 // @Param        page query int false "int valid" default(1)
-// @Success      200 {object} errno.errno{data=nil}
+// @Success      200 {object} errno.errno{data=[]model.Movie}
 // @Router       /movie [get]
 func (h *movieHandle) GetMovies(ctx *fiber.Ctx) error {
 	var p = database.Pagination{
-		Limit:  uint(ctx.QueryInt("page_size", 50)),
-		Offset: uint(ctx.QueryInt("page_size", 50) * (ctx.QueryInt("page", 1) - 1)),
+		Limit:  uint64(ctx.QueryInt("page_size", 50)),
+		Offset: uint64(ctx.QueryInt("page_size", 50) * (ctx.QueryInt("page", 1) - 1)),
 	}
 
 	if err := h.valid.Struct(p); err != nil {
@@ -105,14 +135,24 @@ func (h *movieHandle) GetMovies(ctx *fiber.Ctx) error {
 // @Produce      json
 // @Param        code path string true "movie code"
 // @Success      200 {object} errno.errno{data=model.MovieInfo}
-// @Router       /movie/:code [get]
+// @Router       /movie/info/:code [get]
 func (h *movieHandle) GetMovieInfo(ctx *fiber.Ctx) error {
 	code := ctx.Params("code", "")
 	data, err := h.svc.GetMovieInfo(code)
 	return ctx.JSON(errno.DecodeError(err).WithData(data))
 }
 
-// TODO: update movie info
-func (h *movieHandle) UpdateMovie(ctx *fiber.Ctx) error {
-	return ctx.Status(200).SendString("pong")
+// @Summary      Search movies
+// @Description  Search movies by code
+// @Tags         movie
+// @Produce      json
+// @Param        code query string true "movie code"
+// @Success      200 {object} errno.errno{data=[]model.Movie}
+// @Router       /movie/search [get]
+func (h *movieHandle) SearchMovies(ctx *fiber.Ctx) error {
+	data, err := h.svc.SearchMoviesByCode(ctx.Query("code"))
+	if err != nil {
+		return ctx.JSON(errno.DecodeError(err))
+	}
+	return ctx.JSON(errno.OK.WithData(data))
 }

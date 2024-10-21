@@ -44,7 +44,7 @@ func (db *sqliteDB) DeleteAnimes(ids []uint) error {
 		return err
 	}
 
-	stmt, err := tx.Prepare(`DELETE FROM anime WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
+	stmt, err := tx.Prepare(`DELETE FROM anime WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `);`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -97,7 +97,7 @@ func (db *sqliteDB) UpdateAnime(anime model.Anime) error {
 }
 
 func (db *sqliteDB) GetAnimes(p *database.Pagination) ([]model.Anime, error) {
-	rows, err := db.conn.Query("SELECT * FROM anime")
+	rows, err := db.conn.Query("SELECT * FROM anime;")
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err

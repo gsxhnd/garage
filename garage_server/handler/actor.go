@@ -111,8 +111,8 @@ func (h *actorHandle) UpdateActor(ctx *fiber.Ctx) error {
 // @Router       /actor [get]
 func (h *actorHandle) GetActors(ctx *fiber.Ctx) error {
 	var p = database.Pagination{
-		Limit:  uint(ctx.QueryInt("page_size", 50)),
-		Offset: uint(ctx.QueryInt("page_size", 50) * ctx.QueryInt("page", 0)),
+		Limit:  uint64(ctx.QueryInt("page_size", 50)),
+		Offset: uint64(ctx.QueryInt("page_size", 50) * ctx.QueryInt("page", 0)),
 	}
 
 	data, err := h.svc.GetActors(&p)

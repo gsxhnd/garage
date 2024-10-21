@@ -41,7 +41,7 @@ func (db *sqliteDB) DeleteTags(ids []uint) error {
 		return err
 	}
 	defer db.txRollback(tx, err)
-	stmt, err := tx.Prepare(`DELETE FROM tag WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `)`)
+	stmt, err := tx.Prepare(`DELETE FROM tag WHERE id IN (?` + strings.Repeat(`,?`, len(ids)-1) + `);`)
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return err
@@ -95,7 +95,7 @@ func (db *sqliteDB) UpdateTag(tag *model.Tag) error {
 }
 
 func (db *sqliteDB) GetTags() ([]model.Tag, error) {
-	rows, err := db.conn.Query("SELECT id, name, pid, created_at, updated_at FROM tag")
+	rows, err := db.conn.Query("SELECT id, name, pid, created_at, updated_at FROM tag;")
 	if err != nil {
 		db.logger.Errorf(err.Error())
 		return nil, err

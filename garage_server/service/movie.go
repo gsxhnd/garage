@@ -9,9 +9,10 @@ import (
 type MovieService interface {
 	CreateMovies([]model.Movie) error
 	DeleteMovies([]uint) error
-	UpdateMovie(model.Movie) error
+	UpdateMovie(*model.Movie) error
 	GetMovies(*database.Pagination) ([]model.Movie, error)
-	GetMovieInfo(code string) (*model.MovieInfo, error)
+	GetMovieInfo(string) (*model.MovieInfo, error)
+	SearchMoviesByCode(string) ([]model.Movie, error)
 }
 
 type movieService struct {
@@ -37,13 +38,18 @@ func (s movieService) DeleteMovies(ids []uint) error {
 }
 
 // UpdateMovie implements MovieService.
-func (s movieService) UpdateMovie(model.Movie) error {
-	panic("unimplemented")
+func (s movieService) UpdateMovie(m *model.Movie) error {
+	return s.db.UpdateMovie(m)
 }
 
 // GetMovies implements MovieService.
 func (s movieService) GetMovies(p *database.Pagination) ([]model.Movie, error) {
 	return s.db.GetMovies(p)
+}
+
+// GetMovies implements MovieService.
+func (s movieService) SearchMoviesByCode(code string) ([]model.Movie, error) {
+	return s.db.GetMovies(nil, "code", code)
 }
 
 func (s movieService) GetMovieInfo(code string) (*model.MovieInfo, error) {

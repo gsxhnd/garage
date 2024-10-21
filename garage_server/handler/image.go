@@ -37,7 +37,12 @@ func (h *imageHandle) GetMovieImage(ctx *fiber.Ctx) error {
 func (h *imageHandle) GetActorImage(ctx *fiber.Ctx) error {
 	// var id = ctx.Params("id")
 	b, format, err := h.storage.GetImage("star", 0, "")
-	h.logger.Errorw("GET Star Image", "error", err)
+
+	if err != nil {
+		h.logger.Errorw("GET Star Image", "error", err)
+		return ctx.SendStatus(404)
+	}
+
 	ctx.Response().Header.Set("Content-Type", mime.TypeByExtension("."+format))
 	ctx.Write(b)
 
