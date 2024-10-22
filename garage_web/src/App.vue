@@ -1,10 +1,13 @@
 <template>
-  <router-view class="router-view" />
+  <router-view />
 </template>
 
 <script setup lang="ts">
 import { onBeforeMount } from "vue";
 
-onBeforeMount(async () => {});
+onBeforeMount(async () => {
+  const doc = document.documentElement;
+  doc.dataset.theme = "oneDark";
+});
 </script>
 <style scoped></style>

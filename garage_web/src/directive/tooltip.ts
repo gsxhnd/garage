@@ -24,7 +24,7 @@ export const tooltip: Directive = {
       if (newV) {
         document.body.insertAdjacentElement("beforeend", tooltipParent);
         computePosition(el, tooltipParent, {
-          placement: "bottom",
+          placement: "right",
           middleware: [offset(10), flip(), shift()],
           strategy: "absolute",
         }).then(({ x, y }) => {

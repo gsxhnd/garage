@@ -1,4 +1,4 @@
-<template><div>movie</div></template>
+<template><div>tag</div></template>
 
 <script setup lang="ts"></script>
 

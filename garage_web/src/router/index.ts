@@ -3,7 +3,11 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
 
 import Root from "@/layout/Root.vue";
 // import InitElectron from "@/pages/InitElectron.vue";
-// import Dashboard from "@/pages/Dashboard.vue";
+import Anime from "@/pages/Anime.vue";
+import Actor from "@/pages/Actor.vue";
+import Movie from "@/pages/Movie.vue";
+import Tag from "@/pages/Tag.vue";
+import Setting from "@/pages/Setting.vue";
 
 const RootRoute: RouteRecordRaw = {
   path: "/",
@@ -12,7 +16,13 @@ const RootRoute: RouteRecordRaw = {
   meta: {
     title: "Root",
   },
-  //   children: [{ path: "", name: "Dashboard", component: Dashboard }],
+  children: [
+    { path: "anime", name: "anime", component: Anime },
+    { path: "actor", name: "actor", component: Actor },
+    { path: "movie", name: "movie", component: Movie },
+    { path: "tag", name: "tag", component: Tag },
+    { path: "setting", name: "setting", component: Setting },
+  ],
 };
 
 const router = createRouter({

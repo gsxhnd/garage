@@ -1,4 +1,4 @@
-<template><div>movie</div></template>
+<template><div>Anime</div></template>
 
 <script setup lang="ts"></script>
 

@@ -41,6 +41,14 @@
   --app-button-danger-light-hover: white;
 }
 
+// sidebar theme
+:root[data-theme="oneDark"] {
+  --app-sidebar-background: #414246;
+  --app-sidebar-color: #ffffff;
+  --app-sidebar-menu-item-hover: #59595a;
+  --app-sidebar-menu-item-active: #006dff;
+}
+
 // splitter theme setting
 :root[data-theme="oneDark"] {
   --app-splitter-gutter-color-v: #37383c;

@@ -28,6 +28,6 @@ body {
   }
 }
 
-.app-header {
-  height: var(--app-header-height);
+#app {
+  display: flex;
 }

@@ -1,5 +1,10 @@
-import axios from "axios";
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
+
+export interface Response<T> {
+  code: number;
+  message: string;
+  data: T;
+}
 
 const http = axios.create({
   baseURL: "/api/v1",
@@ -15,21 +20,17 @@ http.interceptors.request.use(
 
 http.interceptors.response.use(
   (resp: AxiosResponse<Response<any>>) => {
-    console.log(resp);
     if (resp.status !== 200) {
+      alert(resp.status);
     }
     if (resp.data.code !== 0) {
       alert(resp.data.message);
     }
     return resp;
   },
-  (_err) => {}
+  (err) => {
+    console.log(err.response);
+  }
 );
 
 export { http };
-
-export interface Response<T> {
-  code: number;
-  message: string;
-  data: T;
-}
