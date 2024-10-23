@@ -22,9 +22,13 @@ export interface MovieInfo {
   tags: MovieTag[];
 }
 
-export function GetMovies() {
-  return http.get<Response<Movie>>("/movie");
-}
+export const GetMovies = () => {
+  return http.get<Response<Array<Movie>>>("/movie");
+};
+
+export const GetMovieInfo = (code: string) => {
+  return http.get<Response<MovieInfo>>(`/movie/info/${code}`);
+};
 
 export const CreateMovies = () => {
   return http.post<Response<null>>("/movie");
