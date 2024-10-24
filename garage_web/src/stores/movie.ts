@@ -13,6 +13,7 @@ export const useMovieStore = defineStore("movie", () => {
   }
 
   async function selectMovie(code: string) {
+    selectMovieInfo.value = null;
     await GetMovieInfo(code).then((data) => {
       selectMovieInfo.value = data.data.data;
     });

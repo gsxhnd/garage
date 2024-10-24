@@ -16,7 +16,7 @@
     "@fortawesome/fontawesome-free": "^6.6.0",
     "@vueuse/components": "^11.1.0",
     "@vueuse/core": "^11.1.0",
-    "ag-grid-vue3": "^32.3.0",
+    "@yaireo/tagify": "^4.31.3",
     "axios": "^1.7.7",
     "bulma": "^1.0.2",
     "localforage": "^1.10.0",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.7.4",
+    "@types/yaireo__tagify": "^4.27.0",
     "@vitejs/plugin-vue": "^5.1.4",
     "esbuild": "^0.24.0",
     "primeicons": "7.0.0",

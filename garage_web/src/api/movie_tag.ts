@@ -2,9 +2,9 @@ import { http, Response } from "@/utils/http";
 
 export interface MovieTag {
   id: number;
-  movieId: number;
-  tagId: number;
-  tagName?: string | null;
+  movie_id: number;
+  tag_id: number;
+  tag_name: string;
 }
 
 export const GetMovieTag = () => {

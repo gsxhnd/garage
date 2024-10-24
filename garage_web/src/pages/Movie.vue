@@ -27,7 +27,6 @@ onBeforeMount(async () => {
 <style scoped lang="scss">
 .movie {
   background-color: rgb(236, 236, 236);
-  padding-top: 20px;
   flex: 1;
   display: flex;
   &-content {
