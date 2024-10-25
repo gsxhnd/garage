@@ -14,7 +14,7 @@
       </template>
     </div>
 
-    <div class="movie-tag" ref="movieTagDivRef" @click.stop="onMovieTagClick">
+    <div class="movie-tag" ref="movieTagDivRef">
       <input ref="movieTagRef" />
     </div>
   </template>
@@ -62,6 +62,10 @@ watchEffect(() => {
   if (movieTagRef.value == null) return;
   tagify = new Tagify(movieTagRef.value, {
     userInput: false,
+    // focusable: false,
+    hooks: {},
+    dropdown: {},
+    templates: {},
   });
   const tags: Array<TagData> = [];
 
@@ -86,15 +90,21 @@ watchEffect(() => {
     })
     .on("focus", (_e) => {
       console.log("focus");
-    });
+      onMovieTagClick();
+    })
+    .on("dropdown:show", (_e) => {
+      // alert(1);
+    })
+    .on("input", (_e) => {});
 });
 
 function onMovieTagClick() {
+  if (showTagTree.value) return;
   if (!movieTagDivRef.value || !tagTreeRef.value) return;
-  const empty = document.createElement("div");
-  computePosition(movieTagDivRef.value, empty, {
+
+  computePosition(movieTagDivRef.value, tagTreeRef.value.$el, {
     placement: "left",
-    middleware: [offset(30), flip(), shift()],
+    middleware: [offset({ mainAxis: 250, crossAxis: -20 }), flip(), shift()],
     strategy: "fixed",
   }).then(({ x, y }) => {
     showTagTree.value = true;

@@ -119,7 +119,7 @@ func (h *tagHandle) GetTags(ctx *fiber.Ctx) error {
 		return ctx.JSON(errno.DecodeError(err))
 	}
 
-	return ctx.JSON(tags)
+	return ctx.JSON(errno.OK.WithData(tags))
 }
 
 // @Summary      Get all tags
