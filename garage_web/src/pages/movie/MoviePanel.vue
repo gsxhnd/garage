@@ -52,48 +52,54 @@ movieStore.$subscribe((_mutation, state) => {
   coverImageUrl.value = `/api/v1/img/${state.selectMovieInfo?.movie.id}/${state.selectMovieInfo?.movie.cover}`;
 });
 
-onClickOutside(tagTreeRef, (_event) => {
-  if (showTagTree.value) {
-    showTagTree.value = false;
+onClickOutside(
+  tagTreeRef,
+  (_event) => {
+    if (showTagTree.value) {
+      showTagTree.value = false;
+    }
+  },
+  {
+    ignore: [movieTagDivRef],
   }
-});
+);
 
 watchEffect(() => {
   if (movieTagRef.value == null) return;
   tagify = new Tagify(movieTagRef.value, {
     userInput: false,
-    // focusable: false,
     hooks: {},
     dropdown: {},
     templates: {},
   });
   const tags: Array<TagData> = [];
 
-  movieStore.selectMovieInfo?.tags.forEach((tag) => {
-    let data: TagData = {
-      value: tag.tag_name,
-      editable: false,
-      source: tag,
-    };
-    if (tag.tag_name) tags.push(data);
-  });
+  if (
+    movieStore.selectMovieInfo &&
+    movieStore.selectMovieInfo.tags?.length > 0
+  ) {
+    movieStore.selectMovieInfo?.tags.forEach((tag) => {
+      let data: TagData = {
+        value: tag.tag_name,
+        editable: false,
+        source: tag,
+      };
+      if (tag.tag_name) tags.push(data);
+    });
 
-  tagify.addTags(tags);
+    tagify.addTags(tags);
+  }
 
   tagify
-    .on("remove", (e) => {
-      console.log(e);
-      console.log(movieTagRef.value?.value);
-    })
-    .on("add", (e) => {
-      console.log(e);
-    })
+    .on("remove", (_e) => {})
+    .on("add", (_e) => {})
     .on("focus", (_e) => {
-      console.log("focus");
+      console.log("foucs");
       onMovieTagClick();
     })
     .on("dropdown:show", (_e) => {
-      // alert(1);
+      console.log("dropdown:show");
+      // tagify?.dropdown.hide();
     })
     .on("input", (_e) => {});
 });

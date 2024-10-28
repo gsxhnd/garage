@@ -52,12 +52,6 @@ const menu = ref([
   },
   { name: "anime", tooltip: "Anime", icon: "fas fa-tv", router: "anime" },
   {
-    name: "tag",
-    tooltip: "Tag",
-    icon: "fas fa-tags",
-    router: "tag",
-  },
-  {
     name: "setting",
     tooltip: "Setting",
     icon: "fas fa-gear",
