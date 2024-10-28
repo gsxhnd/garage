@@ -1,10 +1,11 @@
 @use "bulma/sass/base";
-// @use "bulma/sass/themes";
+@use "bulma/sass/themes";
 @use "bulma/sass/grid";
 @use "bulma/sass/components/modal.scss";
 @use "bulma/sass/components/menu.scss";
 @use "bulma/sass/components/dropdown.scss";
 @use "bulma/sass/elements/button.scss";
+@use "bulma/sass/form/input-textarea.scss";
 // @use "bulma/sass/elements/icon.scss";
 
 @use "./common_button.scss";

@@ -1,10 +1,14 @@
 <template>
   <template v-if="movieStore.selectMovieInfo">
     <div class="movie-cover" v-if="movieStore.selectMovieInfo">
-      <img :src="coverImageUrl" alt="movie cover" />
+      <img
+        :src="coverImageUrl"
+        alt="movie cover"
+        onerror="this.src='/img_not_fount.svg'; this.onerror=null;"
+      />
     </div>
     <div class="movie-info">
-      <span>{{ movieStore.selectMovieInfo.movie.code }}</span>
+      <input class="input" v-model="movieStore.selectMovieInfo.movie.code"></input>
       <span>{{ movieStore.selectMovieInfo.movie.title }}</span>
       <span>{{ movieStore.selectMovieInfo.movie.publishDate }}</span>
     </div>
@@ -120,6 +124,17 @@ function onMovieTagClick() {
 </script>
 
 <style scoped lang="scss">
+.movie-cover {
+  img {
+    max-width: 300px;
+    max-height: 300px;
+  }
+}
+.movie-info {
+  display: flex;
+  flex-direction: column;
+}
+
 .movie-tag {
   width: fit-content;
 }

@@ -1,8 +1,8 @@
 :root[data-theme="oneDark"] {
   --app-font-color: rgb(238, 238, 238);
   --app-header-height: 40px;
-  --app-pane-background-1: #414246;
-  --app-pane-background-2: #37383c;
+  --app-surface-background-1: #414246;
+  --app-surface-background-2: #37383c;
   --app-pane-padding-size: 0 8px;
   --app-setting-pane-height: 60vh;
   --app-setting-pane-width: 60vw;
@@ -43,10 +43,16 @@
 
 // sidebar theme
 :root[data-theme="oneDark"] {
-  --app-sidebar-background: #414246;
+  --app-sidebar-background: var(--app-surface-background-1);
   --app-sidebar-color: #ffffff;
   --app-sidebar-menu-item-hover: #59595a;
   --app-sidebar-menu-item-active: #006dff;
+}
+// movie card
+:root[data-theme="oneDark"] {
+  --app-card-background: #ffffffc7;
+  --app-card-hover-background: #838282;
+  --app-card-color: #3b3b3bc7;
 }
 
 // splitter theme setting

@@ -30,11 +30,14 @@ onBeforeMount(async () => {
   flex: 1;
   display: flex;
   &-content {
+    background-color: var(--app-surface-background-2);
     padding: 20px;
     width: 100%;
     flex-grow: 1;
   }
   &-panel {
+    background-color: var(--app-surface-background-1);
+    padding: 10px;
     width: 400px;
   }
 }
