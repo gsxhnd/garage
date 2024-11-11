@@ -1,7 +1,9 @@
 <template>
   <div class="movie">
     <div class="movie-content">
-      <div class="movie-search"></div>
+      <div class="movie-search">
+        <MovieSearch />
+      </div>
       <div class="movie-pic">
         <MoviePic />
       </div>
@@ -14,6 +16,7 @@
 
 <script setup lang="ts">
 import MoviePic from "./movie/MoviePic.vue";
+import MovieSearch from "./movie/MovieSearch.vue";
 import MoviePanel from "./movie/MoviePanel.vue";
 import { onBeforeMount } from "vue";
 import { useMovieStore } from "@/stores/movie";

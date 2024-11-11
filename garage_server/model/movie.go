@@ -7,7 +7,7 @@ import (
 type Movie struct {
 	Id             uint       `json:"id"`
 	Code           string     `json:"code" validate:"required"`
-	Title          string     `json:"title" validate:"required"`
+	Title          string     `json:"title"`
 	Cover          *string    `json:"cover"`
 	PublishDate    *time.Time `json:"publish_date"`
 	Director       *string    `json:"director"`
