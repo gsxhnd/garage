@@ -37,6 +37,7 @@ type javbusCrawl struct {
 	opt        *JavbusOption
 	collector  *colly.Collector
 	httpClient *resty.Client
+	movies     []JavMovie
 }
 
 func NewJavbusCrawl(logger utils.Logger, opt *JavbusOption, config *CrawlConfig) (JavbusCrawl, error) {
@@ -90,7 +91,7 @@ func (jc *javbusCrawl) GetJavbusMovie() ([]JavMovie, error) {
 	jc.collector.OnHTML(".container", jc.javbusMovieInfoCrawl)
 	jc.collector.OnHTML("body", jc.javbusMovieMagnetCrawl)
 	queue.Run(jc.collector)
-	return nil, nil
+	return jc.movies, nil
 }
 
 func (jc *javbusCrawl) GetJavbusMovieByPrefix() ([]JavMovie, error) {
@@ -103,7 +104,7 @@ func (jc *javbusCrawl) GetJavbusMovieByPrefix() ([]JavMovie, error) {
 	jc.collector.OnHTML(".container", jc.javbusMovieInfoCrawl)
 	jc.collector.OnHTML("body", jc.javbusMovieMagnetCrawl)
 	queue.Run(jc.collector)
-	return nil, nil
+	return jc.movies, nil
 }
 
 func (jc *javbusCrawl) GetJavbusMovieByStar() ([]JavMovie, error) {
@@ -140,7 +141,7 @@ func (jc *javbusCrawl) GetJavbusMovieByStar() ([]JavMovie, error) {
 	queue.Run(collector)
 	collector.Wait()
 
-	return nil, nil
+	return jc.movies, nil
 }
 
 func (jc *javbusCrawl) GetJavbusMovieByFilepath() ([]JavMovie, error) {
@@ -175,6 +176,10 @@ func (jc *javbusCrawl) GetJavbusMovieByFilepath() ([]JavMovie, error) {
 }
 
 func (jc *javbusCrawl) SaveLocal(infos []JavMovie) error {
+	if len(infos) == 0 {
+		jc.logger.Warnw("no jav info to save")
+		return nil
+	}
 	df := dataframe.LoadStructs(infos)
 	f, err := os.OpenFile(path.Join(jc.opt.OutPath, time.Now().Local().Format("2006-01-02-15-04-05")+"-jav_Infow.csv"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
@@ -267,7 +272,7 @@ func (jc *javbusCrawl) javbusMovieInfoCrawl(e *colly.HTMLElement) {
 		Info.Stars += star + ";"
 	})
 
-	// jc. = append(t.javMovies, *Info)
+	jc.movies = append(jc.movies, *Info)
 }
 
 func (jc *javbusCrawl) javbusMovieMagnetCrawl(e *colly.HTMLElement) {
