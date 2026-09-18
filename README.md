@@ -10,7 +10,7 @@
 
 ## 下载命令行工具 🔧
 
-命令行工具提供`Windows`、`macOS`、`Linux`平台预编译的二进制。
+命令行工具提供`Windows`、`macOS`、`Linux`、`FreeBSD`平台预编译的二进制。
 
 最新下载地址: <https://github.com/gsxhnd/garage/releases>
 
