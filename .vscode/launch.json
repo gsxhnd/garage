@@ -12,7 +12,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/cmd",
-      "args": ["crawl", "jav-code", "--magnet", "TKD-048"],
+      "args": ["crawl_javbus", "javbus_code", "--magnet", "TKD-048"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
@@ -25,7 +25,7 @@
       "showLog": true,
       "debugAdapter": "dlv-dap",
       "program": "${workspaceRoot}/cmd",
-      "args": ["crawl", "jav-star-code", "--magnet"],
+      "args": ["crawl_javbus", "javbus_star_code", "--magnet"],
       "output": "${workspaceRoot}/build/garage",
       "trace": "verbose",
       "cwd": "${workspaceRoot}"
