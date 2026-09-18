@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Release
@@ -12,21 +15,20 @@ jobs:
     steps:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v4
-      - name: Set up Go 1.x
-        uses: actions/setup-go@v4
         with:
-          go-version: ^1.21
-        id: go
-      - run: go version
+          fetch-depth: 0
 
-      - name: Get dependencies
-        run: go get -v -t -d ./...
-
-      - uses: goreleaser/goreleaser-action@v4
+      - name: Install Go and goreleaser via mise
+        uses: jdx/mise-action@v4
         with:
-          # either 'goreleaser' (default) or 'goreleaser-pro':
-          distribution: goreleaser
-          version: latest
-          args: release --clean
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify toolchain
+        run: |
+          go version
+          goreleaser --version
+
+      - name: Release
+        run: goreleaser release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

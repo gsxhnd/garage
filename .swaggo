@@ -1,3 +1,0 @@
-replace database/sql.NullInt64 int
-replace database/sql.NullString string
-replace database/sql.NullTime time.Time

@@ -1,6 +1,5 @@
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
+version: 2
 project_name: garage
 git:
   tag_sort: -version:creatordate
@@ -12,7 +11,8 @@ before:
 
 builds:
   - id: garage
-    main: ./garage_cmd
+    main: ./cmd
+    binary: garage
     env:
       - CGO_ENABLED=0
     flags:
@@ -20,9 +20,9 @@ builds:
       - -trimpath
     ldflags:
       - -s -w
-      - -X "{{.ModulePath}}/src/cmd.tag={{.Tag}}"
-      - -X "{{.ModulePath}}/src/cmd.buildDate={{.Now}}"
-      - -X "{{.ModulePath}}/src/cmd.gitCommit={{.FullCommit}}"
+      - -X "main.tag={{.Tag}}"
+      - -X "main.buildDate={{.Date}}"
+      - -X "main.gitCommit={{.FullCommit}}"
     goos:
       - linux
       - freebsd
@@ -39,8 +39,8 @@ builds:
 
 archives:
   - id: garage
-    builds: [garage]
-    format: tar.gz
+    ids: [garage]
+    formats: [tar.gz]
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -48,22 +48,21 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
     files:
       - "LICENSE"
       - "CHANGELOG.md"
 
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  version_template: "{{ incpatch .Version }}-next"
 
 changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
+      - "^docs:"
+      - "^test:"

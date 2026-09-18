@@ -8,15 +8,15 @@ import (
 )
 
 var (
-	RootCmd = cli.NewApp()
+	rootCmd = cli.NewApp()
 	logger  = utils.NewLogger(nil)
 )
 
 func init() {
-	RootCmd.HideVersion = true
-	RootCmd.Usage = "Set of crwal tool"
-	RootCmd.Flags = []cli.Flag{}
-	RootCmd.Commands = []*cli.Command{
+	rootCmd.HideVersion = true
+	rootCmd.Usage = "Set of crwal tool"
+	rootCmd.Flags = []cli.Flag{}
+	rootCmd.Commands = []*cli.Command{
 		crawlJavbusCmd,
 		crawlJavDBCmd,
 		versionCmd,
@@ -24,7 +24,7 @@ func init() {
 }
 
 func main() {
-	err := RootCmd.Run(os.Args)
+	err := rootCmd.Run(os.Args)
 	if err != nil {
 		panic(err)
 	}

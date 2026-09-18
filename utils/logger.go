@@ -64,6 +64,10 @@ func NewLogger(cfg *Config) Logger {
 		core  zapcore.Core
 	)
 
+	if cfg == nil {
+		cfg = &Config{Mode: "dev", Log: LogConfig{Level: "info"}}
+	}
+
 	level = zap.InfoLevel
 	switch cfg.Log.Level {
 	case "debug":

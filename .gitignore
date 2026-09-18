@@ -4,6 +4,7 @@ Thumbs.db
 *.iml
 .idea/
 
+bin/
 build/
 javbus/
 dist/
@@ -13,3 +14,4 @@ testdb/
 data/
 log/
 .dev.env
+.cursor

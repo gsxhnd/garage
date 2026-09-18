@@ -1,8 +1,6 @@
 module github.com/gsxhnd/garage
 
-go 1.22.0
-
-toolchain go1.23.1
+go 1.25.0
 
 require (
 	github.com/antchfx/htmlquery v1.3.3
@@ -10,10 +8,9 @@ require (
 	github.com/go-gota/gota v0.12.0
 	github.com/go-resty/resty/v2 v2.15.3
 	github.com/gocolly/colly/v2 v2.1.0
-	github.com/inhies/go-bytesize v0.0.0-20220417184213-4913239db9cf
 	github.com/stretchr/testify v1.9.0
 	github.com/urfave/cli/v2 v2.27.4
-	go.uber.org/zap v1.27.0
+	go.uber.org/zap v1.28.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 

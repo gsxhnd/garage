@@ -18,7 +18,6 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 	"github.com/gsxhnd/garage/utils"
-	"github.com/inhies/go-bytesize"
 )
 
 const JAVBUS_URL = "https://www.javbus.com"
@@ -347,13 +346,11 @@ func (jc *javbusCrawl) javbusMovieMagnetCrawl(e *colly.HTMLElement) {
 						sizeStr = strings.Replace(sizeStr, "\x09", "", -1)
 						_, err := time.Parse("2006-01-02", sizeStr)
 						if err != nil {
-							b, err := bytesize.Parse(sizeStr)
+							b, err := utils.ParseByteSize(sizeStr)
 							if err != nil {
 								return
 							}
-							sizeStr = strings.Replace(b.Format("%.2f", "MB", false), "MB", "", -1)
-							size, _ := strconv.ParseFloat(sizeStr, 64)
-							m.Size = size
+							m.Size = utils.ByteSizeToMB(b)
 						}
 					}
 				}
