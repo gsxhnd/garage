@@ -2,13 +2,13 @@ name: Test
 
 on:
   push:
+    branches:
+      - "**"
     paths-ignore:
       - "docs/**"
       - "README.md"
-      - "CHANGELOG.md"
       - "LICENSE"
-    tags-ignore:
-      - "v*"
+      - "mise.toml"
 
 jobs:
   Test:
